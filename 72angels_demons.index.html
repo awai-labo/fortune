@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>72天使 × 72悪魔 対応表</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+JP:wght@300;400;500&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8CC7A;
+  --gold-dim:#7A6230;
+  --ink:#1A1410;
+  --ink2:#2D2419;
+  --parchment:#F5EFE0;
+  --parchment2:#EDE3CE;
+  --shadow-angel:#3C2A6B;
+  --shadow-demon:#6B1A1A;
+  --muted:#7A6E5A;
+  --border:#C9A84C44;
+  --angel-bg:#EEF0FA;
+  --angel-text:#2A1F5E;
+  --demon-bg:#FAEEEE;
+  --demon-text:#5E1F1F;
+  --fire-bg:#FAECE7;--fire-text:#712B13;
+  --earth-bg:#EAF3DE;--earth-text:#27500A;
+  --air-bg:#E6F1FB;--air-text:#0C447C;
+  --water-bg:#EEEDFE;--water-text:#3C3489;
+}
+
+body{
+  background: var(--parchment);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, #E8D9B522 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, #D4C4A822 0%, transparent 60%);
+  font-family:'Noto Serif JP', serif;
+  color:var(--ink);
+  min-height:100vh;
+}
+
+header{
+  text-align:center;
+  padding: 2.5rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #1A1410 0%, #2D2419 100%);
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'✦';
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  font-size:280px;
+  color:#ffffff06;
+  pointer-events:none;
+}
+header h1{
+  font-family:'Cinzel',serif;
+  font-size:clamp(1.1rem,3vw,1.8rem);
+  color:var(--gold);
+  letter-spacing:.2em;
+  font-weight:600;
+}
+header p{
+  font-size:11px;
+  color:#9A8A6A;
+  margin-top:.5rem;
+  letter-spacing:.15em;
+}
+
+.controls{
+  display:flex;gap:10px;flex-wrap:wrap;
+  padding:1rem 1rem .5rem;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  background:var(--parchment2);
+}
+.controls label{font-size:12px;color:var(--muted);}
+select,input[type=text]{
+  font-size:12px;padding:5px 9px;
+  border-radius:4px;
+  border:1px solid var(--gold-dim);
+  background:var(--parchment);
+  color:var(--ink);
+  font-family:'Noto Serif JP',serif;
+}
+input[type=text]{width:160px;}
+
+.legend{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  padding:.5rem 1rem;
+  background:var(--parchment2);
+  border-bottom:1px solid var(--border);
+  font-size:11px;
+}
+.leg-item{display:flex;align-items:center;gap:4px;}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
+.leg-angel{background:var(--shadow-angel);opacity:.7;}
+.leg-demon{background:var(--shadow-demon);opacity:.7;}
+
+.table-wrap{overflow-x:auto;padding:.5rem 0;}
+
+table{
+  width:100%;border-collapse:collapse;
+  font-size:11.5px;
+}
+th{
+  font-family:'Cinzel',serif;
+  font-size:10px;font-weight:600;
+  color:var(--gold-dim);
+  text-align:left;
+  padding:7px 8px;
+  border-bottom:1px solid var(--gold-dim);
+  white-space:nowrap;
+  background:var(--ink2);
+  letter-spacing:.08em;
+}
+th.angel-head{color:#9A9FD4;}
+th.demon-head{color:#D49A9A;}
+
+td{
+  padding:6px 8px;
+  border-bottom:.5px solid #D4C4A855;
+  vertical-align:top;
+  color:var(--ink);
+  line-height:1.5;
+}
+tr:hover td{background:#EDE3CE88;}
+
+/* 区切り列 */
+td.divider,th.divider{
+  width:4px;padding:0;
+  background:linear-gradient(180deg,var(--gold-dim),var(--gold));
+  opacity:.4;
+}
+
+.num{
+  font-family:'Cinzel',serif;
+  color:var(--gold-dim);font-size:10px;
+  text-align:center;
+}
+
+/* ヘブライ */
+.heb{direction:rtl;font-size:15px;font-weight:500;}
+.heb-kana{direction:ltr;display:block;font-size:9px;color:var(--muted);text-align:center;line-height:1.4;}
+
+/* 天使エリア */
+td.angel-area{background:#F5F3FF44;}
+.angel-name-en{font-weight:500;font-size:12px;color:var(--angel-text);}
+.angel-name-jp{font-size:10px;color:#6A5FAA;}
+.angel-domain{font-size:10px;color:var(--muted);}
+
+/* 悪魔エリア */
+td.demon-area{background:#FFF3F344;}
+.demon-name-en{font-weight:500;font-size:12px;color:var(--demon-text);}
+.demon-name-jp{font-size:10px;color:#AA5F5F;}
+.demon-rank{
+  display:inline-block;font-size:9px;
+  padding:1px 5px;border-radius:3px;
+  background:#F0D4D4;color:#8B2020;
+  margin-bottom:2px;
+}
+.demon-domain{font-size:10px;color:var(--muted);}
+
+/* タロットバッジ */
+.card-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;white-space:nowrap;font-weight:500;}
+.fire{background:var(--fire-bg);color:var(--fire-text);}
+.earth{background:var(--earth-bg);color:var(--earth-text);}
+.air{background:var(--air-bg);color:var(--air-text);}
+.water{background:var(--water-bg);color:var(--water-text);}
+.sign-text{font-size:10px;color:var(--muted);display:block;margin-top:2px;}
+.planet-badge{display:inline-block;font-size:10px;padding:1px 5px;border-radius:3px;background:#EDE3CE;color:var(--muted);}
+
+/* ミラー感 - 天使と悪魔の間の記号 */
+.mirror{text-align:center;font-size:14px;color:var(--gold-dim);padding:0 4px !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✦ 72天使 × 72悪魔 対応表 ✦</h1>
+  <p>Shem HaMephorash · Ars Goetia · Zodiacal Degrees</p>
+</header>
+
+<div class="controls">
+  <label>スート：</label>
+  <select id="suitFilter">
+    <option value="">すべて</option>
+    <option value="ワンド">ワンド（火）</option>
+    <option value="ペンタクル">ペンタクル（地）</option>
+    <option value="ソード">ソード（風）</option>
+    <option value="カップ">カップ（水）</option>
+  </select>
+  <label style="margin-left:8px;">階位：</label>
+  <select id="rankFilter">
+    <option value="">すべて</option>
+    <option value="王">王</option>
+    <option value="公爵">公爵</option>
+    <option value="侯爵">侯爵</option>
+    <option value="伯爵">伯爵</option>
+    <option value="大統領">大統領</option>
+    <option value="騎士">騎士</option>
+    <option value="王子">王子</option>
+  </select>
+  <label style="margin-left:8px;">検索：</label>
+  <input type="text" id="search" placeholder="天使・悪魔・星座・領域など">
+</div>
+<div class="legend">
+  <span class="leg-item"><span class="leg-dot leg-angel"></span>天使（光）</span>
+  <span style="color:var(--muted);margin:0 4px;">⇄</span>
+  <span class="leg-item"><span class="leg-dot leg-demon"></span>悪魔（影）</span>
+  <span style="color:var(--muted);margin-left:8px;font-size:10px;">同じ黄道度数の表と裏</span>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th style="width:28px;" class="angel-head">#</th>
+  <th style="width:65px;" class="angel-head">ヘブライ</th>
+  <th style="width:80px;" class="angel-head">神名</th>
+  <th style="width:130px;" class="angel-head">天使名</th>
+  <th class="divider"></th>
+  <th style="width:90px;">小アルカナ</th>
+  <th style="width:65px;">惑星</th>
+  <th class="divider"></th>
+  <th style="width:50px;" class="demon-head">階位</th>
+  <th style="width:130px;" class="demon-head">悪魔名</th>
+  <th class="demon-head">天使の守護領域 ↔ 悪魔の能力</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script>
+const hebMap={
+  'א':'アレフ','ב':'ベート','ג':'ギメル','ד':'ダレット',
+  'ה':'ヘー','ו':'ヴァヴ','ז':'ザイン','ח':'ヘット',
+  'ט':'テット','י':'ヨッド','כ':'カフ','ך':'カフ',
+  'ל':'ラメッド','מ':'メム','ם':'メム','נ':'ヌン',
+  'ן':'ヌン','ס':'サメフ','ע':'アイン','פ':'ペー',
+  'ף':'ペー','צ':'ツァディ','ץ':'ツァディ',
+  'ק':'コフ','ר':'レーシュ','ש':'シン','ת':'タヴ'
+};
+function hebToKana(str){return[...str].map(c=>hebMap[c]||c).join('·');}
+
+const suitClass={ワンド:"fire",ペンタクル:"earth",ソード:"air",カップ:"water"};
+
+const map=[
+  {n:1,suit:"ワンド",card:"2",sign:"牡羊座",planet:"火星"},
+  {n:2,suit:"ワンド",card:"2",sign:"牡羊座",planet:"火星"},
+  {n:3,suit:"ワンド",card:"3",sign:"牡羊座",planet:"太陽"},
+  {n:4,suit:"ワンド",card:"3",sign:"牡羊座",planet:"太陽"},
+  {n:5,suit:"ワンド",card:"4",sign:"牡羊座",planet:"金星"},
+  {n:6,suit:"ワンド",card:"4",sign:"牡羊座",planet:"金星"},
+  {n:7,suit:"ペンタクル",card:"5",sign:"牡牛座",planet:"水星"},
+  {n:8,suit:"ペンタクル",card:"5",sign:"牡牛座",planet:"水星"},
+  {n:9,suit:"ペンタクル",card:"6",sign:"牡牛座",planet:"月"},
+  {n:10,suit:"ペンタクル",card:"6",sign:"牡牛座",planet:"月"},
+  {n:11,suit:"ペンタクル",card:"7",sign:"牡牛座",planet:"土星"},
+  {n:12,suit:"ペンタクル",card:"7",sign:"牡牛座",planet:"土星"},
+  {n:13,suit:"ソード",card:"8",sign:"双子座",planet:"木星"},
+  {n:14,suit:"ソード",card:"8",sign:"双子座",planet:"木星"},
+  {n:15,suit:"ソード",card:"9",sign:"双子座",planet:"火星"},
+  {n:16,suit:"ソード",card:"9",sign:"双子座",planet:"火星"},
+  {n:17,suit:"ソード",card:"10",sign:"双子座",planet:"太陽"},
+  {n:18,suit:"ソード",card:"10",sign:"双子座",planet:"太陽"},
+  {n:19,suit:"カップ",card:"2",sign:"蟹座",planet:"金星"},
+  {n:20,suit:"カップ",card:"2",sign:"蟹座",planet:"金星"},
+  {n:21,suit:"カップ",card:"3",sign:"蟹座",planet:"水星"},
+  {n:22,suit:"カップ",card:"3",sign:"蟹座",planet:"水星"},
+  {n:23,suit:"カップ",card:"4",sign:"蟹座",planet:"月"},
+  {n:24,suit:"カップ",card:"4",sign:"蟹座",planet:"月"},
+  {n:25,suit:"ワンド",card:"5",sign:"獅子座",planet:"土星"},
+  {n:26,suit:"ワンド",card:"5",sign:"獅子座",planet:"土星"},
+  {n:27,suit:"ワンド",card:"6",sign:"獅子座",planet:"木星"},
+  {n:28,suit:"ワンド",card:"6",sign:"獅子座",planet:"木星"},
+  {n:29,suit:"ワンド",card:"7",sign:"獅子座",planet:"火星"},
+  {n:30,suit:"ワンド",card:"7",sign:"獅子座",planet:"火星"},
+  {n:31,suit:"ペンタクル",card:"8",sign:"乙女座",planet:"太陽"},
+  {n:32,suit:"ペンタクル",card:"8",sign:"乙女座",planet:"太陽"},
+  {n:33,suit:"ペンタクル",card:"9",sign:"乙女座",planet:"金星"},
+  {n:34,suit:"ペンタクル",card:"9",sign:"乙女座",planet:"金星"},
+  {n:35,suit:"ペンタクル",card:"10",sign:"乙女座",planet:"水星"},
+  {n:36,suit:"ペンタクル",card:"10",sign:"乙女座",planet:"水星"},
+  {n:37,suit:"ソード",card:"2",sign:"天秤座",planet:"月"},
+  {n:38,suit:"ソード",card:"2",sign:"天秤座",planet:"月"},
+  {n:39,suit:"ソード",card:"3",sign:"天秤座",planet:"土星"},
+  {n:40,suit:"ソード",card:"3",sign:"天秤座",planet:"土星"},
+  {n:41,suit:"ソード",card:"4",sign:"天秤座",planet:"木星"},
+  {n:42,suit:"ソード",card:"4",sign:"天秤座",planet:"木星"},
+  {n:43,suit:"カップ",card:"5",sign:"蠍座",planet:"火星"},
+  {n:44,suit:"カップ",card:"5",sign:"蠍座",planet:"火星"},
+  {n:45,suit:"カップ",card:"6",sign:"蠍座",planet:"太陽"},
+  {n:46,suit:"カップ",card:"6",sign:"蠍座",planet:"太陽"},
+  {n:47,suit:"カップ",card:"7",sign:"蠍座",planet:"金星"},
+  {n:48,suit:"カップ",card:"7",sign:"蠍座",planet:"金星"},
+  {n:49,suit:"ワンド",card:"8",sign:"射手座",planet:"水星"},
+  {n:50,suit:"ワンド",card:"8",sign:"射手座",planet:"水星"},
+  {n:51,suit:"ワンド",card:"9",sign:"射手座",planet:"月"},
+  {n:52,suit:"ワンド",card:"9",sign:"射手座",planet:"月"},
+  {n:53,suit:"ワンド",card:"10",sign:"射手座",planet:"土星"},
+  {n:54,suit:"ワンド",card:"10",sign:"射手座",planet:"土星"},
+  {n:55,suit:"ペンタクル",card:"2",sign:"山羊座",planet:"木星"},
+  {n:56,suit:"ペンタクル",card:"2",sign:"山羊座",planet:"木星"},
+  {n:57,suit:"ペンタクル",card:"3",sign:"山羊座",planet:"火星"},
+  {n:58,suit:"ペンタクル",card:"3",sign:"山羊座",planet:"火星"},
+  {n:59,suit:"ペンタクル",card:"4",sign:"山羊座",planet:"太陽"},
+  {n:60,suit:"ペンタクル",card:"4",sign:"山羊座",planet:"太陽"},
+  {n:61,suit:"ソード",card:"5",sign:"水瓶座",planet:"金星"},
+  {n:62,suit:"ソード",card:"5",sign:"水瓶座",planet:"金星"},
+  {n:63,suit:"ソード",card:"6",sign:"水瓶座",planet:"水星"},
+  {n:64,suit:"ソード",card:"6",sign:"水瓶座",planet:"水星"},
+  {n:65,suit:"ソード",card:"7",sign:"水瓶座",planet:"月"},
+  {n:66,suit:"ソード",card:"7",sign:"水瓶座",planet:"月"},
+  {n:67,suit:"カップ",card:"8",sign:"魚座",planet:"土星"},
+  {n:68,suit:"カップ",card:"8",sign:"魚座",planet:"土星"},
+  {n:69,suit:"カップ",card:"9",sign:"魚座",planet:"木星"},
+  {n:70,suit:"カップ",card:"9",sign:"魚座",planet:"木星"},
+  {n:71,suit:"カップ",card:"10",sign:"魚座",planet:"火星"},
+  {n:72,suit:"カップ",card:"10",sign:"魚座",planet:"火星"},
+];
+
+const angels=[
+  [1,"והו","ヴェフ","ヴァヴ・ヘー・ヴァヴ","Vehuiah","ヴェフイア","意志・始まりの力"],
+  [2,"ילי","イェリ","ヨッド・ラメッド・ヨッド","Jeliel","ジェリエル","愛・忠誠・生殖力"],
+  [3,"סיט","シタ","サメフ・ヨッド・テット","Sitael","シタエル","建設・試練への耐久"],
+  [4,"עלם","エレム","アイン・ラメッド・メム","Elemiah","エレミア","旅・内的変容・発見"],
+  [5,"מהש","マハス","メム・ヘー・シン","Mahasiah","マハシア","調和・学習・平和"],
+  [6,"ללה","レラ","ラメッド・ラメッド・ヘー","Lelahel","レラヘル","光・癒し・才能の開花"],
+  [7,"אכא","アカア","アレフ・カフ・アレフ","Achaiah","アカイア","忍耐・自然法則の理解"],
+  [8,"כהת","カヘト","カフ・ヘー・タヴ","Cahetel","カヘテル","感謝・神の祝福・農業"],
+  [9,"הזי","ヘジ","ヘー・ザイン・ヨッド","Haziel","ハジエル","赦し・慈悲・神の恵み"],
+  [10,"אלד","アラド","アレフ・ラメッド・ダレット","Aladiah","アラディア","浄化・カルマの解消"],
+  [11,"לאו","ラウ","ラメッド・アレフ・ヴァヴ","Lauviah","ラウヴィア","勝利・啓示・夢のお告げ"],
+  [12,"ההע","ハハア","ヘー・ヘー・アイン","Hahaiah","ハハイア","庇護・夢の解読"],
+  [13,"יזל","イェゼル","ヨッド・ザイン・ラメッド","Jezalel","ジェザレル","記憶・誠実さ・和解"],
+  [14,"מבה","メベ","メム・ベート・ヘー","Mebahel","メバヘル","正義・真実・解放"],
+  [15,"הרי","ハリ","ヘー・レーシュ・ヨッド","Hariel","ハリエル","信仰の浄化・動物の守護"],
+  [16,"הקמ","ハケム","ヘー・コフ・メム","Hekamiah","ヘカミア","忠誠・リーダーシップ"],
+  [17,"לאו","ラウ②","ラメッド・アレフ・ヴァヴ","Lauviah②","ラウヴィア②","知恵・高次の啓示"],
+  [18,"כלי","カリ","カフ・ラメッド・ヨッド","Caliel","カリエル","正義の勝利・法廷"],
+  [19,"לוו","レウ","ラメッド・ヴァヴ・ヴァヴ","Leuviah","レウヴィア","記憶・豊穣・許し"],
+  [20,"פהל","パハル","ペー・ヘー・ラメッド","Pahaliah","パハリア","変容・道徳・宗教"],
+  [21,"נלך","ネルク","ヌン・ラメッド・カフ","Nelkhael","ネルカエル","学習・魔術除去・詩"],
+  [22,"ייי","イェイ","ヨッド・ヨッド・ヨッド","Yeiayel","イェイアイエル","運命・名声・予言"],
+  [23,"מלה","メレ","メム・ラメッド・ヘー","Melahel","メラヘル","癒し・自然・薬草"],
+  [24,"חהו","ハフ","ヘット・ヘー・ヴァヴ","Haheuiah","ハヘウイア","庇護・亡命・真実"],
+  [25,"נתה","ニト","ヌン・タヴ・ヘー","Nith-Haiah","ニト・ハイア","魔法・叡智・秘教"],
+  [26,"האא","ハア","ヘー・アレフ・アレフ","Haaiah","ハアイア","政治・外交・秘密"],
+  [27,"ירת","イェレト","ヨッド・レーシュ・タヴ","Yeratel","イェラテル","伝播・文明の守護"],
+  [28,"שאה","シャア","シン・アレフ・ヘー","Seheiah","セヘイア","長寿・健康・危険除去"],
+  [29,"ריי","レイ","レーシュ・ヨッド・ヨッド","Reyiel","レイエル","解放・信仰・瞑想"],
+  [30,"אום","オム","アレフ・ヴァヴ・メム","Omael","オマエル","忍耐・多様性・動物"],
+  [31,"לכב","レカブ","ラメッド・カフ・ベート","Lecabel","レカベル","知識・植物・農業"],
+  [32,"ושר","ヴァシル","ヴァヴ・シン・レーシュ","Vasariah","ヴァサリア","正義・謙虚・法律"],
+  [33,"יחו","イェフ","ヨッド・ヘット・ヴァヴ","Yehuiah","イェフイア","上位への服従・保護"],
+  [34,"להח","レハフ","ラメッド・ヘー・ヘット","Lehahiah","レハヒア","秩序・献身・平和"],
+  [35,"כוק","カヴァク","カフ・ヴァヴ・コフ","Chavakiah","チャヴァキア","和解・家族の絆"],
+  [36,"מנד","メナド","メム・ヌン・ダレット","Menadel","メナデル","仕事・記憶・故郷"],
+  [37,"אני","アニ","アレフ・ヌン・ヨッド","Aniel","アニエル","突破口・啓示・科学"],
+  [38,"חעמ","ハアム","ヘット・アイン・メム","Haamiah","ハアミア","儀式・真理探求・礼節"],
+  [39,"רהע","ラハ","レーシュ・ヘー・アイン","Rehael","レハエル","治癒・親子関係・服従"],
+  [40,"ייז","イェイズ","ヨッド・ヨッド・ザイン","Ieiazel","イェイアゼル","解放・芸術・印刷"],
+  [41,"ההה","ヘヘヘ","ヘー・ヘー・ヘー","Hahahel","ハハヘル","使命・霊的覚醒・修道"],
+  [42,"מיכ","ミク","メム・ヨッド・カフ","Mikael","ミカエル","秩序・政治的守護・旅"],
+  [43,"וול","ヴェヴァル","ヴァヴ・ヴァヴ・ラメッド","Vevaliah","ヴェヴァリア","権力・平和・繁栄"],
+  [44,"ילה","イェレ","ヨッド・ラメッド・ヘー","Yelahiah","イェラヒア","戦士・カルマの正義"],
+  [45,"סאל","サエル","サメフ・アレフ・ラメッド","Sealiah","セアリア","意志・動機・真実"],
+  [46,"עריאל","アリエル","アイン・レーシュ・ヨッド・アレフ・ラメッド","Ariel","アリエル","知覚・発見・夢"],
+  [47,"עשל","アシュル","アイン・シン・ラメッド","Asaliah","アサリア","観想・正義・真理"],
+  [48,"מיה","ミイェ","メム・ヨッド・ヘー","Mihael","ミハエル","友情・平和・生殖"],
+  [49,"והו","ヴェフ②","ヴァヴ・ヘー・ヴァヴ","Vehuel","ヴェフエル","賛美・偉大さ・高次"],
+  [50,"דני","デニ","ダレット・ヌン・ヨッド","Daniel","ダニエル","言葉・慈悲・弁護"],
+  [51,"החש","ハフス","ヘー・ヘット・シン","Hahasiah","ハハシア","錬金術・秘教・医療"],
+  [52,"עממ","アメム","アイン・メム・メム","Imamaiah","イママイア","変容・力・試練克服"],
+  [53,"ננא","ネナ","ヌン・ヌン・アレフ","Nanael","ナナエル","伝統・瞑想・哲学"],
+  [54,"ניתה","ニテ","ヌン・ヨッド・タヴ・ヘー","Nithael","ニタエル","王権・安定・長寿"],
+  [55,"מבה","メベ②","メム・ベート・ヘー","Mebahiah","メバヒア","道徳・子孫・宗教"],
+  [56,"פוי","プイ","ペー・ヴァヴ・ヨッド","Poyel","ポイエル","豊かさ・スター性・謙虚"],
+  [57,"נמם","ネメム","ヌン・メム・メム","Nemamiah","ネマミア","大義・戦略・解放"],
+  [58,"ייל","イェイル","ヨッド・ヨッド・ラメッド","Yeialel","イェイアレル","鉄・戦士・精神力"],
+  [59,"הרח","ヘラフ","ヘー・レーシュ・ヘット","Harachel","ハラヘル","知識・宝・書物"],
+  [60,"מצר","メツェル","メム・ツァディ・レーシュ","Mitzrael","ミツラエル","癒し・誠実・感情"],
+  [61,"ומב","ウマブ","ヴァヴ・メム・ベート","Umabel","ウマベル","友情・感受性・占星術"],
+  [62,"יהה","イェへ","ヨッド・ヘー・ヘー","Iah-Hel","イア・ヘル","哲学・孤独・叡智"],
+  [63,"ענו","アヌ","アイン・ヌン・ヴァヴ","Anauel","アナウエル","統一・ビジネス・保護"],
+  [64,"מחי","メヒ","メム・ヘット・ヨッド","Mehiel","メヒエル","保護・霊感・著述"],
+  [65,"דמב","デマブ","ダレット・メム・ベート","Damabiah","ダマビア","海・魔術除去・航海"],
+  [66,"מנק","メナク","メム・ヌン・コフ","Manakel","マナケル","夢・植物・水"],
+  [67,"איע","アイェ","アレフ・ヨッド・アイン","Eiael","エイアエル","変化・長寿・錬金術"],
+  [68,"חבו","ハブ","ヘット・ベート・ヴァヴ","Habuhiah","ハブヒア","癒し・農業・出産"],
+  [69,"ראה","ラア","レーシュ・アレフ・ヘー","Rochel","ロケル","発見・遺産・法律"],
+  [70,"יבמ","イェブム","ヨッド・ベート・メム","Jabamiah","ジャバミア","錬金術・再生・変容"],
+  [71,"היי","ヘイ","ヘー・ヨッド・ヨッド","Haiaiel","ハイアイエル","武器・勝利・戦略"],
+  [72,"מומ","ムム","メム・ヴァヴ・メム","Mumiah","ムミア","終わりと再生・完成"],
+];
+
+// 72悪魔データ [番号, 英名, カタカナ名, 階位, 能力/領域]
+const demons=[
+  [1,"Bael","バエル","王","姿を隠す力・狡猾さ・統治"],
+  [2,"Agares","アガレス","公爵","逃げたものを引き戻す・地震・言語習得"],
+  [3,"Vassago","ヴァッサゴ","王子","過去未来の透視・失せ物発見"],
+  [4,"Samigina","サミギナ","侯爵","死者の霊との交信・魔術知識"],
+  [5,"Marbas","マルバス","大統領","秘密の暴露・癒しと病の両方・変身"],
+  [6,"Valefor","ヴァレフォル","公爵","盗みの技・友人を誘惑して堕落させる"],
+  [7,"Amon","アモン","侯爵","過去未来の知識・不和を和解させる"],
+  [8,"Barbatos","バルバトス","公爵","動物の言葉を解読・隠された宝の発見"],
+  [9,"Paimon","パイモン","王","芸術・科学の知識・幻影の召喚"],
+  [10,"Buer","ブエル","大統領","哲学・薬草・癒し・倫理"],
+  [11,"Gusion","グシオン","公爵","過去未来の知識・名誉と尊厳の付与"],
+  [12,"Sitri","シトリ","王子","愛欲・秘密の暴露・美の付与"],
+  [13,"Beleth","ベレト","王","愛と情欲の力・支配"],
+  [14,"Leraje","レラジェ","侯爵","戦いの激化・弓の傷の腐敗"],
+  [15,"Eligos","エリゴス","騎士","戦争の秘密・未来の知識・騎士道"],
+  [16,"Zepar","ゼパル","公爵","女性を惑わせる・不妊・愛の呪縛"],
+  [17,"Botis","ボティス","大統領/伯爵","過去未来の知識・友と敵の和解"],
+  [18,"Bathin","バシン","公爵","薬草と宝石の知識・瞬間移動"],
+  [19,"Sallos","サルロス","公爵","男女の愛情を引き起こす・平和的"],
+  [20,"Purson","プルソン","王","隠された宝・過去未来・神の秘密"],
+  [21,"Morax","モラクス","伯爵/大統領","天文・薬草・宝石の知識"],
+  [22,"Ipos","イポス","伯爵/王子","勇気と機知の付与・未来の知識"],
+  [23,"Aim","アイム","公爵","都市への放火・機知・真実の答え"],
+  [24,"Naberius","ナベリウス","侯爵","失われた名誉の回復・弁論術"],
+  [25,"Glasya-Labolas","グラシャラボラス","大統領","殺人・過去未来・芸術・霊視"],
+  [26,"Bune","ブネ","公爵","富と雄弁・死者の霊の移動"],
+  [27,"Ronove","ロノウェ","侯爵/伯爵","言語習得・召使いの霊・好意"],
+  [28,"Berith","ベリト","公爵","金属の黄金化・過去未来・名誉"],
+  [29,"Astaroth","アスタロト","公爵","怠惰・過去未来・秘密・芸術"],
+  [30,"Forneus","フォルネウス","侯爵","言語・弁論・名声・敵の友愛"],
+  [31,"Foras","フォラス","大統領","論理・薬草・宝石・不可視化・長寿"],
+  [32,"Asmodeus","アスモデウス","王","愛と情欲・賭け事・幾何学・見えない守護"],
+  [33,"Gaap","ガアプ","大統領/王子","愛と憎しみ・過去未来・哲学"],
+  [34,"Furfur","フルフール","伯爵","愛を起こす・嵐・雷・秘密の保護"],
+  [35,"Marchosias","マルコシアス","侯爵","戦いの強さ・真実の答え"],
+  [36,"Stolas","ストラス","王子","天文・薬草・宝石の知識"],
+  [37,"Phenex","フェニックス","侯爵","詩・科学・弁論・過去の記憶"],
+  [38,"Halphas","ハルファス","伯爵","塔の建設・戦争の武器・兵士の派遣"],
+  [39,"Malphas","マルファス","大統領","建築・敵の意図の暴露・霊の召喚"],
+  [40,"Raum","ラウム","伯爵","宝の盗難・王国の破壊・過去未来"],
+  [41,"Focalor","フォカロル","公爵","嵐と海の支配・人を溺死させる"],
+  [42,"Vepar","ヴェパル","公爵","海の支配・傷の化膿・船の幻影"],
+  [43,"Sabnock","サブノック","侯爵","城・要塞の建設・傷の腐敗・霊の召喚"],
+  [44,"Shax","シャックス","侯爵","聴覚・視覚・理性を奪う・馬の召喚"],
+  [45,"Vine","ヴァイン","王","魔女の暴露・未来の知識・嵐・水"],
+  [46,"Bifrons","ビフロンス","伯爵","天文・幾何学・薬草・墓の移動"],
+  [47,"Vual","ヴュアル","公爵","女性の愛・友情・過去未来"],
+  [48,"Haagenti","ハアゲンティ","大統領","金属の黄金化・ワインと水の変換・知恵"],
+  [49,"Crocell","クロセル","公爵","水の音の幻聴・温泉の発見・幾何学"],
+  [50,"Furcas","フルカス","騎士","哲学・天文・弁論・手相・火の知識"],
+  [51,"Balam","バラム","王","過去未来・姿を隠す力・機知と才知"],
+  [52,"Alloces","アロケス","公爵","天文・リベラルアーツ・使い霊"],
+  [53,"Camio","カミオ","大統領","鳥と動物の声の理解・未来の知識・論争"],
+  [54,"Murmur","ムルムル","公爵/伯爵","哲学・死者の霊の召喚・服従"],
+  [55,"Orobas","オロバス","王子","過去未来・神学・名誉・霊の暴露"],
+  [56,"Gremory","グレモリー","公爵","過去未来・女性の愛・隠された宝"],
+  [57,"Ose","オセ","大統領","リベラルアーツ・真実の答え・変身"],
+  [58,"Amy","アミー","大統領","天文・リベラルアーツ・薬草・宝の発見"],
+  [59,"Orias","オリアス","侯爵","星と惑星の知識・変身・好意と名誉"],
+  [60,"Vapula","ヴァプラ","公爵","哲学・力学・リベラルアーツ全般"],
+  [61,"Zagan","ザガン","王/大統領","金属の変換・知恵・機知の付与"],
+  [62,"Valac","ヴァラク","大統領","蛇の霊視・宝の在り処・真実"],
+  [63,"Andras","アンドラス","侯爵","不和の播種・殺害・主人と召使の離間"],
+  [64,"Haures","ハウレス","公爵","過去未来・悪魔の秘密・幻影の破壊"],
+  [65,"Andrealphus","アンドレアルフス","侯爵","幾何学・天文・変身（孔雀）"],
+  [66,"Kimaris","キマリス","侯爵","文法・論理・修辞・隠された宝"],
+  [67,"Amdusias","アムドゥシアス","公爵","音楽・楽器・嵐・木の傾き"],
+  [68,"Belial","ベリアル","王","徳と分配・好意・名誉・元老院への影響"],
+  [69,"Decarabia","デカラビア","侯爵","鳥の知識・薬草・宝石・星形"],
+  [70,"Seere","セエレ","王子","瞬間移動・秘密の暴露・盗みの発見"],
+  [71,"Dantalion","ダンタリオン","公爵","すべての人の心の知識・変身・愛の付与"],
+  [72,"Andromalius","アンドロマリウス","伯爵","盗人の発見・宝の回収・詐欺の暴露"],
+];
+
+const mapByN={};
+map.forEach(m=>mapByN[m.n]=m);
+const demonByN={};
+demons.forEach(d=>demonByN[d[0]]=d);
+
+function render(){
+  const sv=document.getElementById('suitFilter').value;
+  const rv=document.getElementById('rankFilter').value;
+  const kw=document.getElementById('search').value.toLowerCase();
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+
+  angels.forEach(([num,heb,yomi,yomiKana,angelEn,angelJp,angelDomain])=>{
+    const m=mapByN[num];
+    const d=demonByN[num];
+    if(!m||!d)return;
+    if(sv&&m.suit!==sv)return;
+    if(rv&&d[3]!==rv)return;
+    const searchStr=`${num}${yomi}${yomiKana}${angelEn}${angelJp}${angelDomain}${d[1]}${d[2]}${d[3]}${d[4]}${m.suit}${m.card}${m.planet}${m.sign}`.toLowerCase();
+    if(kw&&!searchStr.includes(kw))return;
+
+    const sc=suitClass[m.suit]||'';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="num angel-area">${num}</td>
+      <td class="angel-area">
+        <span class="heb">${heb}</span>
+        <span class="heb-kana">${hebToKana(heb)}</span>
+      </td>
+      <td class="angel-area">
+        <span style="font-size:11px;font-weight:600;">${yomi}</span><br>
+        <span style="font-size:9px;color:var(--muted);">${yomiKana}</span>
+      </td>
+      <td class="angel-area">
+        <span class="angel-name-en">${angelEn}</span><br>
+        <span class="angel-name-jp">${angelJp}</span>
+      </td>
+      <td class="divider"></td>
+      <td>
+        <span class="card-badge ${sc}">${m.suit}${m.card}</span>
+        <span class="sign-text">${m.sign}</span>
+      </td>
+      <td><span class="planet-badge">${m.planet}</span></td>
+      <td class="divider"></td>
+      <td class="demon-area"><span class="demon-rank">${d[3]}</span></td>
+      <td class="demon-area">
+        <span class="demon-name-en">${d[1]}</span><br>
+        <span class="demon-name-jp">${d[2]}</span>
+      </td>
+      <td class="demon-area">
+        <span class="angel-domain" style="color:#7A6A8A;">天：${angelDomain}</span><br>
+        <span class="demon-domain">魔：${d[4]}</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+});
+}
+
+render();
+document.getElementById('suitFilter').addEventListener('change',render);
+document.getElementById('rankFilter').addEventListener('change',render);
+document.getElementById('search').addEventListener('input',render);
+</script>
+</body>
+</html>
