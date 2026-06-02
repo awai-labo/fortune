@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oracle — Kabbalistic & Norse</title>
+  <title>The Integration Tree — Oracle</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,6 +59,33 @@
       letter-spacing: 0.05em;
     }
 
+    /* 言語切り替え */
+    .lang-switch {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.6rem;
+    }
+
+    .lang-btn {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      padding: 6px 18px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      opacity: 0.45;
+    }
+
+    .lang-btn.active {
+      opacity: 1;
+      border-color: var(--gold);
+    }
+
     .q-area { margin-bottom: 1.4rem; }
 
     .q-area textarea {
@@ -98,7 +125,6 @@
     .draw-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
     .draw-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* カードステージ */
     .card-stage { display: none; }
     .card-stage.visible { display: block; animation: fadeUp 0.8s ease forwards; }
 
@@ -120,7 +146,6 @@
     }
 
     .card-face.reversed { transform: rotate(180deg); }
-
     .card-face svg { width: 100%; height: 100%; display: block; }
 
     .card-name {
@@ -138,7 +163,6 @@
       margin-top: 4px;
     }
 
-    /* 鑑定ボックス */
     .reading-box {
       background: rgba(255,255,255,0.025);
       border: 0.5px solid rgba(201,168,76,0.18);
@@ -182,9 +206,14 @@
 <body>
   <div class="wrap">
     <header>
-      <p class="site-title">Oracle — Kabbalistic &amp; Norse</p>
-      <p class="site-sub">あわいの雨宿り</p>
+      <p class="site-title">The Integration Tree</p>
+      <p class="site-sub">Oracle — Kabbalistic &amp; Norse</p>
     </header>
+
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btnJa" onclick="setLang('ja')">JP</button>
+      <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
 
     <div class="q-area">
       <textarea id="userQ" rows="2" placeholder="今、問いかけたいことを書いてください（省略可）…"></textarea>
@@ -207,738 +236,54 @@
       </div>
     </div>
   </div>
-
+<script src="cards-data.js"></script>
   <script>
-    // ======================================================
-    // ★ デプロイ後にVercelのURLに書き換えてください
-    // ======================================================
     const API_ENDPOINT = 'https://fortune-five-psi.vercel.app/api/oracle';
-    const CARDS = [
-  // =====================
-  // セフィロト（11枚）
-  // =====================
-  {
-    id: 'daat', name: "DA'AT", type: 'Sephirot',
-    subs: ['Gate of the Abyss', "Readiness to face one's depths"],
-    symbol: 'Ø', symbolColor: '#88ffcc',
-    gradStops: [['#001a10','#002820'], ['#004a38','#00887a']],
-    image: 'images/daat.png',
-    keywords: '知識・深淵の扉・土星・ギメルのラクダが通過する扉・ビフロストへの接続点',
-    upright: 'これまで積み重ねてきた努力・喜び・試練のすべてが一つの巨大な知恵として完全に融合しようとしている。天の直感と地上のリアルな経験がピタッと噛み合い、新しい次元へとシフトする人生の大きな特異点。「あなたの過去は、何一つ間違っていなかった」という全肯定のエネルギー。',
-    reversed: '人生において最も核心に触れる大事なテーマと向き合っているがゆえの、神聖な足止め。「ここを超えられなければ終わりだ」という思い込みから、巨大で冷たい壁が見えている。しかしその「目詰まり」こそが、大反転のトリガーになる。',
-  },
-  {
-    id: 'kether', name: 'KETHER', type: 'Sephirot',
-    subs: ['The Crown', 'Pure Existence'],
-    symbol: '✦', symbolColor: '#ffffff',
-    gradStops: [['#0a0a0a','#1a1a2e'], ['#2a2a4a','#8888cc']],
-    image: 'images/kether.png',
-    keywords: '王冠・純粋な存在・無限の可能性・直感・根拠のない確信',
-    upright: 'まだ何の色もついていない、純粋な「私は私である」という存在の全肯定。無限の可能性。あなたの「直感」や「根拠のない確信」に強烈な守護が入っている。外側のルールに合わせる必要はない。',
-    reversed: 'ありのままの自分では世界に存在してはいけないという恐怖。「完璧でなければ価値がない」という思い込みが100点か0点かの極端な世界を見せている。その激しさごと、抱きしめていよう。',
-  },
-  {
-    id: 'chokmah', name: 'CHOKMAH', type: 'Sephirot',
-    subs: ['Wisdom', 'Pure Inspiration'],
-    symbol: '⊕', symbolColor: '#aaddff',
-    gradStops: [['#001020','#002040'], ['#003366','#0066bb']],
-    image: 'images/chokmah.png',
-    keywords: '知恵・ロジックなしの直感・アイデアの爆発・衝動的なパッション',
-    upright: 'ロジックなしの直感、アイデアの爆発。採算や他人の納得はいらない。あなたの「思いつき」や「衝動的なパッション」そのものに強烈な追い風が吹いている。',
-    reversed: '自分の直感や感性を、過去にロジックや常識という冷たい檻に閉じ込められ、殺されかけた猛烈な危機感と怒り。「コントロールされるくらいなら全部壊した方がマシだ」という防衛の概念。その荒々しいエネルギーごと、誇らしく抱きしめていよう。',
-  },
-  {
-    id: 'binah', name: 'BINAH', type: 'Sephirot',
-    subs: ['Understanding', 'Form from Chaos'],
-    symbol: '△', symbolColor: '#cc88ff',
-    gradStops: [['#100020','#200040'], ['#3a0066','#7700cc']],
-    image: 'images/binah.png',
-    keywords: '理解・混沌に形を与えること・深い受容・母なる器・制限',
-    upright: '深い理解と受容。大切なものを守り育てるための「母なる器（制限）」。構造化する知性に強力なサポート。感性がリアルな形を持って世界に定着するのを手伝ってくれている。',
-    reversed: '不確かな混沌の中で傷つき、見捨てられた恐怖。「絶対にコントロールできるルール」という城壁が必要だった。その慎重さごと抱きしめていよう。新しい居場所を創り出す最高の鍵に変わる。',
-  },
-  {
-    id: 'chesed', name: 'CHESED', type: 'Sephirot',
-    subs: ['Mercy', 'Unconditional Love'],
-    symbol: '♃', symbolColor: '#ffdd88',
-    gradStops: [['#1a1000','#332000'], ['#664400','#cc9900']],
-    image: 'images/chesed.png',
-    keywords: '慈悲・無条件の肯定と受容・大いなる慈悲・無限の拡大と豊かさ',
-    upright: '大いなる慈悲、無限の拡大と豊かさそのもののエネルギー。「受け入れる力」や「育てるエネルギー」に強烈な追い風。守りに入るより器を開いて循環させるとき。',
-    reversed: '無条件で受け止められた経験が乏しく、「与え続けなければ見捨てられる」という深い飢餓感。共依存の沼でのたうち回った苦しみは、本当の聖域を現実に創り出す最高の鍵になる。',
-  },
-  {
-    id: 'geburah', name: 'GEBURAH', type: 'Sephirot',
-    subs: ['Strength', 'Sacred Judgment'],
-    symbol: '♂', symbolColor: '#ff6644',
-    gradStops: [['#1a0000','#3a0000'], ['#770000','#cc2200']],
-    image: 'images/geburah.png',
-    keywords: '峻厳・適切な境界線の確立・本質ではないものを断ち切るNOの力・尊厳を守るための神聖な裁き',
-    upright: '本質ではないものを断ち切るNOの力。尊厳を守るための神聖な裁き。「これ以上自分を安売りしなくていい」という強い守護。依存関係を断ち、自分の領域に杭を打つチャンス。',
-    reversed: '大切な聖域を過去に何度も踏みにじられ、侵略されてきた無力感。悪魔になってでも尊厳を死守しようとした、戦士としてのプライドを猛烈に讃えたい。大切な人を完璧に防衛する最高の盾になる。',
-  },
-  {
-    id: 'tiphareth', name: 'TIPHARETH', type: 'Sephirot',
-    subs: ['Beauty', 'The True Self'],
-    symbol: '☀', symbolColor: '#ffcc00',
-    gradStops: [['#1a1200','#332400'], ['#665500','#ccaa00']],
-    image: 'images/tiphareth.png',
-    keywords: '美・自己統合とありのままの輝き・中心軸（セルフ）とつながる太陽のような調和と美しさ',
-    upright: '中心軸（セルフ）とつながる太陽のような調和と美しさ。「真実の生き方」や「等身大の自己表現」への強烈なスポットライト。主人公として真ん中に立つとき。',
-    reversed: 'ありのままの未完成な自分では無視され、愛されなかった拒絶の痛み。自分の価値が見えなくなってのたうち回った苦しみの記憶は、本当の美しさを開花させる最高の鍵になる。',
-  },
-  {
-    id: 'netzach', name: 'NETZACH', type: 'Sephirot',
-    subs: ['Victory', 'Wild Emotion'],
-    symbol: '♀', symbolColor: '#88ff88',
-    gradStops: [['#001a00','#003300'], ['#006600','#00aa44']],
-    image: 'images/netzach.png',
-    keywords: '勝利・野生の感情の解放・理由のない「大好き！」「心地いい！」というエモーショナルな熱量と芸術的感性',
-    upright: '理由のない「大好き！」「心地いい！」というエモーショナルな熱量と芸術的感性。「正しさ」より「楽しさ・心地よさ」を選ぶとき。感覚を爆発させている姿そのものが最大の魅力になる。',
-    reversed: '純粋な好きという気持ちや繊細な感覚を、過去に「くだらない」と踏みにじられた失望。言葉にできない美しさや違和感を丁寧に拾い上げる圧倒的な共鳴力は、閉ざされた心を一瞬で融かす最高の魔法になる。',
-  },
-  {
-    id: 'hod', name: 'HOD', type: 'Sephirot',
-    subs: ['Splendor', 'Language of Sensation'],
-    symbol: '☿', symbolColor: '#ffaa44',
-    gradStops: [['#1a0800','#331500'], ['#662a00','#cc5500']],
-    image: 'images/hod.png',
-    keywords: '栄光・感覚の言語化と客観的な知性・モヤモヤした感覚に名前を与える明晰さ',
-    upright: 'モヤモヤした感覚に名前を与え、ロジックやシステムとして鮮やかに翻訳・整理する明晰さ。「伝える力」や「分析する知性」に強力なサポート。メソッドを体系化したり、文章にまとめるなら今。',
-    reversed: 'リアルな感情をそのまま出したとき、理不尽に言いくるめられたり嘘つき呼ばわりされた悔しさ。物事の構造や嘘を見抜き、感覚を完璧に翻訳する圧倒的な言語化能力は、誰かの閉ざされた心の鍵を開ける最高の道具になる。',
-  },
-  {
-    id: 'yesod', name: 'YESOD', type: 'Sephirot',
-    subs: ['Foundation', 'The Dreaming Ground'],
-    symbol: '☽', symbolColor: '#aaaaff',
-    gradStops: [['#080018','#100030'], ['#220066','#4400cc']],
-    image: 'images/yesod.png',
-    keywords: '基盤・潜在意識の力と豊かなイマジネーション・夢や幻想・インスピレーションの活性化',
-    upright: '夢や幻想、インスピレーションの活性化。現実化を足元から引き寄せる磁石（心の土台）。無意識のセンサーに強力な追い風。「本当はどうしたい？」をじっくり味わうとき。',
-    reversed: 'ありのままのリアルな現実が、過去にあまりにも過酷で、直視したら心が狂って壊れてしまうほどだった傷。内なる世界の中に命のシェルターを作ってここまで生き延びてくれた、あなたの驚異的な精神力とイメージ力を全力で讃えたい。',
-  },
-  {
-    id: 'malkuth', name: 'MALKUTH', type: 'Sephirot',
-    subs: ['Kingdom', 'Earth Embodied'],
-    symbol: '⊕', symbolColor: '#bb8844',
-    gradStops: [['#100800','#201500'], ['#443300','#886600']],
-    image: 'images/malkuth.png',
-    keywords: '王国・現実化と肉体を持った行動・アイデアやイメージを3次元の地球で結晶化させる力',
-    upright: 'アイデアやイメージをこの3次元の地球で「目に見える形」として結晶化させる力。グラウンディングへの強烈な守護。具体的なタスクを淡々とこなすとき、地球そのものが足元をガシッと支えてくれる。',
-    reversed: '目に見えない約束や愛を信じた結果こっぴどく裏切られ、足元をすくわれる恐怖を味わった傷。物事をリアルに着地させる圧倒的な具体化の力として、理想を地上に完璧に結晶化させる最高の鍵になる。',
-  },
+    let currentLang = 'ja';
 
-  // =====================
-  // ヘブライ文字（22枚）
-  // =====================
-  {
-    id: 'aleph', name: 'ALEPH', type: 'Hebrew',
-    subs: ['The Fool (0)', 'Pure Possibility'],
-    symbol: 'א', symbolColor: '#ffffff',
-    gradStops: [['#050510','#0a0a20'], ['#1a1a40','#4444aa']],
-    image: 'images/aleph.png',
-    keywords: '愚者・無から飛び出す純粋な可能性・計算や損得を脇に置いた無垢さ・風元素',
-    upright: '何も決まっていない、何の色もついていない。だからこそ、ここから何にだってなれる純粋な「存在の始まり」のエネルギー。「言葉にならない沈黙」の中にある最も神聖な力が背中を押している。',
-    reversed: '可能性を信じるのが怖くなるくらい、過去に自分の純粋な衝動を笑われたり踏みにじられた傷があった。でも、あなたの魂の奥底にある「純粋な風（アレフ）」は1ミリも死んでいない。',
-  },
-  {
-    id: 'beth', name: 'BETH', type: 'Hebrew',
-    subs: ['The Magician (I)', 'Will into Form'],
-    symbol: 'ב', symbolColor: '#ffee88',
-    gradStops: [['#181000','#302000'], ['#604000','#cc8800']],
-    image: 'images/beth.png',
-    keywords: '魔術師・意志の力・上と下をつなぐ・道具の習熟・水星',
-    upright: '「上にあるものは下にある」——天の意志を地上に実現させる意志と技術の統合。あなたが持っているすべての道具は、今この瞬間のために揃っている。',
-    reversed: '自分の意志や能力を過去に「大した価値がない」と否定され続けた傷。その小さな魔法の積み重ねを誰かに笑われた記憶が、あなたの手を止めている。あなたの道具は、今も使える。',
-  },
-  {
-    id: 'gimel', name: 'GIMEL', type: 'Hebrew',
-    subs: ['The High Priestess (II)', 'Recall your North Star'],
-    symbol: 'ג', symbolColor: '#ccaaff',
-    gradStops: [['#0d0a1a','#1a1230'], ['#2d1f50','#5a3a9a']],
-    image: 'images/gimel.png',
-    keywords: 'ギメル（駱駝）・女教皇・ケテルとティファレトの道・月・内なる羅針盤',
-    upright: '砂漠の横断——目印のない地平線でも、内なる羅針盤を信じること。論理では捉えきれない微細な感覚やインスピレーションが、実は最も確かな道しるべとなっている。',
-    reversed: '遠い光を追い、自分自身の光の糸を見失うこと。他者の承認に依存する古いパターンから、自分自身の深い知恵を信頼する新しい在り方への移行を促している。',
-  },
-  {
-    id: 'daleth', name: 'DALETH', type: 'Hebrew',
-    subs: ['The Empress (III)', 'Abundance Embodied'],
-    symbol: 'ד', symbolColor: '#ffbbdd',
-    gradStops: [['#1a0010','#330020'], ['#660044','#cc0088']],
-    image: 'images/daleth.png',
-    keywords: '女帝・豊かさ・大地の母・感覚的な美・金星',
-    upright: '大地の豊かさ、感覚的な喜び、創造の母性エネルギー。あなたの感覚そのものが宝物。美しいものを愛する力、育てる力——それがそのまま世界への贈り物になる。',
-    reversed: '自分の豊かさや美しさを認められなかった傷。「どうせ私には無理」という自己否定のパターン。しかしその飢餓の深さが、豊かさの真の意味を知っているということ。',
-  },
-  {
-    id: 'heh', name: 'HEH', type: 'Hebrew',
-    subs: ['The Emperor (IV)', 'Structure and Authority'],
-    symbol: 'ה', symbolColor: '#ff8844',
-    gradStops: [['#1a0800','#331500'], ['#663300','#cc6600']],
-    image: 'images/heh.png',
-    keywords: '皇帝・構造と権威・秩序を作る力・牡羊座・火の意志',
-    upright: '秩序を作る力、構造化する意志。あなたの「王国」を現実に打ち立てるとき。混沌に骨格を与え、長期的なビジョンを地上に根付かせる力に強烈な守護が入っている。',
-    reversed: '権威を振りかざされ、自分の秩序を力で踏みにじられた傷。コントロールすることでしか安心できなくなった防衛の歴史。あなたの真の権威は、脅しではなく存在感から来る。',
-  },
-  {
-    id: 'vav', name: 'VAV', type: 'Hebrew',
-    subs: ['The Hierophant (V)', 'Bridge of Tradition'],
-    symbol: 'ו', symbolColor: '#aabbff',
-    gradStops: [['#080018','#100030'], ['#1a0055','#3300aa']],
-    image: 'images/vav.png',
-    keywords: '教皇・伝統と教えを橋渡しする・内なる師・牡牛座',
-    upright: '見えない知恵の継承者として、あなたは今、何か大切なものを次の人へ渡す役割を担っている。内なる師の声を聞くとき——外の権威ではなく、魂の中心にある確信を信じて。',
-    reversed: '過去に「正しい教え」の名のもとに傷つけられた経験。権威への反発、または権威への過剰な依存。あなた自身の内なる知恵は、誰かの許可を必要としない。',
-  },
-  {
-    id: 'zayin', name: 'ZAYIN', type: 'Hebrew',
-    subs: ['The Lovers (VI)', 'The Choice'],
-    symbol: 'ז', symbolColor: '#ffddaa',
-    gradStops: [['#1a1000','#332000'], ['#664400','#bb8800']],
-    image: 'images/zayin.png',
-    keywords: '恋人・選択・二つの道の前に立つ・双子座・統合か分裂か',
-    upright: '二つの道の前に立っている。これは単なる恋愛の選択ではなく、「どの自分として生きるか」という魂の選択。あなたの心が本当に動く方を、信頼して。',
-    reversed: '選択することへの深い恐怖。「選んだら何かを失う」「どちらも正しい気がして動けない」——その分裂の痛みそのものが、あなたが何を大切にしているかを教えてくれる。',
-  },
-  {
-    id: 'cheth', name: 'CHETH', type: 'Hebrew',
-    subs: ['The Chariot (VII)', 'Directed Will'],
-    symbol: 'ח', symbolColor: '#88ccff',
-    gradStops: [['#001018','#002030'], ['#004466','#0088bb']],
-    image: 'images/cheth.png',
-    keywords: '戦車・相反する力を御する意志・前進・蟹座',
-    upright: '相反する力を両手で御しながら、真っ直ぐ前進するとき。外側の嵐がどれだけ激しくても、内側の意志が軸として機能している。その集中力と意志に強烈な守護が入っている。',
-    reversed: '内側の矛盾する声に引き裂かれ、どちらに進むべきかわからなくなっている。「前に進まなければ」というプレッシャーと、疲れ果てた心の葛藤。まず手綱を一度置いて、休んでいい。',
-  },
-  {
-    id: 'tet', name: 'TET', type: 'Hebrew',
-    subs: ['Strength (VIII)', 'The Gentle Taming'],
-    symbol: 'ט', symbolColor: '#ffaa66',
-    gradStops: [['#180800','#301500'], ['#602800','#bb5500']],
-    image: 'images/tet.png',
-    keywords: '力・優しさで野性を御する・内なる獅子・乙女座または獅子座',
-    upright: '怪力ではなく、愛と優しさで内なる野性をなだめる力。あなたの中の激しい感情、恐れ、衝動——それを押さえ込むのではなく、優しく手を差し伸べるとき。',
-    reversed: '自分の感情的な強さを「恥ずかしい」「弱い」と思わされてきた傷。その深い感情性こそが、あなたの最大の強みだということを、まだ受け取れていない。',
-  },
-  {
-    id: 'yod', name: 'YOD', type: 'Hebrew',
-    subs: ['The Hermit (IX)', 'The Inner Light'],
-    symbol: 'י', symbolColor: '#ffffaa',
-    gradStops: [['#101000','#202000'], ['#404400','#888800']],
-    image: 'images/yod.png',
-    keywords: '隠者・内なる光を灯して道を照らす・孤独な探求・乙女座',
-    upright: '孤独の中で内なる光を灯しながら、魂の道を照らす隠者のとき。外の喧騒から離れ、自分の内側に深く降りていくことへの強烈な守護。その静寂の中に、あなたが探していた答えがある。',
-    reversed: '孤立が孤独になってしまっているとき。「誰にもわかってもらえない」という深い孤独感。しかし、その孤独の深さほど、あなたの内なる光は明るい。灯台は、自分のために光らなくていい。',
-  },
-  {
-    id: 'kaf', name: 'KAF', type: 'Hebrew',
-    subs: ['Wheel of Fortune (X)', 'The Great Turning'],
-    symbol: 'כ', symbolColor: '#cc88ff',
-    gradStops: [['#100018','#200030'], ['#3a0066','#7700cc']],
-    image: 'images/kaf.png',
-    keywords: '運命の輪・大いなる循環・転機・木星・宇宙の流れに乗る',
-    upright: '大いなる転機。宇宙の巨大な歯車が動き始めている。今まで積み上げてきたものが、全く新しいステージへと押し上げられるとき。この流れに乗ることへの強烈な守護が入っている。',
-    reversed: '変化への恐怖、または変化に翻弄されているとき。「なぜ自分だけ」という苦しさの中にいる。しかし、輪は必ず回る。今の底にいることが、次の上昇の始まり。',
-  },
-  {
-    id: 'lamed', name: 'LAMED', type: 'Hebrew',
-    subs: ['Justice (XI)', 'The Honest Mirror'],
-    symbol: 'ל', symbolColor: '#88ffdd',
-    gradStops: [['#001810','#003020'], ['#006644','#00bb88']],
-    image: 'images/lamed.png',
-    keywords: '正義・因果の法則・公正な目でみること・天秤座',
-    upright: '因果の法則が働いている。今起きていることは、宇宙の誠実な応答。正直な目で自分と世界を見ることへの守護。嘘や誤魔化しを手放し、本当のことを見るとき。',
-    reversed: '不公平な扱いを受け続けてきた深い傷。「なぜ自分だけが割を食うのか」という怒りと悲しみ。その感覚は正当だ。しかし、真の正義はあなた自身の誠実さから始まる。',
-  },
-  {
-    id: 'mem', name: 'MEM', type: 'Hebrew',
-    subs: ['The Hanged Man (XII)', 'Sacred Surrender'],
-    symbol: 'מ', symbolColor: '#88aaff',
-    gradStops: [['#000818','#001030'], ['#002266','#0044cc']],
-    image: 'images/mem.png',
-    keywords: '吊るされた男・聖なる降伏・視点の180度反転・水元素',
-    upright: '自分のちっぽけなエゴの力で現実に抗うのを完全にやめ、自ら「吊るされた男」となって世界を逆さまに見つめ直す、偉大なる降伏のとき。「何もしない」「委ねる」ことを選ぶとき、宇宙の大きな流れがあなたを次のステージへと押し流してくれる。',
-    reversed: '「どうせ私なんて」という無価値感の泥沼。被害者のポジションにしがみついて動こうとしない状態。しかし、あなたの魂の古い皮を脱ぎ捨て、新しく生まれ変わらせるための「胎内」がそこにある。',
-  },
-  {
-    id: 'nun', name: 'NUN', type: 'Hebrew',
-    subs: ['Death (XIII)', 'Transformation'],
-    symbol: 'נ', symbolColor: '#446688',
-    gradStops: [['#050510','#0a0a18'], ['#101030','#2a2a66']],
-    image: 'images/nun.png',
-    keywords: '死・変容・終わりと始まり・蠍座・古い皮を脱ぐ',
-    upright: '終わりは始まり。古いものが完全に死に、新しいものが生まれようとしている。この変容を恐れないこと——死のカードは、魂が次のステージへと進む準備ができたというサイン。',
-    reversed: '変化や終わりへの深い恐怖。「失うこと」への執着。しかし、脱皮を拒む蛇は窒息する。あなたが手放すことを恐れているものの中に、次の自由への扉がある。',
-  },
-  {
-    id: 'samekh', name: 'SAMEKH', type: 'Hebrew',
-    subs: ['Temperance (XIV)', 'The Alchemist'],
-    symbol: 'ס', symbolColor: '#aaffcc',
-    gradStops: [['#001510','#002820'], ['#005540','#00aa80']],
-    image: 'images/samekh.png',
-    keywords: '節制・錬金術・対立する力の融合・射手座',
-    upright: '対立する力を器の中で融合させる錬金術師のとき。急ぎすぎず、焦らず、天使のように一方の杯からもう一方へと注ぎ続ける忍耐と精度。その調整の中で、奇跡の合金が生まれる。',
-    reversed: '極端から極端に振れるパターン。バランスをとることへの過剰な負担感。「もっとうまくやらなければ」という完璧主義が、流れを止めている。揺れることそのものが、錬金術の過程。',
-  },
-  {
-    id: 'ayin', name: 'AYIN', type: 'Hebrew',
-    subs: ['The Devil (XV)', 'Shadow Chains'],
-    symbol: 'ע', symbolColor: '#886644',
-    gradStops: [['#100800','#201000'], ['#402000','#884400']],
-    image: 'images/ayin.png',
-    keywords: '悪魔・シャドウの鎖・物質への執着・山羊座・見えない縛り',
-    upright: '今のあなたを縛っている鎖を直視するとき。その鎖は外から与えられたように見えるが、実はあなた自身が握っている。シャドウの正体を見ることで、自由が始まる。',
-    reversed: 'その鎖を外す恐怖——「自由になったら何が起きるかわからない」という深い不安。その縛りは、かつてあなたを守るために必要だったもの。その歴史への敬意と共に、少しずつ手を開いていい。',
-  },
-  {
-    id: 'pe', name: 'PE', type: 'Hebrew',
-    subs: ['The Tower (XVI)', 'Sacred Destruction'],
-    symbol: 'פ', symbolColor: '#ff4422',
-    gradStops: [['#1a0000','#380000'], ['#770000','#dd2200']],
-    image: 'images/pe.png',
-    keywords: '塔・聖なる破壊・嘘の構造物の崩壊・火星',
-    upright: '嘘の上に建てられた構造物が崩れ落ちるとき。それは破壊ではなく、解放。稲妻が塔を打ち抜くとき、真実だけが残る。その崩壊の中にこそ、本物の基盤を作り直すチャンスがある。',
-    reversed: '崩壊への恐怖から、ひびが入った塔にしがみついているとき。「今更壊せない」という思い込みの重さ。しかし、あなたが恐れているその崩壊は、すでに内側から始まっている。',
-  },
-  {
-    id: 'tzadi', name: 'TZADI', type: 'Hebrew',
-    subs: ['The Star (XVII)', 'Hope Returns'],
-    symbol: 'צ', symbolColor: '#aaccff',
-    gradStops: [['#000818','#001030'], ['#001866','#0033cc']],
-    image: 'images/tzadi.png',
-    keywords: '星・希望の光・嵐のあとの静けさ・水瓶座',
-    upright: '嵐が過ぎ去った後、星が静かに輝いているとき。傷ついた心に、宇宙から直接注がれるいやしの光。「あなたはここにいていい」という宇宙の全肯定。ただ受け取るだけでいい。',
-    reversed: '希望を持つことへの恐怖。「どうせまた裏切られる」という防衛。その恐怖の奥に、まだ輝きたいという魂の声がある。星は、あなたが見ていないときも、ずっと光り続けている。',
-  },
-  {
-    id: 'qof', name: 'QOF', type: 'Hebrew',
-    subs: ['The Moon (XVIII)', 'The Depths Revealed'],
-    symbol: 'ק', symbolColor: '#8888cc',
-    gradStops: [['#080010','#100020'], ['#200044','#440088']],
-    image: 'images/qof.png',
-    keywords: '月・無意識の深み・幻想と直感の境界・魚座',
-    upright: '無意識の深い海が揺れているとき。夢、幻想、直感——論理では測れないものが動いている。月の光の下では、昼には見えないものが見える。その曖昧さの中に、真実がある。',
-    reversed: '幻想と現実の境が曖昧になっているとき、または直感を信頼できないとき。「自分が何を感じているかわからない」という混乱。その霧は、深い感受性の証拠でもある。',
-  },
-  {
-    id: 'resh', name: 'RESH', type: 'Hebrew',
-    subs: ['The Sun (XIX)', 'Radiant Joy'],
-    symbol: 'ר', symbolColor: '#ffdd00',
-    gradStops: [['#1a1200','#332400'], ['#665500','#ccaa00']],
-    image: 'images/resh.png',
-    keywords: '太陽・輝き・子どものような喜び・成功と祝福',
-    upright: '子どものような無垢な喜び、太陽の下で輝くとき。あなたの存在そのものが光。成功、健康、喜び——それらはすでにあなたの中にある。ただそれを、世界に向けて開いていい。',
-    reversed: '喜ぶことへの恐怖、または輝くことへの罪悪感。「自分だけ幸せになっていいのか」という思い込み。その曇りを通しても、あなたの太陽は消えていない。',
-  },
-  {
-    id: 'shin', name: 'SHIN', type: 'Hebrew',
-    subs: ['Judgement (XX)', 'The Great Resurrection'],
-    symbol: 'שׁ', symbolColor: '#ff6600',
-    gradStops: [['#1a0400','#380800'], ['#771100','#cc3300']],
-    image: 'images/shin.png',
-    keywords: '審判・聖なる火が過去を全肯定へ昇華する・魂の復活・火元素',
-    upright: 'これまでの人生であなたが味わってきたすべての挫折、のたうち回った苦しみ、サバイバルの歴史。そのすべての点と点が、パッと一本の光の線に繋がり、「何一つ無駄な経験はなかった！」と魂の底から驚天動地の納得を迎えるとき。',
-    reversed: '「今さら変わっても無駄だ」と、過去の痛みの墓場の中に自らを閉じ込め、目覚めのサインを拒絶している状態。あなたがのたうち回ったあの暗闇の記憶こそが、大反転の燃料そのもの。',
-  },
-  {
-    id: 'tav', name: 'TAV', type: 'Hebrew',
-    subs: ['The World (XXI)', 'Completion'],
-    symbol: 'ת', symbolColor: '#aaffaa',
-    gradStops: [['#001800','#003000'], ['#006600','#00cc44']],
-    image: 'images/tav.png',
-    keywords: '世界・完成・一つのサイクルの終わりと新たな始まり・土星',
-    upright: '一つの大きなサイクルが完成する瞬間。宇宙の舞踊の中で、あなたはすべての要素を統合した。この完成は終わりではなく、次の大きな螺旋の出発点。今、全力で祝っていい。',
-    reversed: '完成を認められない、または次のステップへの恐怖。「もっと完璧にならないと」という思い込みで、すでに成し遂げたものを見えなくしている。あなたはすでに、十分に遠くまで来た。',
-  },
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('btnJa').className = 'lang-btn' + (lang === 'ja' ? ' active' : '');
+      document.getElementById('btnEn').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+      document.getElementById('userQ').placeholder = lang === 'ja'
+        ? '今、問いかけたいことを書いてください（省略可）…'
+        : 'Write your question here (optional)…';
+      document.getElementById('drawBtn').textContent = lang === 'ja'
+        ? '✦ Draw a Card ✦'
+        : '✦ Draw a Card ✦';
+    }
 
-  // =====================
-  // 九つの世界 + ヴァルハラ + ビフロスト（11枚）
-  // =====================
-  {
-    id: 'asgard', name: 'ASGARD', type: 'World',
-    subs: ['Realm of the Aesir', 'Divine Order'],
-    symbol: '⚡', symbolColor: '#ffdd44',
-    gradStops: [['#1a1400','#332800'], ['#665500','#ccaa00']],
-    image: 'images/asgard.png',
-    keywords: 'アースガルズ・神々の領域・秩序と権威・オーディンの館・天上界',
-    upright: '神々の秩序と権威のエネルギーが働いている。高い視点から物事を見渡す力、大局を把握する知性。あなたは今、自分の人生の主権者として立つべきとき。',
-    reversed: '神の権威を笠に着た支配、または権威への過剰な服従。「高みから見下ろされる」感覚の傷。しかし本物の権威は、制圧ではなく守護から来る。',
-  },
-  {
-    id: 'midgard', name: 'MIDGARD', type: 'World',
-    subs: ['The Human Realm', 'Here and Now'],
-    symbol: '⊕', symbolColor: '#88bb44',
-    gradStops: [['#080c00','#101800'], ['#243300','#4a6600']],
-    image: 'images/midgard.png',
-    keywords: 'ミドガルズ・人間の世界・今ここにある現実・日常の中の神聖さ',
-    upright: '今ここにある現実、日常の中の神聖さ。あなたの足元にある地面こそが、すべての旅の出発点。この日常の中に、神話が息づいている。',
-    reversed: '日常の重さに押しつぶされているとき、または現実から逃げたいとき。その「ただの毎日」の中に、見過ごしてきた宝が隠れている。',
-  },
-  {
-    id: 'jotunheim', name: 'JOTUNHEIM', type: 'World',
-    subs: ['Realm of Giants', 'Ancient Forces'],
-    symbol: '⛰', symbolColor: '#8899aa',
-    gradStops: [['#080a10','#101520'], ['#202840','#404f77']],
-    image: 'images/jotunheim.png',
-    keywords: 'ヨトゥンヘイム・巨人族の世界・古代の力・コントロールできない自然の猛威',
-    upright: 'コントロールできない古代の力、自然の猛威のエネルギーが動いている。それに抗うのではなく、その巨大さを尊重して流れる方法を見つけるとき。',
-    reversed: '巨大な力への恐怖、または自分の中の手に負えない感情への恐れ。しかし、ヨトゥンの力はあなたを壊すためにあるのではない。',
-  },
-  {
-    id: 'vanaheim', name: 'VANAHEIM', type: 'World',
-    subs: ['Realm of the Vanir', 'Nature Magic'],
-    symbol: '❀', symbolColor: '#88ff88',
-    gradStops: [['#001800','#003000'], ['#006600','#00cc44']],
-    image: 'images/vanaheim.png',
-    keywords: 'ヴァナヘイム・ヴァン神族の世界・自然の魔法・豊穣・フレイとフレイヤ',
-    upright: '豊穣と自然の魔法。フレイヤの愛の力、フレイの豊穣のエネルギーが流れている。感覚的な喜び、繁栄、性的な創造力への強烈な守護。',
-    reversed: '自然の流れや感覚的な喜びから切り離されているとき。「欲しいと思ってはいけない」という禁止令。あなたの欲望は、生命そのものの声。',
-  },
-  {
-    id: 'alfheim', name: 'ALFHEIM', type: 'World',
-    subs: ['Realm of Light Elves', 'Inspiration'],
-    symbol: '✧', symbolColor: '#ddeeff',
-    gradStops: [['#080c18','#101830'], ['#202848','#3a4888']],
-    image: 'images/alfheim.png',
-    keywords: 'アルフヘイム・光のエルフの世界・インスピレーション・創造的な火花',
-    upright: '光のエルフが運ぶインスピレーションと創造の火花。あなたのアイデアや感性は、今、高次の領域から直接届いている。その「ひらめき」を信頼して形にするとき。',
-    reversed: 'インスピレーションが枯渇しているとき、または創造性を否定されてきた傷。光のエルフは気まぐれではない——あなたが疲れているとき、彼らは静かに待っている。',
-  },
-  {
-    id: 'svartalfheim', name: 'SVARTALFHEIM', type: 'World',
-    subs: ['Realm of Dark Elves', 'Hidden Craft'],
-    symbol: '⚙', symbolColor: '#666688',
-    gradStops: [['#080808','#101010'], ['#202030','#3a3a55']],
-    image: 'images/svartalfheim.png',
-    keywords: 'スヴァルタルヘイム・闇のエルフの世界・隠れた技術・深い職人芸',
-    upright: '見えない場所での職人的な技術と努力。誰も見ていなくても、あなたは確かな技を磨いている。その地道な積み重ねが、やがて世界を変える道具を生み出す。',
-    reversed: '隠れて作業することの孤独感、または評価されない苦しさ。しかし、ドワーフの最高の作品は、地下で生まれた。その暗闇での制作が本物の力になる。',
-  },
-  {
-    id: 'niflheim', name: 'NIFLHEIM', type: 'World',
-    subs: ['Realm of Mist', 'The Primordial Cold'],
-    symbol: '❄', symbolColor: '#aaddff',
-    gradStops: [['#000810','#001020'], ['#002040','#004488']],
-    image: 'images/niflheim.png',
-    keywords: 'ニフルヘイム・霧の世界・原初の冷たさ・始原の氷・感覚の麻痺',
-    upright: '霧の中に包まれているとき。何も見えない、何も感じられない——その無感覚は、魂が嵐の中で自分を守るための凍結。今は動かなくていい。霧はやがて晴れる。',
-    reversed: 'その凍結が長くなりすぎているとき。感情が完全に麻痺し、生きている感覚が薄くなっているとき。ニフルヘイムの氷は始まりの物質——いつか必ず、火との出会いで融ける。',
-  },
-  {
-    id: 'muspelheim', name: 'MUSPELHEIM', type: 'World',
-    subs: ['Realm of Fire', 'Primordial Destruction'],
-    symbol: '🔥', symbolColor: '#ff6600',
-    gradStops: [['#1a0400','#380800'], ['#771100','#cc3300']],
-    image: 'images/muspelheim.png',
-    keywords: 'ムスペルスヘイム・炎の世界・原初の火・スルトの炎・破壊的創造',
-    upright: '原初の炎が燃え盛るとき。古いものを焼き尽くし、灰の中から新しいものが生まれる。その破壊は浄化。あなたの中の消えかけていた炎が、再び燃え上がる。',
-    reversed: '怒りや激情のコントロールが効かなくなっているとき、または逆に炎が完全に消えてしまったとき。スルトの炎は終末のためにある——しかし今、その炎はあなたの内側で新しいものを創るためにある。',
-  },
-  {
-    id: 'helheim', name: 'HELHEIM', type: 'World',
-    subs: ['Total acceptance,', 'numbness'],
-    symbol: '⬡', symbolColor: '#7fddff',
-    gradStops: [['#00101a','#002233'], ['#004466','#0088bb']],
-    image: 'images/helheim.png',
-    keywords: 'ヘルの領域・全受容・すべてが最終的に安らぐ場所・静水の下',
-    upright: '静水の下——死ではなく、変容の前の静止。ラディカルな受け入れ。ヘルは冷たい女神ではなく、すべてを平等に受け入れる慈悲の場所。今のあなたに必要なのは、全受容という深い休息。',
-    reversed: '平和と見せかけた麻痺、降伏に偽装した回避。「もう何も感じたくない」という麻痺の中にいるとき。その無感覚は、かつてあなたが生き延びるために選んだ戦略だった。',
-  },
-  {
-    id: 'valhalla', name: 'VALHALLA', type: 'World',
-    subs: ['Hall of the Fallen', 'Honored Wounds'],
-    symbol: '⚔', symbolColor: '#ffcc66',
-    gradStops: [['#180c00','#302000'], ['#604000','#cc8000']],
-    image: 'images/valhalla.png',
-    keywords: 'ヴァルハラ・英雄たちの館・名誉ある戦いの記憶・傷を誇りへ',
-    upright: '戦って傷ついた者だけが入れる館。あなたの傷は、弱さの証拠ではなく、戦った証拠。その傷を持つあなたを、ヴァルキューレが迎えに来ている。誇りを持って立て。',
-    reversed: '傷つくことへの恐怖、または傷を恥じ続けているとき。「こんな自分では価値がない」という思い込み。あなたの傷に刻まれた歴史こそが、最も美しい勲章。',
-  },
-  {
-    id: 'bifrost', name: 'BIFROST', type: 'World',
-    subs: ['The Rainbow Bridge', 'Between Worlds'],
-    symbol: '🌈', symbolColor: '#ffaaff',
-    gradStops: [['#100018','#200030'], ['#3a0055','#880099']],
-    image: 'images/bifrost.png',
-    keywords: 'ビフロスト・虹の橋・世界と世界をつなぐ・見えない力が降りてくる・ダアトとの接続',
-    upright: '見えない世界と見える世界をつなぐ虹の橋が現れているとき。神聖なものがあなたのもとへ降りてこようとしている。扉を開ける意志を持った魂だけが、この橋の上に立てる。',
-    reversed: '橋が渡れないとき——見えない世界への不信、または「自分にはそんな価値がない」という思い込み。しかし、虹は両岸から見える。あなたの側からも、その橋は光っている。',
-  },
-
-  // =====================
-  // ルーン文字（24枚）
-  // =====================
-  {
-    id: 'fehu', name: 'FEHU', type: 'Rune',
-    subs: ['Cattle · Wealth', 'Mobile Fortune'],
-    symbol: 'ᚠ', symbolColor: '#ffcc44',
-    gradStops: [['#1a1000','#332000'], ['#665500','#bbaa00']],
-    image: 'images/fehu.png',
-    keywords: '家畜・富・循環する豊かさ・エネルギーの流れ・フレイのアエット',
-    upright: '富と豊かさのエネルギーが動いている。貯め込むのではなく、流し続けることで豊かさは増す。あなたの才能、時間、愛——それらを循環させるとき。',
-    reversed: '豊かさを受け取ることへの恐怖、または喪失への執着。「持っていなければ価値がない」という思い込み。真の富は、流れの中にある。',
-  },
-  {
-    id: 'uruz', name: 'URUZ', type: 'Rune',
-    subs: ['Aurochs · Wild Strength', 'Primal Force'],
-    symbol: 'ᚢ', symbolColor: '#cc8844',
-    gradStops: [['#100800','#201500'], ['#4a2a00','#996600']],
-    image: 'images/uruz.png',
-    keywords: '原牛・野生の力・原始的な生命力・通過儀礼・フレイのアエット',
-    upright: '野生の原牛のような生命力。コントロールを手放し、原始的な力に身を任せるとき。あなたの中に眠る野性の強さが目覚めようとしている。',
-    reversed: '生命力の消耗、または力への恐怖。その疲れは本物——しかしウルズの牛は、倒れても立ち上がる。あなたの根底にある生命力は、まだ燃えている。',
-  },
-  {
-    id: 'thurisaz', name: 'THURISAZ', type: 'Rune',
-    subs: ['Thorn · Giant', 'Protective Force'],
-    symbol: 'ᚦ', symbolColor: '#ff6644',
-    gradStops: [['#1a0400','#380800'], ['#661100','#cc2200']],
-    image: 'images/thurisaz.png',
-    keywords: '棘・巨人・トール神・保護の力・境界線・フレイのアエット',
-    upright: '棘は攻撃のためではなく、守護のためにある。今、あなたには明確な境界線を引く力が与えられている。その「NO」は、あなた自身と大切なものを守る神聖な棘。',
-    reversed: '境界線を引けずに傷ついているとき、または棘が暴走しているとき。その攻撃性の奥には、深く傷つけられた心がある。守るべきものは、まず自分自身。',
-  },
-  {
-    id: 'ansuz', name: 'ANSUZ', type: 'Rune',
-    subs: ['God · Message', 'Divine Communication'],
-    symbol: 'ᚨ', symbolColor: '#aabbff',
-    gradStops: [['#080818','#101030'], ['#202260','#4044cc']],
-    image: 'images/ansuz.png',
-    keywords: 'オーディン・神の言葉・メッセージ・コミュニケーション・インスピレーション・フレイのアエット',
-    upright: 'オーディンからの直接のメッセージが届いているとき。言葉、詩、インスピレーション——あなたを通して語ろうとしている何かがある。その声を聞いて、言葉にする。',
-    reversed: 'コミュニケーションの断絶、または言葉が本当の意味を失っているとき。言葉が届かない孤独感。しかし、真の言葉は沈黙の中からも伝わる。',
-  },
-  {
-    id: 'raidho', name: 'RAIDHO', type: 'Rune',
-    subs: ['Journey · Rhythm', 'The Right Path'],
-    symbol: 'ᚱ', symbolColor: '#88aadd',
-    gradStops: [['#080c18','#101830'], ['#1c2a55','#3a55bb']],
-    image: 'images/raidho.png',
-    keywords: '旅・リズム・正しい道・移動・宇宙のリズムに乗る・フレイのアエット',
-    upright: '旅のルーン——今のあなたは正しい道を歩んでいる。目的地よりも、その旅のリズムに意識を向けるとき。宇宙の大きなリズムに同調して動くとき、最短距離が見えてくる。',
-    reversed: '道を見失っているとき、または間違った方向へ進んでいる感覚。その迷いは、本当の方向を知っているから生まれる。立ち止まって、足元の感覚を確かめて。',
-  },
-  {
-    id: 'kenaz', name: 'KENAZ', type: 'Rune',
-    subs: ['Torch · Knowledge', 'Creative Fire'],
-    symbol: 'ᚲ', symbolColor: '#ffaa44',
-    gradStops: [['#1a0800','#331500'], ['#663000','#cc6600']],
-    image: 'images/kenaz.png',
-    keywords: '松明・知識・創造の火・技術・内なる光・フレイのアエット',
-    upright: '内なる光、創造の炎が燃えているとき。技術、知識、制作——あなたの手の中に光がある。その光を持って、暗闇の中を照らす。知ることそのものが、力になる。',
-    reversed: '創造の火が消えかけているとき。インスピレーションの枯渇、または自分の光を信じられないとき。松明は消えても、火種は残っている。もう一度、息を吹きかけてみて。',
-  },
-  {
-    id: 'gebo', name: 'GEBO', type: 'Rune',
-    subs: ['Gift · Exchange', 'Sacred Balance'],
-    symbol: 'ᚷ', symbolColor: '#ffddaa',
-    gradStops: [['#181000','#302000'], ['#604400','#bb8800']],
-    image: 'images/gebo.png',
-    keywords: '贈り物・交換・対等な関係・神聖なバランス・フレイのアエット',
-    upright: '真の贈り物は対等な交換から生まれる。一方的な与えでも取りでもなく、魂と魂が等しく交わるとき。あなたの存在そのものが、誰かへの最大の贈り物。',
-    reversed: '与えすぎて枯渇しているとき、または受け取ることを拒否しているとき。ギャバは言う——受け取ることもまた、与えること、と。',
-  },
-  {
-    id: 'wunjo', name: 'WUNJO', type: 'Rune',
-    subs: ['Joy · Clan', 'True Belonging'],
-    symbol: 'ᚹ', symbolColor: '#ffff88',
-    gradStops: [['#181800','#303000'], ['#666600','#cccc00']],
-    image: 'images/wunjo.png',
-    keywords: '喜び・仲間・真の帰属感・調和・フレイのアエット',
-    upright: '真の喜び、仲間との調和のとき。あなたは今、本当の意味で「居場所」にいる。または、その場所への道が開かれている。この喜びを、遠慮なく受け取っていい。',
-    reversed: '喜びを感じることへの罪悪感、または仲間外れの痛み。「自分だけ幸せになっていいのか」という思い込み。喜びはあなたの権利——生まれてきたその瞬間から。',
-  },
-  {
-    id: 'hagalaz', name: 'HAGALAZ', type: 'Rune',
-    subs: ['Hail · Disruption', 'Necessary Chaos'],
-    symbol: 'ᚺ', symbolColor: '#aaccff',
-    gradStops: [['#080c18','#101830'], ['#1a2a50','#3a5599']],
-    image: 'images/hagalaz.png',
-    keywords: '雹・混乱・必要な破壊・コントロールできない変化・ハガルのアエット',
-    upright: '雹が降り注ぐとき——コントロールできない外からの破壊。しかしハガラズの雹は、やがて地に溶けて水になる。この混乱は、新しい成長のための「強制的なリセット」。',
-    reversed: '混乱への恐怖から、すべてをコントロールしようとしているとき。または、嵐の中で完全に立ちすくんでいるとき。嵐には必ず終わりがある——あなたは今、その中を通過している。',
-  },
-  {
-    id: 'nauthiz', name: 'NAUTHIZ', type: 'Rune',
-    subs: ['Need · Constraint', 'Fire from Friction'],
-    symbol: 'ᚾ', symbolColor: '#cc8866',
-    gradStops: [['#180800','#301500'], ['#5a2800','#aa5500']],
-    image: 'images/nauthiz.png',
-    keywords: '必要・制約・摩擦・必要は発明の母・制限から創造が生まれる・ハガルのアエット',
-    upright: '摩擦木から生まれた火。制限の中から創造が生まれる。今のあなたの制約は、あなたの内なる火を引き出すための摩擦。「内なる火」へのサポート。',
-    reversed: '制約への絶望、または制限の中での自己消耗。限界を感じて絶望するとき、その苦しさはあなたが本当に限界まで頑張ってきた証拠。ナウティズの火は、摩擦がなければ生まれない。',
-  },
-  {
-    id: 'isa', name: 'ISA', type: 'Rune',
-    subs: ['Ice · Stillness', 'Inward Journey'],
-    symbol: 'ᛁ', symbolColor: '#ddeeff',
-    gradStops: [['#080c10','#101820'], ['#1a2840','#304a77']],
-    image: 'images/isa.png',
-    keywords: '氷・静止・収縮・自我の固化・内省のとき・ハガルのアエット',
-    upright: '完全な静止。氷のように動きが止まった状態。今は動かないことが正解。外側への拡張が止まり、内側に向かう。「静止と内省」への守護。',
-    reversed: '凍結への恐怖、または自我の過剰な硬化。動けない自分を責めたり、逆に凍りついたまま溶けられないとき——氷は必ず溶ける。静止の中で、次のための力を蓄えている。',
-  },
-  {
-    id: 'jera', name: 'JERA', type: 'Rune',
-    subs: ['Year · Harvest', 'Patience Rewarded'],
-    symbol: 'ᛃ', symbolColor: '#aabb44',
-    gradStops: [['#0a1000','#141e00'], ['#2a3c00','#507700']],
-    image: 'images/jera.png',
-    keywords: '年・収穫・サイクル・蒔いた種が実る・自然なリズム・ハガルのアエット',
-    upright: '一年の循環、収穫の時。蒔いた種が実る——因果の法則。急ぐことのできない成熟のプロセス。あなたがやってきたことは、ちゃんと報われる時期に来ている。',
-    reversed: '収穫への焦りと不信、または実りを受け取れないとき。あなたが確かに蒔いた種は、確かに育っている。ただ、自然の時間は人間の焦りより遅い。',
-  },
-  {
-    id: 'eihwaz', name: 'EIHWAZ', type: 'Rune',
-    subs: ['Yew Tree · Death & Rebirth', 'World Tree'],
-    symbol: 'ᛇ', symbolColor: '#226644',
-    gradStops: [['#040c08','#081810'], ['#103025','#205545']],
-    image: 'images/eihwaz.png',
-    keywords: 'イチイの木・ユグドラシル・生と死の境界・変容・通過儀礼・ハガルのアエット',
-    upright: 'ユグドラシル（世界樹）との関連。生と死の境界に立つルーン——死を知ることが真の力を生む。今のあなたは深い変化の真っ只中にいる。その変化は本物。',
-    reversed: '変容への抵抗、または境界の混乱。変わることが怖い、自分が誰なのかわからなくなるのは、本当に深い変容が起きているサイン。根は死の世界まで届きながら、枝は天を突き刺す。',
-  },
-  {
-    id: 'perthro', name: 'PERTHRO', type: 'Rune',
-    subs: ['Fate Vessel · Mystery', 'The Hidden Lot'],
-    symbol: 'ᛈ', symbolColor: '#aa88cc',
-    gradStops: [['#0c0818','#181030'], ['#2c2050','#5540aa']],
-    image: 'images/perthro.png',
-    keywords: '運命・秘密・サイコロ壺・ノルン・隠された知識・ハガルのアエット',
-    upright: '最も謎めいたルーン。サイコロ壺、または運命の容器。ノルンが紡ぐ糸の全体像は、いずれ見えてくる。今はわからなくていい。その謎を、楽しむ余白を作ってみよう。',
-    reversed: 'コントロールへの執着、または運命への諦め。わからないことへの恐怖は、過去に「わからないまま」に傷つけられた記憶があるから。運命は容器の中で静かに待っている。',
-  },
-  {
-    id: 'algiz', name: 'ALGIZ', type: 'Rune',
-    subs: ['Elk · Divine Connection', 'Sacred Protection'],
-    symbol: 'ᛉ', symbolColor: '#ccffcc',
-    gradStops: [['#001808','#003010'], ['#006630','#00cc66']],
-    image: 'images/algiz.png',
-    keywords: 'ヘラジカ・防護・神との繋がり・目覚め・高次の意識へのアクセス・ハガルのアエット',
-    upright: 'ヘラジカの角、または人が両手を天に向けて立つ姿。神との繋がりと防護のルーン。あなたの内なる聖域は、今、完璧に守られている。',
-    reversed: '防護の過剰発動、または神聖なものへの接続の喪失。両手を天に向けるその姿勢は、今のあなたにも宿っている。内なる聖域は消えていない。',
-  },
-  {
-    id: 'sowilo', name: 'SOWILO', type: 'Rune',
-    subs: ['From Fragmentation', 'to Integration'],
-    symbol: 'ᛊ', symbolColor: '#ffd966',
-    gradStops: [['#1a0e00','#3d2200'], ['#8a5c00','#c9a84c']],
-    image: 'images/sowilo.png',
-    keywords: '太陽・勝利・全体性・分裂した自己を光で統合する・ハガルのアエット',
-    upright: '勝利のルーン、稲妻の閃光。分裂した自己を一つに戻す力——影と光が統合された全体性。あなたが自分の全体（光も影も）を受け入れたとき、その輝きは誰にも消せないものになる。',
-    reversed: '勝利への恐れ、または光の中に立つことへの怖さ。うまくいくこと、輝くことが怖いなら、過去に光の中に立って傷ついた経験があるのかもしれない。その勝利を、あなた自身が一番先に祝ってあげよう。',
-  },
-  {
-    id: 'tiwaz', name: 'TIWAZ', type: 'Rune',
-    subs: ['Tyr · Justice', 'Sacred Sacrifice'],
-    symbol: 'ᛏ', symbolColor: '#88aaff',
-    gradStops: [['#080818','#101030'], ['#1c2060','#3840cc']],
-    image: 'images/tiwaz.png',
-    keywords: 'テュール神・正義・自己犠牲・大義のための個人的損失・テュールのアエット',
-    upright: 'テュールは狼フェンリルを縛るために自らの右手を捧げた——大義のための個人的損失。今のあなたが選ぼうとしていること、そこには本物の誇りがある。',
-    reversed: '自己犠牲の過剰、または正義の暴走。傷ついても正義を守ろうとするのは、あなたがその信念を命がけで信じているから。あなたを大切にすることも、正義の一部。',
-  },
-  {
-    id: 'berkana', name: 'BERKANA', type: 'Rune',
-    subs: ['Birch · Birth', 'New Growth'],
-    symbol: 'ᛒ', symbolColor: '#bbffaa',
-    gradStops: [['#081000','#101e00'], ['#204000','#408800']],
-    image: 'images/berkana.png',
-    keywords: '白樺・誕生・成長・庇護・母性と再生の力・テュールのアエット',
-    upright: '白樺の木、大地の女神。出産、成長、庇護。今、あなたの周りで何か新しいものが芽吹き始めている。今始まろうとしているものを、恐れずに育ててください。',
-    reversed: '新しい命への恐れ、または養育の枯渇。まず自分という大地を潤してあげよう。その豊かさの上に、新しい命が育つ。土もまた栄養を必要とする。',
-  },
-  {
-    id: 'ehwaz', name: 'EHWAZ', type: 'Rune',
-    subs: ['Horse · Partnership', 'Moving Together'],
-    symbol: 'ᛖ', symbolColor: '#ddbb88',
-    gradStops: [['#180c00','#302000'], ['#604000','#cc8000']],
-    image: 'images/ehwaz.png',
-    keywords: '馬・パートナーシップ・移動・信頼と相互尊重・二つが一つになる・テュールのアエット',
-    upright: '馬と乗り手のルーン——信頼と相互尊重のパートナーシップ。二つが一つになる時に生まれる速度と優雅さ。あなたが誰かと本当の信頼で繋がっているなら、それは今最も大切にすべきもの。',
-    reversed: '信頼への恐れ、または一方的な関係の疲弊。互いを尊重できる関係だけが、本当に遠くへ行ける。馬と乗り手はどちらも等しく大切。',
-  },
-  {
-    id: 'mannaz', name: 'MANNAZ', type: 'Rune',
-    subs: ['Human · Self', 'Know Thyself'],
-    symbol: 'ᛗ', symbolColor: '#ccbbaa',
-    gradStops: [['#101008','#201f10'], ['#3a3828','#706e50']],
-    image: 'images/mannaz.png',
-    keywords: '人間・自己・知性・自己認識と内省・テュールのアエット',
-    upright: '「汝自身を知れ」——内なる知性と社会の中での自分の位置。今のあなたは、自分自身をより深く知る時期にいる。その洞察は周囲の人々にも光をもたらす。',
-    reversed: '自己認識の歪み、または他者との境界の喪失。人間であることそのものが、すでに知性の現れ。あなたをあなたとして見る、その目を、まず自分に向けよう。',
-  },
-  {
-    id: 'laguz', name: 'LAGUZ', type: 'Rune',
-    subs: ['Water · Flow', 'Trust the Current'],
-    symbol: 'ᛚ', symbolColor: '#88ccff',
-    gradStops: [['#000c18','#001830'], ['#003366','#0066cc']],
-    image: 'images/laguz.png',
-    keywords: '水・流れ・直感・無意識の流れ・感情の深み・テュールのアエット',
-    upright: '水、湖、海。無意識の流れ、直感、感情の深み。今のあなたの内なる声、感情の深み——それは信頼できる。波のように形を変えながら本質を保つ。',
-    reversed: '感情の氾濫、または直感への不信。水は形を変えながら、どこまでも流れ続ける。あなたの直感もまた、止まっていない。その流れに、そっと乗ってみよう。',
-  },
-  {
-    id: 'ingwaz', name: 'INGWAZ', type: 'Rune',
-    subs: ['Ing · Potential', 'Inner Completion'],
-    symbol: 'ᛜ', symbolColor: '#aaffcc',
-    gradStops: [['#001810','#003020'], ['#006650','#00cc99']],
-    image: 'images/ingwaz.png',
-    keywords: 'イング神・潜在力・完成・種の中に眠る完全な可能性・テュールのアエット',
-    upright: '豊穣の神イング（フレイ）のルーン。種の中に眠る完全な可能性——内側に集められたエネルギー。今見えていなくても、あなたの内側では完成に向かうプロセスが進んでいる。',
-    reversed: '見えない成果への焦り、または完成を外に出す怖さ。種は暗闇の中でこそ育つ。あなたの内的完成は本物。その準備が整ったとき、あなたは自然に外へと向かえる。',
-  },
-  {
-    id: 'dagaz', name: 'DAGAZ', type: 'Rune',
-    subs: ['Dawn · Breakthrough', 'Threshold Moment'],
-    symbol: 'ᛞ', symbolColor: '#ffeeaa',
-    gradStops: [['#101000','#202000'], ['#404000','#888800']],
-    image: 'images/dagaz.png',
-    keywords: '夜明け・突破口・変容・意識の覚醒・暗闇が突然光に変わる転換点・テュールのアエット',
-    upright: '夜明けの光、昼と夜の境界点。突破口、劇的な変容の瞬間。今、あなたはその閾値の上に立っている。もう少し。その扉の向こうに、あなたが待っていた光がある。',
-    reversed: '夜明け前の絶望、または突破口への恐れ。あなたがこれだけ暗闇を歩いてきたことが、光がすぐそこにある証拠。夜明けは来る。その閾値を、一歩だけ、渡ってみよう。',
-  },
-  {
-    id: 'othala', name: 'OTHALA', type: 'Rune',
-    subs: ['Homeland · Heritage', 'Return to Root'],
-    symbol: 'ᛟ', symbolColor: '#ddbb66',
-    gradStops: [['#100c00','#201800'], ['#403000','#887000']],
-    image: 'images/othala.png',
-    keywords: '故郷・遺産・帰属・先祖の土地・血のつながり・自分が自分であることの根源・テュールのアエット',
-    upright: 'フサークの最後のルーン。先祖の土地、受け継がれる遺産。今のあなたは、自分の根っこへと帰る旅の途中にいる。あなたが自分のルーツを大切にするとき、そこから無限の力が湧いてくる。',
-    reversed: '帰れない故郷への哀愁、またはルーツからの切断。あなたの中に、すでに故郷がある。あなたが自分自身でいる場所、そこがあなたの故郷。',
-  },
-];
+  
+    
 
     function buildSvg(card) {
-  if (card.image) {
-    return `<image href="${card.image}" width="200" height="320" preserveAspectRatio="xMidYMid slice"/>`;
-  }
-  const [c1, c2] = card.gradStops;
-  const gid = 'g' + card.id;
-  return `
-    <defs>
-      <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
-        <stop offset="0%" stop-color="${c2[1]}"/>
-        <stop offset="45%" stop-color="${c1[1]}"/>
-        <stop offset="100%" stop-color="${c1[0]}"/>
-      </radialGradient>
-    </defs>
-    <rect width="200" height="320" fill="url(#${gid})"/>
-    <text x="100" y="138" text-anchor="middle" dominant-baseline="middle"
-      font-size="60" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
-    <line x1="70" y1="162" x2="130" y2="162" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
-    <text x="100" y="182" text-anchor="middle"
-      font-family="'Cinzel Decorative',serif" font-size="8.5" letter-spacing="3"
-      fill="rgba(255,255,255,0.72)">${card.name}</text>
-    <text x="100" y="208" text-anchor="middle"
-      font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
-      fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
-    <text x="100" y="223" text-anchor="middle"
-      font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
-      fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
-  `;
+      if (card.image) {
+        return `<image href="${card.image}" width="200" height="320" preserveAspectRatio="xMidYMid slice"/>`;
+      }
+      const [c1, c2] = card.gradStops;
+      const gid = 'g' + card.id;
+      return `
+        <defs>
+          <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
+            <stop offset="0%" stop-color="${c2[1]}"/>
+            <stop offset="45%" stop-color="${c1[1]}"/>
+            <stop offset="100%" stop-color="${c1[0]}"/>
+          </radialGradient>
+        </defs>
+        <rect width="200" height="320" fill="url(#${gid})"/>
+        <text x="100" y="138" text-anchor="middle" dominant-baseline="middle"
+          font-size="60" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
+        <line x1="70" y1="162" x2="130" y2="162" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
+        <text x="100" y="182" text-anchor="middle"
+          font-family="'Cinzel Decorative',serif" font-size="8.5" letter-spacing="3"
+          fill="rgba(255,255,255,0.72)">${card.name}</text>
+        <text x="100" y="208" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
+        <text x="100" y="223" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
+      `;
     }
 
     async function drawCard() {
@@ -950,17 +295,20 @@
       const isReversed = Math.random() > 0.65;
       const question = document.getElementById('userQ').value.trim();
 
-      // カードビジュアル
       document.getElementById('cardSvg').innerHTML = buildSvg(card);
       const face = document.getElementById('cardFace');
       face.className = 'card-face' + (isReversed ? ' reversed' : '');
       document.getElementById('cardName').textContent = card.name + ' · ' + card.type.toUpperCase();
-      document.getElementById('cardOrient').textContent = isReversed ? '↓ Reversed' : '↑ Upright';
+      document.getElementById('cardOrient').textContent = isReversed
+        ? (currentLang === 'ja' ? '↓ Reversed' : '↓ Reversed')
+        : (currentLang === 'ja' ? '↑ Upright' : '↑ Upright');
 
-      // ステージ表示
       const stage = document.getElementById('cardStage');
       stage.className = 'card-stage visible';
-      document.getElementById('readingLoading').style.display = 'block';
+
+      const loadingEl = document.getElementById('readingLoading');
+      loadingEl.textContent = currentLang === 'ja' ? '鑑定文を受信中…' : 'Reading the cards…';
+      loadingEl.style.display = 'block';
       document.getElementById('readingText').style.display = 'none';
       document.getElementById('readingText').textContent = '';
 
@@ -978,17 +326,17 @@
             },
             orientation: isReversed ? 'reversed' : 'upright',
             question,
+            lang: currentLang,
           }),
         });
 
         const data = await resp.json();
-        const text = data.reading || '（読み取れませんでした）';
+        const text = data.reading || (currentLang === 'ja' ? '（読み取れませんでした）' : '(Could not retrieve reading)');
 
-        document.getElementById('readingLoading').style.display = 'none';
+        loadingEl.style.display = 'none';
         const rt = document.getElementById('readingText');
         rt.style.display = 'block';
 
-        // タイプライター
         let i = 0;
         const iv = setInterval(() => {
           rt.textContent = text.slice(0, i);
@@ -997,14 +345,14 @@
         }, 18);
 
       } catch (e) {
-        document.getElementById('readingLoading').style.display = 'none';
+        loadingEl.style.display = 'none';
         const rt = document.getElementById('readingText');
         rt.style.display = 'block';
-        rt.textContent = 'エラー：' + e.message;
+        rt.textContent = currentLang === 'ja' ? 'エラー：' + e.message : 'Error: ' + e.message;
       }
 
       btn.disabled = false;
-      btn.textContent = '✦ Draw Again ✦';
+      btn.textContent = '✦ Draw a Card ✦';
     }
   </script>
 </body>
