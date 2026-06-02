@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oracle — Kabbalistic & Norse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.35);
+      --bg: #08080f;
+      --text: #e8e0d0;
+      --text-dim: rgba(232,224,208,0.4);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem 4rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(180,140,60,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(60,80,160,0.08) 0%, transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap { position: relative; z-index: 1; width: 100%; max-width: 520px; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+
+    .site-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(10px, 2.5vw, 13px);
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    .site-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .q-area { margin-bottom: 1.4rem; }
+
+    .q-area textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      padding: 12px 16px;
+      resize: none;
+      outline: none;
+      line-height: 1.65;
+      transition: border-color 0.3s;
+    }
+
+    .q-area textarea::placeholder { color: var(--text-dim); font-style: italic; }
+    .q-area textarea:focus { border-color: rgba(201,168,76,0.65); }
+
+    .draw-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      padding: 13px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      margin-bottom: 2rem;
+    }
+
+    .draw-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .draw-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* カードステージ */
+    .card-stage { display: none; }
+    .card-stage.visible { display: block; animation: fadeUp 0.8s ease forwards; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.6rem; }
+
+    .card-face {
+      width: 200px;
+      height: 320px;
+      border-radius: 11px;
+      border: 1px solid rgba(201,168,76,0.38);
+      overflow: hidden;
+      box-shadow: 0 0 36px rgba(201,168,76,0.13), 0 20px 56px rgba(0,0,0,0.72);
+      transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .card-face.reversed { transform: rotate(180deg); }
+
+    .card-face svg { width: 100%; height: 100%; display: block; }
+
+    .card-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-top: 12px;
+    }
+
+    .card-orient {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    /* 鑑定ボックス */
+    .reading-box {
+      background: rgba(255,255,255,0.025);
+      border: 0.5px solid rgba(201,168,76,0.18);
+      border-radius: 9px;
+      padding: 1.6rem 1.5rem;
+      position: relative;
+    }
+
+    .reading-box::before {
+      content: '✦';
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 10px;
+      color: var(--gold);
+      font-size: 14px;
+    }
+
+    .reading-loading {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 15px;
+      padding: 1rem 0;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+    .reading-text {
+      font-size: 17px;
+      line-height: 1.95;
+      font-weight: 300;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p class="site-title">Oracle — Kabbalistic &amp; Norse</p>
+      <p class="site-sub">あわいの雨宿り</p>
+    </header>
+
+    <div class="q-area">
+      <textarea id="userQ" rows="2" placeholder="今、問いかけたいことを書いてください（省略可）…"></textarea>
+    </div>
+
+    <button class="draw-btn" id="drawBtn" onclick="drawCard()">✦ Draw a Card ✦</button>
+
+    <div class="card-stage" id="cardStage">
+      <div class="card-wrap">
+        <div class="card-face" id="cardFace">
+          <svg id="cardSvg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <p class="card-name" id="cardName"></p>
+        <p class="card-orient" id="cardOrient"></p>
+      </div>
+
+      <div class="reading-box">
+        <div class="reading-loading" id="readingLoading">鑑定文を受信中…</div>
+        <div class="reading-text" id="readingText" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ======================================================
+    // ★ デプロイ後にVercelのURLに書き換えてください
+    // ======================================================
+    const API_ENDPOINT = 'https://YOUR-PROJECT.vercel.app/api/oracle';
+
+    const CARDS = [
+      {
+        id: 'sowilo',
+        name: 'SOWILO',
+        type: 'Rune',
+        subs: ['From Fragmentation', 'to Integration'],
+        symbol: '᛭',
+        symbolColor: '#ffd966',
+        gradStops: [['#1a0e00','#3d2200'], ['#8a5c00','#c9a84c']],
+        keywords: '太陽、全体性、光と影の統合、魂の核',
+        upright: '断片化した自己を照らす太陽——散らばったすべての部分を、全体性へと呼び戻す光',
+        reversed: '無理やりな明るさ、影の否定、暗闇を避けることによる燃え尽き',
+      },
+      {
+        id: 'helheim',
+        name: 'HELHEIM',
+        type: 'World',
+        subs: ['Total acceptance,', 'numbness'],
+        symbol: '⬡',
+        symbolColor: '#7fddff',
+        gradStops: [['#00101a','#002233'], ['#004466','#0088bb']],
+        keywords: 'ヘルの領域、全受容、すべてが最終的に安らぐ場所',
+        upright: '静水の下——死ではなく、変容の前の静止。ラディカルな受け入れ',
+        reversed: '平和と見せかけた麻痺、降伏に偽装した回避',
+      },
+      {
+        id: 'daat',
+        name: "DA'AT",
+        type: 'Sephirot',
+        subs: ['Gate of the Abyss', "Readiness to face one's depths"],
+        symbol: 'Ø',
+        symbolColor: '#88ffcc',
+        gradStops: [['#001a10','#002820'], ['#004a38','#00887a']],
+        keywords: '隠されたセフィラー、深淵を通じた知恵、土星の門',
+        upright: '底のない扉の前に立つ——知らないことを受け入れる意志こそが、最も深い知恵',
+        reversed: '知識を鎧にした回避、積み重ねた情報を真の理解と混同すること',
+      },
+      {
+        id: 'gimel',
+        name: 'GIMEL',
+        type: 'Hebrew',
+        subs: ['Recall your', 'North Star'],
+        symbol: 'ג',
+        symbolColor: '#ccaaff',
+        gradStops: [['#0d0a1a','#1a1230'], ['#2d1f50','#5a3a9a']],
+        keywords: 'ギメル（駱駝）、女教皇、ケテルとティファレトの道、月',
+        upright: '砂漠の横断——目印のない地平線でも、内なる羅針盤を信じること',
+        reversed: '遠い光を追い、自分自身の光の糸を見失うこと',
+      },
+    ];
+
+    function buildSvg(card) {
+      const [c1, c2] = card.gradStops;
+      const gid = 'g' + card.id;
+      return `
+        <defs>
+          <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
+            <stop offset="0%" stop-color="${c2[1]}"/>
+            <stop offset="45%" stop-color="${c1[1]}"/>
+            <stop offset="100%" stop-color="${c1[0]}"/>
+          </radialGradient>
+        </defs>
+        <rect width="200" height="320" fill="url(#${gid})"/>
+        <text x="100" y="138" text-anchor="middle" dominant-baseline="middle"
+          font-size="60" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
+        <line x1="70" y1="162" x2="130" y2="162" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
+        <text x="100" y="182" text-anchor="middle"
+          font-family="'Cinzel Decorative',serif" font-size="8.5" letter-spacing="3"
+          fill="rgba(255,255,255,0.72)">${card.name}</text>
+        <text x="100" y="208" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
+        <text x="100" y="223" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
+      `;
+    }
+
+    async function drawCard() {
+      const btn = document.getElementById('drawBtn');
+      btn.disabled = true;
+      btn.textContent = '…';
+
+      const card = CARDS[Math.floor(Math.random() * CARDS.length)];
+      const isReversed = Math.random() > 0.65;
+      const question = document.getElementById('userQ').value.trim();
+
+      // カードビジュアル
+      document.getElementById('cardSvg').innerHTML = buildSvg(card);
+      const face = document.getElementById('cardFace');
+      face.className = 'card-face' + (isReversed ? ' reversed' : '');
+      document.getElementById('cardName').textContent = card.name + ' · ' + card.type.toUpperCase();
+      document.getElementById('cardOrient').textContent = isReversed ? '↓ Reversed' : '↑ Upright';
+
+      // ステージ表示
+      const stage = document.getElementById('cardStage');
+      stage.className = 'card-stage visible';
+      document.getElementById('readingLoading').style.display = 'block';
+      document.getElementById('readingText').style.display = 'none';
+      document.getElementById('readingText').textContent = '';
+
+      try {
+        const resp = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            card: {
+              name: card.name,
+              type: card.type,
+              keywords: card.keywords,
+              upright: card.upright,
+              reversed: card.reversed,
+            },
+            orientation: isReversed ? 'reversed' : 'upright',
+            question,
+          }),
+        });
+
+        const data = await resp.json();
+        const text = data.reading || '（読み取れませんでした）';
+
+        document.getElementById('readingLoading').style.display = 'none';
+        const rt = document.getElementById('readingText');
+        rt.style.display = 'block';
+
+        // タイプライター
+        let i = 0;
+        const iv = setInterval(() => {
+          rt.textContent = text.slice(0, i);
+          i += 2;
+          if (i > text.length) { rt.textContent = text; clearInterval(iv); }
+        }, 18);
+
+      } catch (e) {
+        document.getElementById('readingLoading').style.display = 'none';
+        const rt = document.getElementById('readingText');
+        rt.style.display = 'block';
+        rt.textContent = 'エラー：' + e.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = '✦ Draw Again ✦';
+    }
+  </script>
+</body>
+</html>
