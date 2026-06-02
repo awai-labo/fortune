@@ -266,30 +266,33 @@
     ];
 
     function buildSvg(card) {
-      const [c1, c2] = card.gradStops;
-      const gid = 'g' + card.id;
-      return `
-        <defs>
-          <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
-            <stop offset="0%" stop-color="${c2[1]}"/>
-            <stop offset="45%" stop-color="${c1[1]}"/>
-            <stop offset="100%" stop-color="${c1[0]}"/>
-          </radialGradient>
-        </defs>
-        <rect width="200" height="320" fill="url(#${gid})"/>
-        <text x="100" y="138" text-anchor="middle" dominant-baseline="middle"
-          font-size="60" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
-        <line x1="70" y1="162" x2="130" y2="162" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
-        <text x="100" y="182" text-anchor="middle"
-          font-family="'Cinzel Decorative',serif" font-size="8.5" letter-spacing="3"
-          fill="rgba(255,255,255,0.72)">${card.name}</text>
-        <text x="100" y="208" text-anchor="middle"
-          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
-          fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
-        <text x="100" y="223" text-anchor="middle"
-          font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
-          fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
-      `;
+  if (card.image) {
+    return `<image href="${card.image}" width="200" height="320" preserveAspectRatio="xMidYMid slice"/>`;
+  }
+  const [c1, c2] = card.gradStops;
+  const gid = 'g' + card.id;
+  return `
+    <defs>
+      <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
+        <stop offset="0%" stop-color="${c2[1]}"/>
+        <stop offset="45%" stop-color="${c1[1]}"/>
+        <stop offset="100%" stop-color="${c1[0]}"/>
+      </radialGradient>
+    </defs>
+    <rect width="200" height="320" fill="url(#${gid})"/>
+    <text x="100" y="138" text-anchor="middle" dominant-baseline="middle"
+      font-size="60" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
+    <line x1="70" y1="162" x2="130" y2="162" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
+    <text x="100" y="182" text-anchor="middle"
+      font-family="'Cinzel Decorative',serif" font-size="8.5" letter-spacing="3"
+      fill="rgba(255,255,255,0.72)">${card.name}</text>
+    <text x="100" y="208" text-anchor="middle"
+      font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+      fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
+    <text x="100" y="223" text-anchor="middle"
+      font-family="'Cormorant Garamond',serif" font-size="10" font-style="italic"
+      fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
+  `;
     }
 
     async function drawCard() {
