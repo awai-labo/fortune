@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Integration Tree — Oracle</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080f'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c9a84c' stroke-width='4'/%3E%3Cpath d='M32 12v40M18 32h28M23 20l18 24M41 20 23 44' stroke='%23c9a84c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -240,6 +241,15 @@
   <script>
     const API_ENDPOINT = 'https://fortune-five-psi.vercel.app/api/oracle';
     let currentLang = 'ja';
+    let currentDrawId = 0;
+    let typingTimer = null;
+
+    function stopTyping() {
+      if (typingTimer) {
+        clearInterval(typingTimer);
+        typingTimer = null;
+      }
+    }
 
     function setLang(lang) {
       currentLang = lang;
@@ -287,6 +297,9 @@
     }
 
     async function drawCard() {
+      const drawId = ++currentDrawId;
+      stopTyping();
+
       const btn = document.getElementById('drawBtn');
       btn.disabled = true;
       btn.textContent = '…';
@@ -331,6 +344,8 @@
         });
 
         const data = await resp.json();
+        if (drawId !== currentDrawId) return;
+
         const text = data.reading || (currentLang === 'ja' ? '（読み取れませんでした）' : '(Could not retrieve reading)');
 
         loadingEl.style.display = 'none';
@@ -338,21 +353,32 @@
         rt.style.display = 'block';
 
         let i = 0;
-        const iv = setInterval(() => {
+        typingTimer = setInterval(() => {
+          if (drawId !== currentDrawId) {
+            stopTyping();
+            return;
+          }
+
           rt.textContent = text.slice(0, i);
           i += 2;
-          if (i > text.length) { rt.textContent = text; clearInterval(iv); }
+          if (i > text.length) {
+            rt.textContent = text;
+            stopTyping();
+            btn.disabled = false;
+            btn.textContent = '✦ Draw a Card ✦';
+          }
         }, 18);
 
       } catch (e) {
+        if (drawId !== currentDrawId) return;
+
         loadingEl.style.display = 'none';
         const rt = document.getElementById('readingText');
         rt.style.display = 'block';
         rt.textContent = currentLang === 'ja' ? 'エラー：' + e.message : 'Error: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = '✦ Draw a Card ✦';
       }
-
-      btn.disabled = false;
-      btn.textContent = '✦ Draw a Card ✦';
     }
   </script>
 </body>
