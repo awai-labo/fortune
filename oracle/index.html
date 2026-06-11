@@ -86,6 +86,15 @@
       border-color: var(--gold);
     }
 
+    .deck-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      font-style: italic;
+      text-align: center;
+      line-height: 1.8;
+      margin-bottom: 1.6rem;
+    }
+
     .q-area { margin-bottom: 1.4rem; }
 
     .q-area textarea {
@@ -223,12 +232,12 @@
 
     .instagram-link a:hover { color: var(--gold); }
     .instagram-link svg { flex-shrink: 0; }
- </style>
-<meta property="og:title" content="The Integration Tree — Oracle" />
-<meta property="og:description" content="カバラの生命の樹と北欧神話ユグドラシルを統合したオラクル。カードを引いて、今の自分と対話するきっかけに。" />
-<meta property="og:url" content="https://fortune-five-psi.vercel.app/oracle/" />
-<meta property="og:image" content="https://raw.githubusercontent.com/awai-labo/fortune/main/oracle/images/ogp.png" />
-<meta property="og:type" content="website" />
+  </style>
+  <meta property="og:title" content="The Integration Tree — Oracle" />
+  <meta property="og:description" content="カバラの生命の樹と北欧神話ユグドラシルを統合したオラクル。カードを引いて、今の自分と対話するきっかけに。" />
+  <meta property="og:url" content="https://fortune-five-psi.vercel.app/oracle/" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/awai-labo/fortune/main/oracle/images/ogp.png" />
+  <meta property="og:type" content="website" />
 </head>
 <body>
   <div class="wrap">
@@ -241,6 +250,8 @@
       <button class="lang-btn active" id="btnJa" onclick="setLang('ja')">JP</button>
       <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
     </div>
+
+    <p class="deck-desc">カバラの生命の樹と北欧神話ユグドラシルを統合した、68枚のオラクルデッキ。今のあなたの内側と対話するきっかけに。</p>
 
     <div class="q-area">
       <textarea id="userQ" rows="2" placeholder="今、問いかけたいことを書いてください（省略可）…"></textarea>
