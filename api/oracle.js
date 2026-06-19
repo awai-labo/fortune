@@ -103,7 +103,7 @@ Write as if the energy of the card itself is speaking — not as a tarot explana
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         system: isJa ? systemJa : systemEn,
         messages: [{ role: 'user', content: prompt }],
