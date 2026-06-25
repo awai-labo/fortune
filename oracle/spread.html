@@ -389,6 +389,27 @@
     }
     .ig-link:hover { color: var(--gold); }
 
+    /* ── コピーボタン ── */
+    .copy-wrap {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      padding: 11px 28px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .copy-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .copy-btn.copied { opacity: 0.5; cursor: default; }
+
     @media (max-width: 480px) {
       .card-inner { flex-direction: column; align-items: center; }
       .card-face { width: 140px; height: 224px; }
@@ -444,6 +465,9 @@
           <div class="reading-loading" id="synthesisLoading" style="display:none">まとめ鑑定文を受信中…</div>
           <div class="reading-text" id="synthesisText" style="display:none"></div>
         </div>
+      </div>
+      <div class="copy-wrap" id="copyWrap" style="display:none">
+        <button class="copy-btn" id="copyBtn" onclick="copyReading()">✦ Copy Reading ✦</button>
       </div>
     </div>
 
@@ -612,6 +636,7 @@
       document.getElementById('synthesisLoading').style.display = 'none';
       document.getElementById('synthesisText').style.display = 'none';
       document.getElementById('synthesisText').textContent = '';
+      document.getElementById('copyWrap').style.display = 'none';
 
       // ── 各カードのブロックを生成 ──
       const readingPromises = drawn.map(async ({ card, isReversed, posLabel, posIndex }) => {
@@ -722,6 +747,48 @@
 
       btn.disabled = false;
       btn.textContent = isJa ? '✦ もう一度引く ✦' : '✦ Draw Again ✦';
+
+      // コピーボタンを表示
+      const copyWrap = document.getElementById('copyWrap');
+      const copyBtn = document.getElementById('copyBtn');
+      copyWrap.style.display = 'block';
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = isJa ? '✦ 鑑定文をコピー ✦' : '✦ Copy Reading ✦';
+
+      // コピー用テキストをグローバルに保持
+      window._lastResults = results;
+      window._lastSynthesis = document.getElementById('synthesisText').textContent;
+    }
+
+    // ── 鑑定文をコピー ──
+    function copyReading() {
+      const results = window._lastResults || [];
+      const synthesis = window._lastSynthesis || '';
+      const question = document.getElementById('userQ').value.trim();
+      const isJa = currentLang === 'ja';
+
+      let text = '';
+      if (question) text += (isJa ? `【問い】${question}\n\n` : `[Question] ${question}\n\n`);
+
+      results.forEach((r, i) => {
+        const ori = r.isReversed ? (isJa ? '逆位置' : 'Reversed') : (isJa ? '正位置' : 'Upright');
+        text += `${isJa ? '━━' : '──'} ${toRoman(i + 1)}. ${r.posLabel} ${isJa ? '━━' : '──'}\n`;
+        text += `${r.card.name} (${ori})\n\n`;
+        text += `${r.reading}\n\n`;
+      });
+
+      text += isJa ? '━━ まとめ ━━\n\n' : '── Synthesis ──\n\n';
+      text += synthesis;
+
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = isJa ? '✦ コピーしました ✦' : '✦ Copied ✦';
+        btn.className = 'copy-btn copied';
+        setTimeout(() => {
+          btn.textContent = isJa ? '✦ 鑑定文をコピー ✦' : '✦ Copy Reading ✦';
+          btn.className = 'copy-btn';
+        }, 2500);
+      });
     }
 
     // ── タイピングアニメーション ──
