@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Integration Tree — Spread Reading</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080f'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c9a84c' stroke-width='4'/%3E%3Cpath d='M32 12v40M18 32h28M23 20l18 24M41 20 23 44' stroke='%23c9a84c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.35);
+      --bg: #08080f;
+      --text: #e8e0d0;
+      --text-dim: rgba(232,224,208,0.4);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(180,140,60,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(60,80,160,0.08) 0%, transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap { position: relative; z-index: 1; width: 100%; max-width: 680px; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+
+    .site-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(10px, 2.5vw, 13px);
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    .site-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    /* ── 言語切り替え ── */
+    .lang-switch {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 2rem;
+    }
+    .lang-btn {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      padding: 6px 18px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      opacity: 0.45;
+    }
+    .lang-btn.active { opacity: 1; border-color: var(--gold); }
+
+    /* ── Step 1: 設定エリア ── */
+    .section-label {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 1.8rem;
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .count-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 10px 6px;
+      cursor: pointer;
+      transition: all 0.25s;
+      border-right: 0.5px solid var(--gold-dim);
+    }
+    .count-btn:last-child { border-right: none; }
+    .count-btn.active {
+      background: rgba(201,168,76,0.1);
+      color: var(--gold);
+    }
+    .count-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.03); }
+
+    /* ── ポジション入力 ── */
+    .positions-area {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 1.6rem;
+    }
+
+    .pos-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pos-num {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      opacity: 0.55;
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .pos-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      padding: 9px 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .pos-input::placeholder { color: var(--text-dim); font-style: italic; }
+    .pos-input:focus { border-color: rgba(201,168,76,0.65); }
+
+    /* ── 問い ── */
+    .q-area { margin-bottom: 1.6rem; }
+    .q-area textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      padding: 12px 16px;
+      resize: none;
+      outline: none;
+      line-height: 1.65;
+      transition: border-color 0.3s;
+    }
+    .q-area textarea::placeholder { color: var(--text-dim); font-style: italic; }
+    .q-area textarea:focus { border-color: rgba(201,168,76,0.65); }
+
+    /* ── ドローボタン ── */
+    .draw-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      padding: 13px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      margin-bottom: 3rem;
+    }
+    .draw-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .draw-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── カード一覧エリア ── */
+    .spread-stage { display: none; }
+    .spread-stage.visible { display: block; animation: fadeUp 0.8s ease forwards; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── 個別カードブロック ── */
+    .card-block {
+      margin-bottom: 3rem;
+    }
+
+    .card-block-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+
+    .pos-badge {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 8px;
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      opacity: 0.55;
+      text-transform: uppercase;
+    }
+
+    .pos-meaning-label {
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+
+    .card-inner {
+      display: flex;
+      gap: 1.4rem;
+      align-items: flex-start;
+    }
+
+    .card-face {
+      width: 120px;
+      height: 192px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(201,168,76,0.38);
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(201,168,76,0.1), 0 12px 36px rgba(0,0,0,0.7);
+      transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .card-face.reversed { transform: rotate(180deg); }
+    .card-face svg { width: 100%; height: 100%; display: block; }
+    .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .card-meta { flex: 1; padding-top: 4px; }
+
+    .card-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .card-orient {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    .reading-box {
+      background: rgba(255,255,255,0.025);
+      border: 0.5px solid rgba(201,168,76,0.18);
+      border-radius: 9px;
+      padding: 1.3rem 1.3rem;
+      position: relative;
+    }
+
+    .reading-box::before {
+      content: '✦';
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 10px;
+      color: var(--gold);
+      font-size: 14px;
+    }
+
+    .reading-loading {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 14px;
+      padding: 0.8rem 0;
+    }
+
+    .reading-text {
+      font-size: 15.5px;
+      line-height: 2;
+      color: rgba(232,224,208,0.88);
+      white-space: pre-wrap;
+    }
+
+    /* ── 区切り線 ── */
+    .divider {
+      height: 0.5px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+      margin: 2rem 0 3rem;
+    }
+
+    /* ── まとめ鑑定 ── */
+    .synthesis-block {
+      margin-top: 1rem;
+    }
+
+    .synthesis-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 1.4rem;
+      opacity: 0.8;
+    }
+
+    .synthesis-box {
+      background: rgba(201,168,76,0.04);
+      border: 0.5px solid rgba(201,168,76,0.28);
+      border-radius: 9px;
+      padding: 1.8rem 1.6rem;
+      position: relative;
+    }
+
+    .synthesis-box::before {
+      content: '✦ ✦ ✦';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 14px;
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 0.3em;
+    }
+
+    /* ── フッター ── */
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+
+    .ig-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.3s;
+    }
+    .ig-link:hover { color: var(--gold); }
+
+    @media (max-width: 480px) {
+      .card-inner { flex-direction: column; align-items: center; }
+      .card-face { width: 140px; height: 224px; }
+      .card-meta { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="site-title">The Integration Tree</div>
+      <div class="site-sub">Kabbalah × Yggdrasil — 68-Card Oracle</div>
+    </header>
+
+    <div style="text-align:center; margin-bottom: 1.4rem;">
+      <a class="back-link" href="index.html">← Single Card Reading</a>
+    </div>
+
+    <!-- 言語切り替え -->
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btnJa" onclick="setLang('ja')">JA</button>
+      <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
+
+    <!-- Step 1: 枚数選択 -->
+    <div class="section-label" id="labelCount">枚数を選ぶ</div>
+    <div class="count-row" id="countRow">
+      <button class="count-btn" onclick="setCount(2)">II</button>
+      <button class="count-btn active" onclick="setCount(3)">III</button>
+      <button class="count-btn" onclick="setCount(4)">IV</button>
+      <button class="count-btn" onclick="setCount(5)">V</button>
+    </div>
+
+    <!-- Step 2: ポジション入力 -->
+    <div class="section-label" id="labelPos">各カードの意味を入力（省略可）</div>
+    <div class="positions-area" id="positionsArea"></div>
+
+    <!-- Step 3: 問い -->
+    <div class="q-area">
+      <textarea id="userQ" rows="3" placeholder="今、問いかけたいことを書いてください（省略可）…"></textarea>
+    </div>
+
+    <!-- Draw -->
+    <button class="draw-btn" id="drawBtn" onclick="drawSpread()">✦ Draw Cards ✦</button>
+
+    <!-- 結果エリア -->
+    <div class="spread-stage" id="spreadStage">
+      <div id="cardsContainer"></div>
+      <div class="divider"></div>
+      <div class="synthesis-block">
+        <div class="synthesis-title" id="synthesisTitle">SYNTHESIS</div>
+        <div class="synthesis-box">
+          <div class="reading-loading" id="synthesisLoading" style="display:none">まとめ鑑定文を受信中…</div>
+          <div class="reading-text" id="synthesisText" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- フッター -->
+    <footer>
+      <div class="footer-brand">Awai no Amayadori</div>
+      <a class="ig-link" href="https://instagram.com/awaikeiko" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+        @awaikeiko
+      </a>
+    </footer>
+  </div>
+
+  <script src="cards-data.js"></script>
+  <script>
+    const SPREAD_API = 'https://fortune-five-psi.vercel.app/api/spread';
+    const SINGLE_API = 'https://fortune-five-psi.vercel.app/api/oracle';
+
+    let currentLang = 'ja';
+    let currentCount = 3;
+    let typingTimers = [];
+
+    // ── 言語切り替え ──
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('btnJa').className = 'lang-btn' + (lang === 'ja' ? ' active' : '');
+      document.getElementById('btnEn').className = 'lang-btn' + (lang === 'en' ? ' active' : '');
+
+      const isJa = lang === 'ja';
+      document.getElementById('labelCount').textContent = isJa ? '枚数を選ぶ' : 'Number of Cards';
+      document.getElementById('labelPos').textContent = isJa
+        ? '各カードの意味を入力（省略可）'
+        : 'Name each position (optional)';
+      document.getElementById('userQ').placeholder = isJa
+        ? '今、問いかけたいことを書いてください（省略可）…'
+        : 'Write your question here (optional)…';
+      document.getElementById('drawBtn').textContent = isJa ? '✦ Draw Cards ✦' : '✦ Draw Cards ✦';
+      document.getElementById('synthesisTitle').textContent = isJa ? 'まとめ鑑定' : 'SYNTHESIS';
+
+      // プレースホルダー更新
+      renderPositionInputs();
+    }
+
+    // ── 枚数設定 ──
+    function setCount(n) {
+      currentCount = n;
+      document.querySelectorAll('.count-btn').forEach((btn, i) => {
+        btn.className = 'count-btn' + (i + 2 === n ? ' active' : '');
+      });
+      renderPositionInputs();
+    }
+
+    // ── ポジション入力フィールドを描画 ──
+    const defaultPositions = {
+      ja: {
+        2: ['過去・原因', '未来・展開'],
+        3: ['過去・背景', '現在・状況', '未来・展開'],
+        4: ['状況', '課題・障害', '隠れた要因', 'アドバイス'],
+        5: ['過去', '現在', '近い未来', '隠れた要因', '最終的な流れ'],
+      },
+      en: {
+        2: ['Past / Root', 'Future / Unfolding'],
+        3: ['Past / Background', 'Present / Situation', 'Future / Direction'],
+        4: ['Situation', 'Challenge', 'Hidden Factor', 'Guidance'],
+        5: ['Past', 'Present', 'Near Future', 'Hidden Factor', 'Overall Flow'],
+      },
+    };
+
+    function renderPositionInputs() {
+      const area = document.getElementById('positionsArea');
+      const lang = currentLang;
+      const defaults = defaultPositions[lang][currentCount];
+      const old = area.querySelectorAll('.pos-input');
+      const oldVals = Array.from(old).map(el => el.value);
+
+      area.innerHTML = '';
+      for (let i = 0; i < currentCount; i++) {
+        const row = document.createElement('div');
+        row.className = 'pos-row';
+
+        const num = document.createElement('span');
+        num.className = 'pos-num';
+        num.textContent = toRoman(i + 1);
+
+        const input = document.createElement('input');
+        input.className = 'pos-input';
+        input.type = 'text';
+        input.dataset.pos = i;
+        input.placeholder = defaults[i] || '';
+        input.value = oldVals[i] || '';
+
+        row.appendChild(num);
+        row.appendChild(input);
+        area.appendChild(row);
+      }
+    }
+
+    function toRoman(n) {
+      return ['I','II','III','IV','V'][n - 1] || n;
+    }
+
+    // ── SVG描画 ──
+    function buildSvg(card) {
+      if (card.image) {
+        return `<img src="${card.image}" style="width:100%;height:100%;object-fit:cover;display:block;" />`;
+      }
+      const [c1, c2] = card.gradStops;
+      const gid = 'g' + card.id + Math.random().toString(36).slice(2,6);
+      return `<svg viewBox="0 0 120 192" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
+            <stop offset="0%" stop-color="${c2[1]}"/>
+            <stop offset="45%" stop-color="${c1[1]}"/>
+            <stop offset="100%" stop-color="${c1[0]}"/>
+          </radialGradient>
+        </defs>
+        <rect width="120" height="192" fill="url(#${gid})"/>
+        <text x="60" y="82" text-anchor="middle" dominant-baseline="middle"
+          font-size="36" fill="${card.symbolColor}" opacity="0.88">${card.symbol}</text>
+        <line x1="36" y1="97" x2="84" y2="97" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
+        <text x="60" y="110" text-anchor="middle"
+          font-family="'Cinzel Decorative',serif" font-size="5.5" letter-spacing="2"
+          fill="rgba(255,255,255,0.72)">${card.name}</text>
+        <text x="60" y="125" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="6.5" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[0]}</text>
+        <text x="60" y="136" text-anchor="middle"
+          font-family="'Cormorant Garamond',serif" font-size="6.5" font-style="italic"
+          fill="rgba(255,255,255,0.52)">${card.subs[1]}</text>
+      </svg>`;
+    }
+
+    // ── スプレッドを引く ──
+    async function drawSpread() {
+      stopAllTyping();
+
+      const btn = document.getElementById('drawBtn');
+      btn.disabled = true;
+      btn.textContent = '…';
+
+      const isJa = currentLang === 'ja';
+      const question = document.getElementById('userQ').value.trim();
+      const posInputs = document.querySelectorAll('.pos-input');
+
+      // カードをランダムに引く（重複なし）
+      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
+      const drawn = shuffled.slice(0, currentCount).map((card, i) => ({
+        card,
+        isReversed: Math.random() > 0.65,
+        posLabel: posInputs[i]?.value.trim() || posInputs[i]?.placeholder || `Card ${i + 1}`,
+        posIndex: i,
+      }));
+
+      // ── カード表示エリアをリセット ──
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const stage = document.getElementById('spreadStage');
+      stage.className = 'spread-stage visible';
+
+      // まとめ鑑定エリアをリセット
+      document.getElementById('synthesisLoading').style.display = 'none';
+      document.getElementById('synthesisText').style.display = 'none';
+      document.getElementById('synthesisText').textContent = '';
+
+      // ── 各カードのブロックを生成 ──
+      const readingPromises = drawn.map(async ({ card, isReversed, posLabel, posIndex }) => {
+        const block = document.createElement('div');
+        block.className = 'card-block';
+        block.id = `block-${posIndex}`;
+
+        block.innerHTML = `
+          <div class="card-block-header">
+            <span class="pos-badge">${toRoman(posIndex + 1)}</span>
+            <span class="pos-meaning-label">${posLabel}</span>
+          </div>
+          <div class="card-inner">
+            <div class="card-face${isReversed ? ' reversed' : ''}" id="face-${posIndex}">
+              ${buildSvg(card)}
+            </div>
+            <div class="card-meta">
+              <div class="card-name">${card.name} · ${card.type.toUpperCase()}</div>
+              <div class="card-orient">${isReversed ? '↓ Reversed' : '↑ Upright'}</div>
+              <div class="reading-box">
+                <div class="reading-loading" id="loading-${posIndex}">${isJa ? '鑑定文を受信中…' : 'Reading the cards…'}</div>
+                <div class="reading-text" id="text-${posIndex}" style="display:none"></div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(block);
+
+        // APIへリクエスト（個別鑑定）
+        try {
+          const resp = await fetch(SINGLE_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              card: {
+                name: card.name,
+                type: card.type,
+                keywords: card.keywords,
+                upright: card.upright,
+                reversed: card.reversed,
+              },
+              orientation: isReversed ? 'reversed' : 'upright',
+              question,
+              lang: currentLang,
+              positionLabel: posLabel,
+            }),
+          });
+          const data = await resp.json();
+          const text = data.reading || (isJa ? '（読み取れませんでした）' : '(Could not retrieve reading)');
+
+          document.getElementById(`loading-${posIndex}`).style.display = 'none';
+          const rt = document.getElementById(`text-${posIndex}`);
+          rt.style.display = 'block';
+          await typeText(rt, text, posIndex);
+
+          return { card, isReversed, posLabel, reading: text };
+        } catch (e) {
+          document.getElementById(`loading-${posIndex}`).style.display = 'none';
+          const rt = document.getElementById(`text-${posIndex}`);
+          rt.style.display = 'block';
+          rt.textContent = isJa ? 'エラー：' + e.message : 'Error: ' + e.message;
+          return { card, isReversed, posLabel, reading: '' };
+        }
+      });
+
+      // 全個別鑑定を並列実行
+      const results = await Promise.all(readingPromises);
+
+      // ── まとめ鑑定 ──
+      const synLoading = document.getElementById('synthesisLoading');
+      const synText = document.getElementById('synthesisText');
+      synLoading.textContent = isJa ? 'まとめ鑑定文を受信中…' : 'Synthesizing the reading…';
+      synLoading.style.display = 'block';
+      synText.style.display = 'none';
+      synText.textContent = '';
+
+      try {
+        const resp = await fetch(SPREAD_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cards: results.map(r => ({
+              name: r.card.name,
+              type: r.card.type,
+              keywords: r.card.keywords,
+              upright: r.card.upright,
+              reversed: r.card.reversed,
+              orientation: r.isReversed ? 'reversed' : 'upright',
+              positionLabel: r.posLabel,
+              reading: r.reading,
+            })),
+            question,
+            lang: currentLang,
+          }),
+        });
+        const data = await resp.json();
+        const text = data.reading || (isJa ? '（読み取れませんでした）' : '(Could not retrieve reading)');
+
+        synLoading.style.display = 'none';
+        synText.style.display = 'block';
+        await typeText(synText, text, 'syn');
+      } catch (e) {
+        synLoading.style.display = 'none';
+        synText.style.display = 'block';
+        synText.textContent = isJa ? 'エラー：' + e.message : 'Error: ' + e.message;
+      }
+
+      btn.disabled = false;
+      btn.textContent = isJa ? '✦ もう一度引く ✦' : '✦ Draw Again ✦';
+    }
+
+    // ── タイピングアニメーション ──
+    function typeText(el, text, id) {
+      return new Promise(resolve => {
+        let i = 0;
+        const timer = setInterval(() => {
+          el.textContent = text.slice(0, i);
+          i += 2;
+          if (i > text.length) {
+            el.textContent = text;
+            clearInterval(timer);
+            resolve();
+          }
+        }, 18);
+        typingTimers.push(timer);
+      });
+    }
+
+    function stopAllTyping() {
+      typingTimers.forEach(t => clearInterval(t));
+      typingTimers = [];
+    }
+
+    // ── 初期化 ──
+    setCount(3);
+    renderPositionInputs();
+  </script>
+</body>
+</html>
