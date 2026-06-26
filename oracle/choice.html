@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Integration Tree — Choice Reading</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080f'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c9a84c' stroke-width='4'/%3E%3Cpath d='M32 12v40M18 32h28M23 20l18 24M41 20 23 44' stroke='%23c9a84c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.35);
+      --bg: #08080f;
+      --text: #e8e0d0;
+      --text-dim: rgba(232,224,208,0.4);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(180,140,60,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(60,80,160,0.08) 0%, transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap { position: relative; z-index: 1; width: 100%; max-width: 680px; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+
+    .site-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(10px, 2.5vw, 13px);
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.85;
+      text-transform: uppercase;
+    }
+
+    .site-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--gold); }
+
+    .section-label {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.6;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* 枚数選択 */
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 1.8rem;
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .count-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 10px 6px;
+      cursor: pointer;
+      transition: all 0.25s;
+      border-right: 0.5px solid var(--gold-dim);
+    }
+    .count-btn:last-child { border-right: none; }
+    .count-btn.active { background: rgba(201,168,76,0.1); color: var(--gold); }
+    .count-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.03); }
+
+    /* テーマ入力 */
+    .theme-area { margin-bottom: 1.6rem; }
+    .theme-area input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      padding: 11px 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .theme-area input::placeholder { color: var(--text-dim); font-style: italic; }
+    .theme-area input:focus { border-color: rgba(201,168,76,0.65); }
+
+    /* 選択肢ラベル入力 */
+    .choices-area {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 1.6rem;
+    }
+    .choice-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .choice-default {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      min-width: 28px;
+      text-align: center;
+    }
+    .choice-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      padding: 9px 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .choice-input::placeholder { color: var(--text-dim); font-style: italic; }
+    .choice-input:focus { border-color: rgba(201,168,76,0.65); }
+
+    /* 生成ボタン */
+    .draw-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      padding: 13px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      margin-bottom: 3rem;
+    }
+    .draw-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .draw-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* 結果エリア */
+    .result-stage { display: none; }
+    .result-stage.visible { display: block; animation: fadeUp 0.8s ease forwards; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 各選択肢ブロック */
+    .choice-block { margin-bottom: 3rem; }
+
+    .choice-block-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+
+    .choice-badge {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 13px;
+      color: var(--gold);
+      min-width: 28px;
+    }
+
+    .choice-label-display {
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+
+    .choice-inner {
+      display: flex;
+      gap: 1.4rem;
+      align-items: flex-start;
+    }
+
+    .card-face {
+      width: 110px;
+      height: 176px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(201,168,76,0.38);
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(201,168,76,0.1), 0 12px 36px rgba(0,0,0,0.7);
+    }
+    .card-face.reversed { transform: rotate(180deg); }
+    .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .card-meta { flex: 1; padding-top: 4px; }
+
+    .card-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .card-orient {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+
+    .reading-box {
+      background: rgba(255,255,255,0.025);
+      border: 0.5px solid rgba(201,168,76,0.18);
+      border-radius: 9px;
+      padding: 1.2rem 1.2rem;
+      position: relative;
+    }
+
+    .reading-box::before {
+      content: '✦';
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 10px;
+      color: var(--gold);
+      font-size: 14px;
+    }
+
+    .reading-loading {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 14px;
+      padding: 0.6rem 0;
+    }
+
+    .reading-text {
+      font-size: 15.5px;
+      line-height: 2;
+      color: rgba(232,224,208,0.88);
+      white-space: pre-wrap;
+    }
+
+    .divider {
+      height: 0.5px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+      margin: 1.5rem 0 2.5rem;
+    }
+
+    /* コピーボタン */
+    .copy-wrap { text-align: center; margin-top: 2rem; }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      padding: 11px 28px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .copy-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .copy-btn.copied { opacity: 0.5; cursor: default; }
+
+    /* フッター */
+    footer { margin-top: 4rem; text-align: center; }
+    .footer-brand {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.4;
+      margin-bottom: 6px;
+    }
+    .ig-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.3s;
+    }
+    .ig-link:hover { color: var(--gold); }
+
+    @media (max-width: 480px) {
+      .choice-inner { flex-direction: column; align-items: center; }
+      .card-face { width: 130px; height: 208px; }
+      .card-meta { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="site-title">The Integration Tree</div>
+      <div class="site-sub">Kabbalah × Yggdrasil — 68-Card Oracle</div>
+    </header>
+
+    <div style="text-align:center; margin-bottom: 1.4rem;">
+      <a class="back-link" href="index.html">← Single Card Reading</a>
+    </div>
+
+    <!-- 枚数（選択肢数）-->
+    <div class="section-label">選択肢の数</div>
+    <div class="count-row" id="countRow">
+      <button class="count-btn" onclick="setCount(2)">II</button>
+      <button class="count-btn active" onclick="setCount(3)">III</button>
+      <button class="count-btn" onclick="setCount(4)">IV</button>
+      <button class="count-btn" onclick="setCount(5)">V</button>
+    </div>
+
+    <!-- テーマ -->
+    <div class="section-label">テーマ</div>
+    <div class="theme-area">
+      <input type="text" id="themeInput" placeholder="例：今日のあなたへ　／　今週のメッセージ　…" />
+    </div>
+
+    <!-- 選択肢ラベル -->
+    <div class="section-label">選択肢のラベル（省略可）</div>
+    <div class="choices-area" id="choicesArea"></div>
+
+    <!-- 生成ボタン -->
+    <button class="draw-btn" id="drawBtn" onclick="generate()">✦ Generate ✦</button>
+
+    <!-- 結果 -->
+    <div class="result-stage" id="resultStage">
+      <div id="choiceBlocks"></div>
+      <div class="copy-wrap" id="copyWrap" style="display:none">
+        <button class="copy-btn" id="copyBtn" onclick="copyAll()">✦ 投稿文をコピー ✦</button>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-brand">Awai no Amayadori</div>
+      <a class="ig-link" href="https://instagram.com/awaikeiko" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+        @awaikeiko
+      </a>
+    </footer>
+  </div>
+
+  <script src="cards-data.js"></script>
+  <script>
+    const SINGLE_API = 'https://fortune-five-psi.vercel.app/api/oracle';
+    const ALPHA = ['A','B','C','D','E'];
+
+    let currentCount = 3;
+    let typingTimers = [];
+    let lastResults = [];
+
+    // ── 枚数設定 ──
+    function setCount(n) {
+      currentCount = n;
+      document.querySelectorAll('.count-btn').forEach((btn, i) => {
+        btn.className = 'count-btn' + (i + 2 === n ? ' active' : '');
+      });
+      renderChoiceInputs();
+    }
+
+    // ── 選択肢入力フィールドを描画 ──
+    function renderChoiceInputs() {
+      const area = document.getElementById('choicesArea');
+      const old = area.querySelectorAll('.choice-input');
+      const oldVals = Array.from(old).map(el => el.value);
+      area.innerHTML = '';
+      for (let i = 0; i < currentCount; i++) {
+        const row = document.createElement('div');
+        row.className = 'choice-row';
+
+        const badge = document.createElement('span');
+        badge.className = 'choice-default';
+        badge.textContent = ALPHA[i];
+
+        const input = document.createElement('input');
+        input.className = 'choice-input';
+        input.type = 'text';
+        input.dataset.idx = i;
+        input.placeholder = `選択肢 ${ALPHA[i]} のラベル（省略するとABC表示）`;
+        input.value = oldVals[i] || '';
+
+        row.appendChild(badge);
+        row.appendChild(input);
+        area.appendChild(row);
+      }
+    }
+
+    // ── SVG描画（画像がない場合のフォールバック）──
+    function buildSvg(card) {
+      if (card.image) {
+        return `<img src="${card.image}" style="width:100%;height:100%;object-fit:cover;display:block;" />`;
+      }
+      const [c1, c2] = card.gradStops || [['#1a1a2e','#2d2d5e'],['#2d2d5e','#4a4a8a']];
+      const gid = 'g' + Math.random().toString(36).slice(2,8);
+      return `<svg viewBox="0 0 110 176" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="${gid}" cx="50%" cy="60%" r="75%">
+            <stop offset="0%" stop-color="${c2[1]}"/>
+            <stop offset="45%" stop-color="${c1[1]}"/>
+            <stop offset="100%" stop-color="${c1[0]}"/>
+          </radialGradient>
+        </defs>
+        <rect width="110" height="176" fill="url(#${gid})"/>
+        <text x="55" y="76" text-anchor="middle" dominant-baseline="middle"
+          font-size="32" fill="rgba(255,255,255,0.85)">${card.symbol || '✦'}</text>
+        <line x1="30" y1="90" x2="80" y2="90" stroke="rgba(255,255,255,0.22)" stroke-width="0.5"/>
+        <text x="55" y="101" text-anchor="middle"
+          font-family="'Cinzel Decorative',serif" font-size="5" letter-spacing="2"
+          fill="rgba(255,255,255,0.72)">${card.name}</text>
+      </svg>`;
+    }
+
+    // ── 生成実行 ──
+    async function generate() {
+      stopAllTyping();
+      lastResults = [];
+
+      const btn = document.getElementById('drawBtn');
+      btn.disabled = true;
+      btn.textContent = '…';
+
+      const theme = document.getElementById('themeInput').value.trim();
+      const labelInputs = document.querySelectorAll('.choice-input');
+
+      // カードをランダムに引く（重複なし）
+      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
+      const drawn = shuffled.slice(0, currentCount).map((card, i) => ({
+        card,
+        isReversed: Math.random() > 0.65,
+        label: labelInputs[i]?.value.trim() || ALPHA[i],
+        idx: i,
+      }));
+
+      // リセット
+      const container = document.getElementById('choiceBlocks');
+      container.innerHTML = '';
+      document.getElementById('copyWrap').style.display = 'none';
+
+      const stage = document.getElementById('resultStage');
+      stage.className = 'result-stage visible';
+
+      // ── 各選択肢のブロックを生成 ──
+      const promises = drawn.map(async ({ card, isReversed, label, idx }) => {
+        const block = document.createElement('div');
+        block.className = 'choice-block';
+
+        block.innerHTML = `
+          <div class="choice-block-header">
+            <span class="choice-badge">${label}</span>
+            ${label !== ALPHA[idx] ? `<span class="choice-label-display">/ ${ALPHA[idx]}</span>` : ''}
+          </div>
+          <div class="choice-inner">
+            <div class="card-face${isReversed ? ' reversed' : ''}">
+              ${buildSvg(card)}
+            </div>
+            <div class="card-meta">
+              <div class="card-name">${card.name}</div>
+              <div class="card-orient">${isReversed ? '↓ 逆位置' : '↑ 正位置'}</div>
+              <div class="reading-box">
+                <div class="reading-loading" id="loading-${idx}">メッセージを受信中…</div>
+                <div class="reading-text" id="text-${idx}" style="display:none"></div>
+              </div>
+            </div>
+          </div>
+          ${idx < currentCount - 1 ? '<div class="divider"></div>' : ''}
+        `;
+
+        container.appendChild(block);
+
+        // API呼び出し
+        try {
+          const resp = await fetch(SINGLE_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              card: {
+                name: card.name,
+                type: card.type,
+                keywords: card.keywords,
+                upright: card.upright,
+                reversed: card.reversed,
+              },
+              orientation: isReversed ? 'reversed' : 'upright',
+              question: theme
+                ? `テーマ「${theme}」における選択肢「${label}」を選んだ人へのメッセージ`
+                : `選択肢「${label}」を選んだ人へのオラクルメッセージ`,
+              lang: 'ja',
+              positionLabel: label,
+              mode: 'choice', // APIに選択肢モードであることを伝える
+            }),
+          });
+          const data = await resp.json();
+          const text = data.reading || '（読み取れませんでした）';
+
+          document.getElementById(`loading-${idx}`).style.display = 'none';
+          const rt = document.getElementById(`text-${idx}`);
+          rt.style.display = 'block';
+          await typeText(rt, text, idx);
+
+          return { label, card, isReversed, reading: text };
+        } catch (e) {
+          document.getElementById(`loading-${idx}`).style.display = 'none';
+          const rt = document.getElementById(`text-${idx}`);
+          rt.style.display = 'block';
+          rt.textContent = 'エラー：' + e.message;
+          return { label, card, isReversed, reading: '' };
+        }
+      });
+
+      lastResults = await Promise.all(promises);
+
+      // コピーボタン表示
+      document.getElementById('copyWrap').style.display = 'block';
+
+      btn.disabled = false;
+      btn.textContent = '✦ もう一度生成 ✦';
+    }
+
+    // ── コピー ──
+    function copyAll() {
+      const theme = document.getElementById('themeInput').value.trim();
+      let text = '';
+
+      if (theme) text += `【${theme}】\n\n`;
+
+      lastResults.forEach(r => {
+        const ori = r.isReversed ? '逆位置' : '正位置';
+        text += `▼ ${r.label} を選んだあなたへ\n`;
+        text += `${r.card.name}（${ori}）\n\n`;
+        text += `${r.reading}\n\n`;
+        text += '─────────────\n\n';
+      });
+
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = '✦ コピーしました ✦';
+        btn.className = 'copy-btn copied';
+        setTimeout(() => {
+          btn.textContent = '✦ 投稿文をコピー ✦';
+          btn.className = 'copy-btn';
+        }, 2500);
+      });
+    }
+
+    // ── タイピングアニメーション ──
+    function typeText(el, text, id) {
+      return new Promise(resolve => {
+        let i = 0;
+        const timer = setInterval(() => {
+          el.textContent = text.slice(0, i);
+          i += 2;
+          if (i > text.length) {
+            el.textContent = text;
+            clearInterval(timer);
+            resolve();
+          }
+        }, 18);
+        typingTimers.push(timer);
+      });
+    }
+
+    function stopAllTyping() {
+      typingTimers.forEach(t => clearInterval(t));
+      typingTimers = [];
+    }
+
+    // ── 初期化 ──
+    setCount(3);
+    renderChoiceInputs();
+  </script>
+</body>
+</html>
