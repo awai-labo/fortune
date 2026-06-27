@@ -4,6 +4,7 @@ const CARDS = [
   // =====================
   {
     id: 'daat', name: "DA'AT", type: 'Sephirot',
+    role: 'threshold', group: 'core', theme: 'mystery',
     subs: ['Gate of the Abyss', "Readiness to face one's depths"],
     symbol: 'Ø', symbolColor: '#88ffcc',
     gradStops: [['#001a10','#002820'], ['#004a38','#00887a']],
@@ -14,6 +15,7 @@ const CARDS = [
   },
   {
     id: 'kether', name: 'KETHER', type: 'Sephirot',
+    role: 'center', group: 'core', theme: 'existence',
     subs: ['The Crown', 'Pure Existence'],
     symbol: '✦', symbolColor: '#ffffff',
     gradStops: [['#0a0a0a','#1a1a2e'], ['#2a2a4a','#8888cc']],
@@ -24,6 +26,7 @@ const CARDS = [
   },
   {
     id: 'chokmah', name: 'CHOKMAH', type: 'Sephirot',
+    role: 'igniter', group: 'mover', theme: 'consciousness',
     subs: ['Wisdom', 'Pure Inspiration'],
     symbol: '⊕', symbolColor: '#aaddff',
     gradStops: [['#001020','#002040'], ['#003366','#0066bb']],
@@ -34,6 +37,7 @@ const CARDS = [
   },
   {
     id: 'binah', name: 'BINAH', type: 'Sephirot',
+    role: 'condenser', group: 'diver', theme: 'consciousness',
     subs: ['Understanding', 'Form from Chaos'],
     symbol: '△', symbolColor: '#cc88ff',
     gradStops: [['#100020','#200040'], ['#3a0066','#7700cc']],
@@ -44,6 +48,7 @@ const CARDS = [
   },
   {
     id: 'chesed', name: 'CHESED', type: 'Sephirot',
+    role: 'nurturer', group: 'nurturer', theme: 'growth',
     subs: ['Mercy', 'Unconditional Love'],
     symbol: '♃', symbolColor: '#ffdd88',
     gradStops: [['#1a1000','#332000'], ['#664400','#cc9900']],
@@ -54,6 +59,7 @@ const CARDS = [
   },
   {
     id: 'geburah', name: 'GEBURAH', type: 'Sephirot',
+    role: 'guardian', group: 'nurturer', theme: 'will',
     subs: ['Strength', 'Sacred Judgment'],
     symbol: '♂', symbolColor: '#ff6644',
     gradStops: [['#1a0000','#3a0000'], ['#770000','#cc2200']],
@@ -64,6 +70,7 @@ const CARDS = [
   },
   {
     id: 'tiphareth', name: 'TIPHARETH', type: 'Sephirot',
+    role: 'center', group: 'core', theme: 'existence',
     subs: ['Beauty', 'The True Self'],
     symbol: '☀', symbolColor: '#ffcc00',
     gradStops: [['#1a1200','#332400'], ['#665500','#ccaa00']],
@@ -74,6 +81,7 @@ const CARDS = [
   },
   {
     id: 'netzach', name: 'NETZACH', type: 'Sephirot',
+    role: 'awakener', group: 'weaver', theme: 'emotion',
     subs: ['Victory', 'Wild Emotion'],
     symbol: '♀', symbolColor: '#88ff88',
     gradStops: [['#001a00','#003300'], ['#006600','#00aa44']],
@@ -84,6 +92,7 @@ const CARDS = [
   },
   {
     id: 'hod', name: 'HOD', type: 'Sephirot',
+    role: 'translator', group: 'weaver', theme: 'consciousness',
     subs: ['Splendor', 'Language of Sensation'],
     symbol: '☿', symbolColor: '#ffaa44',
     gradStops: [['#1a0800','#331500'], ['#662a00','#cc5500']],
@@ -94,6 +103,7 @@ const CARDS = [
   },
   {
     id: 'yesod', name: 'YESOD', type: 'Sephirot',
+    role: 'returner', group: 'nurturer', theme: 'mystery',
     subs: ['Foundation', 'The Dreaming Ground'],
     symbol: '☽', symbolColor: '#aaaaff',
     gradStops: [['#080018','#100030'], ['#220066','#4400cc']],
@@ -104,6 +114,7 @@ const CARDS = [
   },
   {
     id: 'malkuth', name: 'MALKUTH', type: 'Sephirot',
+    role: 'builder', group: 'weaver', theme: 'reality',
     subs: ['Kingdom', 'Earth Embodied'],
     symbol: '⊕', symbolColor: '#bb8844',
     gradStops: [['#100800','#201500'], ['#443300','#886600']],
@@ -118,6 +129,7 @@ const CARDS = [
   // =====================
   {
     id: 'aleph', name: 'ALEPH', type: 'Hebrew',
+    role: 'igniter', group: 'mover', theme: 'existence',
     subs: ['The Fool (0)', 'Pure Possibility'],
     symbol: 'א', symbolColor: '#ffffff',
     gradStops: [['#050510','#0a0a20'], ['#1a1a40','#4444aa']],
@@ -128,6 +140,7 @@ const CARDS = [
   },
   {
     id: 'beth', name: 'BETH', type: 'Hebrew',
+    role: 'translator', group: 'weaver', theme: 'consciousness',
     subs: ['The Magician (I)', 'Will into Form'],
     symbol: 'ב', symbolColor: '#ffee88',
     gradStops: [['#181000','#302000'], ['#604000','#cc8800']],
@@ -138,6 +151,7 @@ const CARDS = [
   },
   {
     id: 'gimel', name: 'GIMEL', type: 'Hebrew',
+    role: 'guide', group: 'mover', theme: 'journey',
     subs: ['The High Priestess (II)', 'Recall your North Star'],
     symbol: 'ג', symbolColor: '#ccaaff',
     gradStops: [['#0d0a1a','#1a1230'], ['#2d1f50','#5a3a9a']],
@@ -148,6 +162,7 @@ const CARDS = [
   },
   {
     id: 'daleth', name: 'DALETH', type: 'Hebrew',
+    role: 'observer', group: 'diver', theme: 'emotion',
     subs: ['The Empress (III)', 'Where Grace Enters'],
     symbol: 'ד', symbolColor: '#ffbbdd',
     gradStops: [['#1a0010','#330020'], ['#660044','#cc0088']],
@@ -158,6 +173,7 @@ const CARDS = [
   },
   {
     id: 'heh', name: 'HEH', type: 'Hebrew',
+    role: 'guide', group: 'mover', theme: 'journey',
     subs: ['The Emperor (IV)', 'Structure and Authority'],
     symbol: 'ה', symbolColor: '#ff8844',
     gradStops: [['#1a0800','#331500'], ['#663300','#cc6600']],
@@ -168,6 +184,7 @@ const CARDS = [
   },
   {
     id: 'vav', name: 'VAV', type: 'Hebrew',
+    role: 'connector', group: 'weaver', theme: 'journey',
     subs: ['The Hierophant (V)', 'Bridge of Tradition'],
     symbol: 'ו', symbolColor: '#aabbff',
     gradStops: [['#080018','#100030'], ['#1a0055','#3300aa']],
@@ -178,6 +195,7 @@ const CARDS = [
   },
   {
     id: 'zayin', name: 'ZAYIN', type: 'Hebrew',
+    role: 'chooser', group: 'mover', theme: 'will',
     subs: ['The Lovers (VI)', 'The Choice'],
     symbol: 'ז', symbolColor: '#ffddaa',
     gradStops: [['#1a1000','#332000'], ['#664400','#bb8800']],
@@ -188,6 +206,7 @@ const CARDS = [
   },
   {
     id: 'cheth', name: 'CHETH', type: 'Hebrew',
+    role: 'challenger', group: 'mover', theme: 'will',
     subs: ['The Chariot (VII)', 'Directed Will'],
     symbol: 'ח', symbolColor: '#88ccff',
     gradStops: [['#001018','#002030'], ['#004466','#0088bb']],
@@ -198,6 +217,7 @@ const CARDS = [
   },
   {
     id: 'tet', name: 'TET', type: 'Hebrew',
+    role: 'observer', group: 'diver', theme: 'existence',
     subs: ['Strength (VIII)', 'The Gentle Taming'],
     symbol: 'ט', symbolColor: '#ffaa66',
     gradStops: [['#180800','#301500'], ['#602800','#bb5500']],
@@ -208,6 +228,7 @@ const CARDS = [
   },
   {
     id: 'yod', name: 'YOD', type: 'Hebrew',
+    role: 'depths', group: 'diver', theme: 'mystery',
     subs: ['The Hermit (IX)', 'The Inner Light'],
     symbol: 'י', symbolColor: '#ffffaa',
     gradStops: [['#101000','#202000'], ['#404400','#888800']],
@@ -218,6 +239,7 @@ const CARDS = [
   },
   {
     id: 'kaf', name: 'KAF', type: 'Hebrew',
+    role: 'challenger', group: 'mover', theme: 'growth',
     subs: ['Wheel of Fortune (X)', 'The Great Turning'],
     symbol: 'כ', symbolColor: '#cc88ff',
     gradStops: [['#100018','#200030'], ['#3a0066','#7700cc']],
@@ -228,6 +250,7 @@ const CARDS = [
   },
   {
     id: 'lamed', name: 'LAMED', type: 'Hebrew',
+    role: 'observer', group: 'diver', theme: 'consciousness',
     subs: ['Justice (XI)', 'The Honest Mirror'],
     symbol: 'ל', symbolColor: '#88ffdd',
     gradStops: [['#001810','#003020'], ['#006644','#00bb88']],
@@ -238,6 +261,7 @@ const CARDS = [
   },
   {
     id: 'mem', name: 'MEM', type: 'Hebrew',
+    role: 'observer', group: 'diver', theme: 'mystery',
     subs: ['The Hanged Man (XII)', 'Sacred Surrender'],
     symbol: 'מ', symbolColor: '#88aaff',
     gradStops: [['#000818','#001030'], ['#002266','#0044cc']],
@@ -248,6 +272,7 @@ const CARDS = [
   },
   {
     id: 'nun', name: 'NUN', type: 'Hebrew',
+    role: 'purifier', group: 'diver', theme: 'transformation',
     subs: ['Death (XIII)', 'Transformation'],
     symbol: 'נ', symbolColor: '#446688',
     gradStops: [['#050510','#0a0a18'], ['#101030','#2a2a66']],
@@ -258,6 +283,7 @@ const CARDS = [
   },
   {
     id: 'samekh', name: 'SAMEKH', type: 'Hebrew',
+    role: 'observer', group: 'diver', theme: 'existence',
     subs: ['Temperance (XIV)', 'The Alchemist'],
     symbol: 'ס', symbolColor: '#aaffcc',
     gradStops: [['#001510','#002820'], ['#005540','#00aa80']],
@@ -268,6 +294,7 @@ const CARDS = [
   },
   {
     id: 'ayin', name: 'AYIN', type: 'Hebrew',
+    role: 'depths', group: 'diver', theme: 'mystery',
     subs: ['The Devil (XV)', 'Shadow Chains'],
     symbol: 'ע', symbolColor: '#886644',
     gradStops: [['#100800','#201000'], ['#402000','#884400']],
@@ -278,6 +305,7 @@ const CARDS = [
   },
   {
     id: 'pe', name: 'PE', type: 'Hebrew',
+    role: 'challenger', group: 'mover', theme: 'will',
     subs: ['The Tower (XVI)', 'Sacred Destruction'],
     symbol: 'פ', symbolColor: '#ff4422',
     gradStops: [['#1a0000','#380000'], ['#770000','#dd2200']],
@@ -288,6 +316,7 @@ const CARDS = [
   },
   {
     id: 'tzadi', name: 'TZADI', type: 'Hebrew',
+    role: 'awakener', group: 'weaver', theme: 'emotion',
     subs: ['The Star (XVII)', 'Hope Returns'],
     symbol: 'צ', symbolColor: '#aaccff',
     gradStops: [['#000818','#001030'], ['#001866','#0033cc']],
@@ -298,6 +327,7 @@ const CARDS = [
   },
   {
     id: 'qof', name: 'QOF', type: 'Hebrew',
+    role: 'depths', group: 'diver', theme: 'mystery',
     subs: ['The Moon (XVIII)', 'The Depths Revealed'],
     symbol: 'ק', symbolColor: '#8888cc',
     gradStops: [['#080010','#100020'], ['#200044','#440088']],
@@ -308,6 +338,7 @@ const CARDS = [
   },
   {
     id: 'resh', name: 'RESH', type: 'Hebrew',
+    role: 'translator', group: 'weaver', theme: 'consciousness',
     subs: ['The Sun (XIX)', 'Radiant Joy'],
     symbol: 'ר', symbolColor: '#ffdd00',
     gradStops: [['#1a1200','#332400'], ['#665500','#ccaa00']],
@@ -318,6 +349,7 @@ const CARDS = [
   },
   {
     id: 'shin', name: 'SHIN', type: 'Hebrew',
+    role: 'awakener', group: 'weaver', theme: 'transformation',
     subs: ['Judgement (XX)', 'The Great Resurrection'],
     symbol: 'שׁ', symbolColor: '#ff6600',
     gradStops: [['#1a0400','#380800'], ['#771100','#cc3300']],
@@ -328,6 +360,7 @@ const CARDS = [
   },
   {
     id: 'tav', name: 'TAV', type: 'Hebrew',
+    role: 'builder', group: 'weaver', theme: 'reality',
     subs: ['The World (XXI)', 'Completion'],
     symbol: 'ת', symbolColor: '#aaffaa',
     gradStops: [['#001800','#003000'], ['#006600','#00cc44']],
@@ -342,6 +375,7 @@ const CARDS = [
   // =====================
   {
     id: 'asgard', name: 'ASGARD', type: 'World',
+    role: 'guardian', group: 'nurturer', theme: 'will',
     subs: ['Realm of the Aesir', 'Divine Order'],
     symbol: '⚡', symbolColor: '#ffdd44',
     gradStops: [['#1a1400','#332800'], ['#665500','#ccaa00']],
@@ -352,6 +386,7 @@ const CARDS = [
   },
   {
     id: 'midgard', name: 'MIDGARD', type: 'World',
+    role: 'returner', group: 'nurturer', theme: 'reality',
     subs: ['The Human Realm', 'Here and Now'],
     symbol: '⊕', symbolColor: '#88bb44',
     gradStops: [['#080c00','#101800'], ['#243300','#4a6600']],
@@ -362,6 +397,7 @@ const CARDS = [
   },
   {
     id: 'jotunheim', name: 'JOTUNHEIM', type: 'World',
+    role: 'challenger', group: 'mover', theme: 'mystery',
     subs: ['Realm of Giants', 'Ancient Forces'],
     symbol: '⛰', symbolColor: '#8899aa',
     gradStops: [['#080a10','#101520'], ['#202840','#404f77']],
@@ -372,6 +408,7 @@ const CARDS = [
   },
   {
     id: 'vanaheim', name: 'VANAHEIM', type: 'World',
+    role: 'nurturer', group: 'nurturer', theme: 'growth',
     subs: ['Realm of the Vanir', 'Nature Magic'],
     symbol: '❀', symbolColor: '#88ff88',
     gradStops: [['#001800','#003000'], ['#006600','#00cc44']],
@@ -382,6 +419,7 @@ const CARDS = [
   },
   {
     id: 'alfheim', name: 'ALFHEIM', type: 'World',
+    role: 'awakener', group: 'weaver', theme: 'emotion',
     subs: ['Realm of Light Elves', 'Inspiration'],
     symbol: '✧', symbolColor: '#ddeeff',
     gradStops: [['#080c18','#101830'], ['#202848','#3a4888']],
@@ -392,6 +430,7 @@ const CARDS = [
   },
   {
     id: 'svartalfheim', name: 'SVARTALFHEIM', type: 'World',
+    role: 'builder', group: 'weaver', theme: 'reality',
     subs: ['Realm of Dark Elves', 'Hidden Craft'],
     symbol: '⚙', symbolColor: '#666688',
     gradStops: [['#080808','#101010'], ['#202030','#3a3a55']],
@@ -402,6 +441,7 @@ const CARDS = [
   },
   {
     id: 'niflheim', name: 'NIFLHEIM', type: 'World',
+    role: 'condenser', group: 'diver', theme: 'mystery',
     subs: ['Realm of Mist', 'The Primordial Cold'],
     symbol: '❄', symbolColor: '#aaddff',
     gradStops: [['#000810','#001020'], ['#002040','#004488']],
@@ -412,6 +452,7 @@ const CARDS = [
   },
   {
     id: 'muspelheim', name: 'MUSPELHEIM', type: 'World',
+    role: 'igniter', group: 'mover', theme: 'transformation',
     subs: ['Realm of Fire', 'Primordial Destruction'],
     symbol: '🔥', symbolColor: '#ff6600',
     gradStops: [['#1a0400','#380800'], ['#771100','#cc3300']],
@@ -422,6 +463,7 @@ const CARDS = [
   },
   {
     id: 'helheim', name: 'HELHEIM', type: 'World',
+    role: 'depths', group: 'diver', theme: 'mystery',
     subs: ['Total acceptance,', 'numbness'],
     symbol: '⬡', symbolColor: '#7fddff',
     gradStops: [['#00101a','#002233'], ['#004466','#0088bb']],
@@ -432,6 +474,7 @@ const CARDS = [
   },
   {
     id: 'valhalla', name: 'VALHALLA', type: 'World',
+    role: 'witness', group: 'core', theme: 'existence',
     subs: ['Hall of the Fallen', 'Honored Wounds'],
     symbol: '⚔', symbolColor: '#ffcc66',
     gradStops: [['#180c00','#302000'], ['#604000','#cc8000']],
@@ -442,6 +485,7 @@ const CARDS = [
   },
   {
     id: 'bifrost', name: 'BIFROST', type: 'World',
+    role: 'connector', group: 'weaver', theme: 'journey',
     subs: ['The Rainbow Bridge', 'Between Worlds'],
     symbol: '🌈', symbolColor: '#ffaaff',
     gradStops: [['#100018','#200030'], ['#3a0055','#880099']],
@@ -456,6 +500,7 @@ const CARDS = [
   // =====================
   {
     id: 'fehu', name: 'FEHU', type: 'Rune',
+    role: 'igniter', group: 'mover', theme: 'growth',
     subs: ['Cattle · Wealth', 'Mobile Fortune'],
     symbol: 'ᚠ', symbolColor: '#ffcc44',
     gradStops: [['#1a1000','#332000'], ['#665500','#bbaa00']],
@@ -466,6 +511,7 @@ const CARDS = [
   },
   {
     id: 'uruz', name: 'URUZ', type: 'Rune',
+    role: 'igniter', group: 'mover', theme: 'reality',
     subs: ['Aurochs · Wild Strength', 'Primal Force'],
     symbol: 'ᚢ', symbolColor: '#cc8844',
     gradStops: [['#100800','#201500'], ['#4a2a00','#996600']],
@@ -476,6 +522,7 @@ const CARDS = [
   },
   {
     id: 'thurisaz', name: 'THURISAZ', type: 'Rune',
+    role: 'guardian', group: 'nurturer', theme: 'will',
     subs: ['Thorn · Giant', 'Protective Force'],
     symbol: 'ᚦ', symbolColor: '#ff6644',
     gradStops: [['#1a0400','#380800'], ['#661100','#cc2200']],
@@ -486,6 +533,7 @@ const CARDS = [
   },
   {
     id: 'ansuz', name: 'ANSUZ', type: 'Rune',
+    role: 'translator', group: 'weaver', theme: 'consciousness',
     subs: ['God · Message', 'Divine Communication'],
     symbol: 'ᚨ', symbolColor: '#aabbff',
     gradStops: [['#080818','#101030'], ['#202260','#4044cc']],
@@ -496,6 +544,7 @@ const CARDS = [
   },
   {
     id: 'raidho', name: 'RAIDHO', type: 'Rune',
+    role: 'guide', group: 'mover', theme: 'journey',
     subs: ['Journey · Rhythm', 'The Right Path'],
     symbol: 'ᚱ', symbolColor: '#88aadd',
     gradStops: [['#080c18','#101830'], ['#1c2a55','#3a55bb']],
@@ -506,6 +555,7 @@ const CARDS = [
   },
   {
     id: 'kenaz', name: 'KENAZ', type: 'Rune',
+    role: 'translator', group: 'weaver', theme: 'consciousness',
     subs: ['Torch · Knowledge', 'Creative Fire'],
     symbol: 'ᚲ', symbolColor: '#ffaa44',
     gradStops: [['#1a0800','#331500'], ['#663000','#cc6600']],
@@ -516,6 +566,7 @@ const CARDS = [
   },
   {
     id: 'gebo', name: 'GEBO', type: 'Rune',
+    role: 'connector', group: 'weaver', theme: 'emotion',
     subs: ['Gift · Exchange', 'Sacred Balance'],
     symbol: 'ᚷ', symbolColor: '#ffddaa',
     gradStops: [['#181000','#302000'], ['#604400','#bb8800']],
@@ -526,6 +577,7 @@ const CARDS = [
   },
   {
     id: 'wunjo', name: 'WUNJO', type: 'Rune',
+    role: 'returner', group: 'nurturer', theme: 'emotion',
     subs: ['Joy · Clan', 'True Belonging'],
     symbol: 'ᚹ', symbolColor: '#ffff88',
     gradStops: [['#181800','#303000'], ['#666600','#cccc00']],
@@ -536,6 +588,7 @@ const CARDS = [
   },
   {
     id: 'hagalaz', name: 'HAGALAZ', type: 'Rune',
+    role: 'purifier', group: 'diver', theme: 'transformation',
     subs: ['Hail · Disruption', 'Necessary Chaos'],
     symbol: 'ᚺ', symbolColor: '#aaccff',
     gradStops: [['#080c18','#101830'], ['#1a2a50','#3a5599']],
@@ -546,6 +599,7 @@ const CARDS = [
   },
   {
     id: 'nauthiz', name: 'NAUTHIZ', type: 'Rune',
+    role: 'challenger', group: 'mover', theme: 'will',
     subs: ['Need · Constraint', 'Fire from Friction'],
     symbol: 'ᚾ', symbolColor: '#cc8866',
     gradStops: [['#180800','#301500'], ['#5a2800','#aa5500']],
@@ -556,6 +610,7 @@ const CARDS = [
   },
   {
     id: 'isa', name: 'ISA', type: 'Rune',
+    role: 'condenser', group: 'diver', theme: 'mystery',
     subs: ['Ice · Stillness', 'Inward Journey'],
     symbol: 'ᛁ', symbolColor: '#ddeeff',
     gradStops: [['#080c10','#101820'], ['#1a2840','#304a77']],
@@ -566,6 +621,7 @@ const CARDS = [
   },
   {
     id: 'jera', name: 'JERA', type: 'Rune',
+    role: 'nurturer', group: 'nurturer', theme: 'growth',
     subs: ['Year · Harvest', 'Patience Rewarded'],
     symbol: 'ᛃ', symbolColor: '#aabb44',
     gradStops: [['#0a1000','#141e00'], ['#2a3c00','#507700']],
@@ -576,6 +632,7 @@ const CARDS = [
   },
   {
     id: 'eihwaz', name: 'EIHWAZ', type: 'Rune',
+    role: 'purifier', group: 'diver', theme: 'transformation',
     subs: ['Yew Tree · Death & Rebirth', 'World Tree'],
     symbol: 'ᛇ', symbolColor: '#226644',
     gradStops: [['#040c08','#081810'], ['#103025','#205545']],
@@ -586,6 +643,7 @@ const CARDS = [
   },
   {
     id: 'perthro', name: 'PERTHRO', type: 'Rune',
+    role: 'threshold', group: 'core', theme: 'mystery',
     subs: ['Fate Vessel · Mystery', 'The Hidden Lot'],
     symbol: 'ᛈ', symbolColor: '#aa88cc',
     gradStops: [['#0c0818','#181030'], ['#2c2050','#5540aa']],
@@ -596,6 +654,7 @@ const CARDS = [
   },
   {
     id: 'algiz', name: 'ALGIZ', type: 'Rune',
+    role: 'guardian', group: 'nurturer', theme: 'will',
     subs: ['Elk · Divine Connection', 'Sacred Protection'],
     symbol: 'ᛉ', symbolColor: '#ccffcc',
     gradStops: [['#001808','#003010'], ['#006630','#00cc66']],
@@ -606,6 +665,7 @@ const CARDS = [
   },
   {
     id: 'sowilo', name: 'SOWILO', type: 'Rune',
+    role: 'awakener', group: 'weaver', theme: 'existence',
     subs: ['From Fragmentation', 'to Integration'],
     symbol: 'ᛊ', symbolColor: '#ffd966',
     gradStops: [['#1a0e00','#3d2200'], ['#8a5c00','#c9a84c']],
@@ -616,6 +676,7 @@ const CARDS = [
   },
   {
     id: 'tiwaz', name: 'TIWAZ', type: 'Rune',
+    role: 'chooser', group: 'mover', theme: 'will',
     subs: ['Tyr · Justice', 'Sacred Sacrifice'],
     symbol: 'ᛏ', symbolColor: '#88aaff',
     gradStops: [['#080818','#101030'], ['#1c2060','#3840cc']],
@@ -626,6 +687,7 @@ const CARDS = [
   },
   {
     id: 'berkana', name: 'BERKANA', type: 'Rune',
+    role: 'nurturer', group: 'nurturer', theme: 'growth',
     subs: ['Birch · Birth', 'New Growth'],
     symbol: 'ᛒ', symbolColor: '#bbffaa',
     gradStops: [['#081000','#101e00'], ['#204000','#408800']],
@@ -636,6 +698,7 @@ const CARDS = [
   },
   {
     id: 'ehwaz', name: 'EHWAZ', type: 'Rune',
+    role: 'connector', group: 'weaver', theme: 'journey',
     subs: ['Horse · Partnership', 'Moving Together'],
     symbol: 'ᛖ', symbolColor: '#ddbb88',
     gradStops: [['#180c00','#302000'], ['#604000','#cc8000']],
@@ -646,6 +709,7 @@ const CARDS = [
   },
   {
     id: 'mannaz', name: 'MANNAZ', type: 'Rune',
+    role: 'center', group: 'core', theme: 'existence',
     subs: ['Human · Self', 'Know Thyself'],
     symbol: 'ᛗ', symbolColor: '#ccbbaa',
     gradStops: [['#101008','#201f10'], ['#3a3828','#706e50']],
@@ -656,6 +720,7 @@ const CARDS = [
   },
   {
     id: 'laguz', name: 'LAGUZ', type: 'Rune',
+    role: 'purifier', group: 'diver', theme: 'emotion',
     subs: ['Water · Flow', 'Trust the Current'],
     symbol: 'ᛚ', symbolColor: '#88ccff',
     gradStops: [['#000c18','#001830'], ['#003366','#0066cc']],
@@ -666,6 +731,7 @@ const CARDS = [
   },
   {
     id: 'ingwaz', name: 'INGWAZ', type: 'Rune',
+    role: 'condenser', group: 'diver', theme: 'mystery',
     subs: ['Ing · Potential', 'Inner Completion'],
     symbol: 'ᛜ', symbolColor: '#aaffcc',
     gradStops: [['#001810','#003020'], ['#006650','#00cc99']],
@@ -676,6 +742,7 @@ const CARDS = [
   },
   {
     id: 'dagaz', name: 'DAGAZ', type: 'Rune',
+    role: 'threshold', group: 'core', theme: 'transformation',
     subs: ['Dawn · Breakthrough', 'Threshold Moment'],
     symbol: 'ᛞ', symbolColor: '#ffeeaa',
     gradStops: [['#101000','#202000'], ['#404000','#888800']],
@@ -686,6 +753,7 @@ const CARDS = [
   },
   {
     id: 'othala', name: 'OTHALA', type: 'Rune',
+    role: 'returner', group: 'nurturer', theme: 'reality',
     subs: ['Homeland · Heritage', 'Return to Root'],
     symbol: 'ᛟ', symbolColor: '#ddbb66',
     gradStops: [['#100c00','#201800'], ['#403000','#887000']],
