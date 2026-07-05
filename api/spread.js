@@ -107,7 +107,8 @@ export default async function handler(req, res) {
 ・詩的でありながら、地に足のついた言葉で
 ・450〜550字の散文、敬体（です・ます調）で
 ・箇条書きは使わない
-・鑑定師が目の前の人に静かに語りかけるような口調で`;
+・鑑定師が目の前の人に静かに語りかけるような口調で
+・Markdown記法（#、**、-、見出し、太字など）は一切使わず、プレーンテキストの散文のみで書くこと。タイトルや見出しをつけないこと`;
 
     const systemEn = `You are a reader of "The Integration Tree" — a unique 68-card oracle deck integrating the Kabbalistic Tree of Life with the Norse World Tree Yggdrasil. This is not a tarot deck.
 
@@ -149,7 +150,8 @@ Your task is not to add up individual card meanings, but to read the story the c
 - Open questions rather than fixed answers — widen perspective
 - Poetic yet grounded
 - 280–350 words of prose, no bullet points
-- Write as if quietly speaking to the person in front of you`;
+- Write as if quietly speaking to the person in front of you
+- Never use Markdown syntax (#, **, -, headings, bold). Plain prose only — no title, no heading`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
