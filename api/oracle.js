@@ -37,8 +37,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { card, orientation, question, lang, positionLabel } = req.body;
+    const { card, orientation, question, lang, positionLabel, pass } = req.body;
     const isJa = lang !== 'en';
+
+    // ── 複数枚引き（positionLabel付き）は合言葉必須。1枚引きは無料のまま ──
+    if (positionLabel) {
+      const PASS = process.env.SPREAD_PASS || '';
+      if (!PASS || pass !== PASS) {
+        return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
+      }
+    }
     const ori = orientation === 'reversed'
       ? (isJa ? '逆位置' : 'Reversed')
       : (isJa ? '正位置' : 'Upright');
