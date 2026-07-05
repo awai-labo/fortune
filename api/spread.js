@@ -37,8 +37,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { cards, question, lang } = req.body;
+    const { cards, question, lang, pass, verify } = req.body;
     const isJa = lang !== 'en';
+
+    // ── 合言葉チェック ──
+    const PASS = process.env.SPREAD_PASS || '';
+    const passOk = PASS && pass === PASS;
+
+    // 合言葉の確認だけのリクエスト（Anthropic APIは呼ばない）
+    if (verify) {
+      if (passOk) return res.status(200).json({ ok: true });
+      return res.status(401).json({ error: 'Invalid passphrase' });
+    }
+
+    if (!passOk) {
+      return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
+    }
 
     if (!cards || !Array.isArray(cards) || cards.length < 2) {
       return res.status(400).json({ error: 'Invalid cards data' });
