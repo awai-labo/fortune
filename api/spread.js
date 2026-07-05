@@ -37,19 +37,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { cards, question, lang, pass, verify } = req.body;
+    const { cards, question, lang, pass, verify, tier } = req.body;
     const isJa = lang !== 'en';
 
-    // ── 合言葉チェック ──
-    const PASS = process.env.SPREAD_PASS || '';
-    const passOk = PASS && pass === PASS;
+    // ── 合言葉チェック（2段階） ──
+    // SPREAD_PASS_3：3枚引き用／SPREAD_PASS_5：5枚引き用（5の合言葉は3も開ける）
+    const P3 = process.env.SPREAD_PASS_3 || '';
+    const P5 = process.env.SPREAD_PASS_5 || '';
+    const has5 = !!(P5 && pass === P5);
+    const has3 = !!(P3 && pass === P3);
 
     // 合言葉の確認だけのリクエスト（Anthropic APIは呼ばない）
     if (verify) {
-      if (passOk) return res.status(200).json({ ok: true });
+      const ok = Number(tier) === 5 ? has5 : (has3 || has5);
+      if (ok) return res.status(200).json({ ok: true });
       return res.status(401).json({ error: 'Invalid passphrase' });
     }
 
+    const need5 = Array.isArray(cards) && cards.length >= 4;
+    const passOk = need5 ? has5 : (has3 || has5);
     if (!passOk) {
       return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
     }
