@@ -44,7 +44,8 @@ export default async function handler(req, res) {
     if (positionLabel) {
       const P3 = process.env.SPREAD_PASS_3 || '';
       const P5 = process.env.SPREAD_PASS_5 || '';
-      const ok = (P3 && pass === P3) || (P5 && pass === P5);
+      const OWNER = process.env.SPREAD_PASS_OWNER || '';
+      const ok = (P3 && pass === P3) || (P5 && pass === P5) || (OWNER && pass === OWNER);
       if (!ok) {
         return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
       }
