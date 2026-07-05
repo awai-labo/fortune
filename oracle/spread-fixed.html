@@ -367,6 +367,83 @@
       letter-spacing: 0.3em;
     }
 
+
+    /* ── 合言葉ゲート ── */
+    .gate {
+      text-align: center;
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 10px;
+      padding: 2.4rem 1.6rem;
+      margin-bottom: 3rem;
+      background: rgba(201,168,76,0.03);
+      display: none;
+    }
+    .gate-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      opacity: 0.85;
+    }
+    .gate-text {
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text-dim);
+      line-height: 1.9;
+      margin-bottom: 1.4rem;
+    }
+    .gate-link {
+      display: inline-block;
+      font-size: 13px;
+      color: var(--gold);
+      opacity: 0.75;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.4rem;
+      border-bottom: 0.5px solid var(--gold-dim);
+      transition: opacity 0.3s;
+    }
+    .gate-link:hover { opacity: 1; }
+    .gate-input {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      text-align: center;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .gate-input::placeholder { color: var(--text-dim); font-style: italic; }
+    .gate-input:focus { border-color: rgba(201,168,76,0.65); }
+    .gate-btn {
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.45);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      padding: 11px 34px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .gate-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .gate-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .gate-error {
+      font-size: 13px;
+      font-style: italic;
+      color: rgba(220,140,120,0.85);
+      margin-top: 0.9rem;
+    }
+
     /* ── フッター ── */
     footer {
       margin-top: 4rem;
@@ -431,7 +508,7 @@
 
     <div style="text-align:center; margin-bottom: 1.4rem; display:flex; justify-content:center; gap:24px; flex-wrap:wrap;">
       <a class="back-link" href="index.html">← Single Card</a>
-      <a class="back-link" href="spread.html">Free Spread →</a>
+      <a class="back-link" href="spread.html">Custom Spread →</a>
     </div>
 
     <!-- 言語切り替え -->
@@ -440,6 +517,18 @@
       <button class="lang-btn" id="btnEn" onclick="setLang('en')">EN</button>
     </div>
 
+    <!-- 合言葉ゲート -->
+    <div class="gate" id="gatePanel">
+      <div class="gate-title" id="gateTitle">✦ PASSPHRASE ✦</div>
+      <p class="gate-text" id="gateText">このスプレッドのご利用には合言葉が必要です。<br>合言葉はnoteの記事でご案内しています。</p>
+      <a class="gate-link" id="gateLink" href="#" target="_blank" rel="noopener" style="display:none">→ 合言葉のご案内はこちら</a>
+      <input class="gate-input" id="gateInput" type="text" placeholder="合言葉" autocomplete="off"
+        onkeydown="if(event.key==='Enter')tryUnlock()" />
+      <button class="gate-btn" id="gateBtn" onclick="tryUnlock()">✦ Enter ✦</button>
+      <div class="gate-error" id="gateError" style="display:none">合言葉が違うようです。もう一度確認してください。</div>
+    </div>
+
+    <div id="appMain" style="display:none">
     <!-- Step 1: 枚数選択 -->
     <div class="section-label" id="labelCount">枚数を選ぶ</div>
     <div class="count-row" id="countRow">
@@ -474,6 +563,8 @@
         <button class="copy-btn" id="copyBtn" onclick="copyReading()">✦ Copy Reading ✦</button>
       </div>
     </div>
+
+    </div><!-- /appMain -->
 
     <!-- フッター -->
     <footer>
@@ -514,6 +605,15 @@
         : 'Write your question here (optional)…';
       document.getElementById('drawBtn').textContent = isJa ? '✦ Draw Cards ✦' : '✦ Draw Cards ✦';
       document.getElementById('synthesisTitle').textContent = isJa ? 'まとめ鑑定' : 'SYNTHESIS';
+
+      document.getElementById('gateText').innerHTML = isJa
+        ? 'このスプレッドのご利用には合言葉が必要です。<br>合言葉はnoteの記事でご案内しています。'
+        : 'A passphrase is needed to use this spread.<br>You can find it in the note article.';
+      document.getElementById('gateLink').textContent = isJa ? '→ 合言葉のご案内はこちら' : '→ Where to find the passphrase';
+      document.getElementById('gateInput').placeholder = isJa ? '合言葉' : 'Passphrase';
+      document.getElementById('gateError').textContent = isJa
+        ? '合言葉が違うようです。もう一度確認してください。'
+        : 'That passphrase doesn\'t seem right. Please check again.';
 
       renderPositions();
     }
@@ -715,8 +815,10 @@
               question,
               lang: currentLang,
               positionLabel: posLabel,
+              pass: getPass(),
             }),
           });
+          if (resp.status === 401) { lockAgain(); throw new Error(isJa ? '合言葉が無効です' : 'Invalid passphrase'); }
           const data = await resp.json();
           const text = data.reading || (isJa ? '（読み取れませんでした）' : '(Could not retrieve reading)');
 
@@ -766,8 +868,10 @@
             })),
             question,
             lang: currentLang,
+            pass: getPass(),
           }),
         });
+        if (resp.status === 401) { lockAgain(); throw new Error(isJa ? '合言葉が無効です' : 'Invalid passphrase'); }
         const data = await resp.json();
         const text = data.reading || (isJa ? '（読み取れませんでした）' : '(Could not retrieve reading)');
 
@@ -847,6 +951,69 @@
       typingTimers.forEach(t => clearInterval(t));
       typingTimers = [];
     }
+
+
+    // ── 合言葉ゲート ──
+    const NOTE_URL = ''; // 合言葉を案内しているnote記事のURL（設定すると案内リンクが表示される）
+    const PASS_KEY = 'itree_spread_pass';
+
+    function getPass() {
+      try { return localStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; }
+    }
+
+    async function verifyPass(pass) {
+      try {
+        const r = await fetch(SPREAD_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ verify: true, pass }),
+        });
+        return r.ok;
+      } catch (e) { return false; }
+    }
+
+    function showApp() {
+      document.getElementById('gatePanel').style.display = 'none';
+      document.getElementById('appMain').style.display = 'block';
+    }
+    function showGate() {
+      document.getElementById('gatePanel').style.display = 'block';
+      document.getElementById('appMain').style.display = 'none';
+    }
+
+    async function tryUnlock() {
+      const input = document.getElementById('gateInput');
+      const err = document.getElementById('gateError');
+      const btn = document.getElementById('gateBtn');
+      const v = input.value.trim();
+      err.style.display = 'none';
+      if (!v) return;
+      btn.disabled = true; btn.textContent = '…';
+      const ok = await verifyPass(v);
+      btn.disabled = false; btn.textContent = '✦ Enter ✦';
+      if (ok) {
+        try { localStorage.setItem(PASS_KEY, v); } catch (e) {}
+        showApp();
+      } else {
+        err.style.display = 'block';
+      }
+    }
+
+    function lockAgain() {
+      try { localStorage.removeItem(PASS_KEY); } catch (e) {}
+      showGate();
+    }
+
+    (async () => {
+      if (NOTE_URL) {
+        const l = document.getElementById('gateLink');
+        l.href = NOTE_URL;
+        l.style.display = 'inline-block';
+      }
+      const saved = getPass();
+      if (saved && await verifyPass(saved)) showApp();
+      else lockAgain();
+    })();
 
     // ── 初期化 ──
     setCount(3);
