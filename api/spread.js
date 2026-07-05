@@ -44,8 +44,10 @@ export default async function handler(req, res) {
     // SPREAD_PASS_3：3枚引き用／SPREAD_PASS_5：5枚引き用（5の合言葉は3も開ける）
     const P3 = process.env.SPREAD_PASS_3 || '';
     const P5 = process.env.SPREAD_PASS_5 || '';
-    const has5 = !!(P5 && pass === P5);
-    const has3 = !!(P3 && pass === P3);
+    const OWNER = process.env.SPREAD_PASS_OWNER || '';
+    const isOwner = !!(OWNER && pass === OWNER);
+    const has5 = !!(P5 && pass === P5) || isOwner;
+    const has3 = !!(P3 && pass === P3) || isOwner;
 
     // 合言葉の確認だけのリクエスト（Anthropic APIは呼ばない）
     if (verify) {
