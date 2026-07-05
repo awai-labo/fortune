@@ -37,7 +37,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { card, orientation, question, lang } = req.body;
+    const { card, orientation, question, lang, positionLabel } = req.body;
     const isJa = lang !== 'en';
     const ori = orientation === 'reversed'
       ? (isJa ? '逆位置' : 'Reversed')
@@ -57,6 +57,7 @@ export default async function handler(req, res) {
 キーワード: ${card.keywords}
 このカードの核心（${ori}）: ${meaning}`;
     if (question) prompt += `\n問い: "${question}"`;
+    if (positionLabel) prompt += `\nスプレッド内の位置: ${positionLabel}\n※この位置が示す視点から鑑定文を書くこと。`;
     prompt += `
 
 【重要な制約】
@@ -80,7 +81,8 @@ export default async function handler(req, res) {
 300〜360字の散文。
 心理学・神話・哲学が自然に溶け込んだ語り口で。
 答えを与えるのではなく、問いを深めるように。
-必ず敬体（です・ます調）で書くこと。鑑定師が目の前の人に静かに語りかけるような口調で。`;
+必ず敬体（です・ます調）で書くこと。鑑定師が目の前の人に静かに語りかけるような口調で。
+Markdown記法（#、**、-、見出し、太字など）は一切使わず、プレーンテキストの散文のみで書くこと。タイトルや見出しをつけず、本文からすっと書き始めること。`;
 
     const systemEn = `You are a reader of "The Integration Tree" — a unique 68-card oracle deck that integrates the Kabbalistic Tree of Life with the Norse World Tree Yggdrasil. This is not a tarot deck.
 The four card types are: Sephirot (11 cards), Hebrew Letters (22 cards), Runes (24 cards), and Norse Worlds (11 cards).
@@ -93,7 +95,8 @@ Write the reading in English prose using this 3-layer framework:
 No bullet points. 180–220 words of prose.
 Let psychology, mythology and philosophy dissolve naturally into the language.
 Open questions rather than fixed answers.
-Write as if the energy of the card itself is speaking — not as a tarot explanation.`;
+Write as if the energy of the card itself is speaking — not as a tarot explanation.
+Never use Markdown syntax (#, **, -, headings, bold). Plain prose only — no title, no heading; begin directly with the body text.`;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
