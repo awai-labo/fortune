@@ -923,7 +923,7 @@
 
     // ── 合言葉ゲート ──
     const NOTE_URL = ''; // 合言葉を案内しているnote記事のURL（設定すると案内リンクが表示される）
-    const PASS_KEY = 'itree_spread_pass';
+    const PASS_KEY = 'itree_pass5';
 
     function getPass() {
       try { return localStorage.getItem(PASS_KEY) || ''; } catch (e) { return ''; }
@@ -934,7 +934,7 @@
         const r = await fetch(SPREAD_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ verify: true, pass }),
+          body: JSON.stringify({ verify: true, pass, tier: 5 }),
         });
         return r.ok;
       } catch (e) { return false; }
