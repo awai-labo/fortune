@@ -978,6 +978,14 @@
         l.href = NOTE_URL;
         l.style.display = 'inline-block';
       }
+      // URLの ?key=合言葉 で自動アンロック（私用ブックマーク用）
+      const urlKey = new URLSearchParams(location.search).get('key');
+      if (urlKey && await verifyPass(urlKey)) {
+        try { localStorage.setItem(PASS_KEY, urlKey); } catch (e) {}
+        history.replaceState(null, '', location.pathname);
+        showApp();
+        return;
+      }
       const saved = getPass();
       if (saved && await verifyPass(saved)) showApp();
       else lockAgain();
