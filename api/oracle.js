@@ -42,8 +42,10 @@ export default async function handler(req, res) {
 
     // ── 複数枚引き（positionLabel付き）は合言葉必須。1枚引きは無料のまま ──
     if (positionLabel) {
-      const PASS = process.env.SPREAD_PASS || '';
-      if (!PASS || pass !== PASS) {
+      const P3 = process.env.SPREAD_PASS_3 || '';
+      const P5 = process.env.SPREAD_PASS_5 || '';
+      const ok = (P3 && pass === P3) || (P5 && pass === P5);
+      if (!ok) {
         return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
       }
     }
