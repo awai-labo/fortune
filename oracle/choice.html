@@ -360,6 +360,12 @@
       <input type="text" id="themeInput" placeholder="例：今日のあなたへ　／　今週のメッセージ　…" />
     </div>
 
+    <!-- 合言葉 -->
+    <div class="section-label">合言葉</div>
+    <div class="theme-area">
+      <input type="password" id="passInput" placeholder="合言葉を入力…" autocomplete="off" />
+    </div>
+
     <!-- 選択肢ラベル -->
     <div class="section-label">選択肢のラベル（省略可）</div>
     <div class="choices-area" id="choicesArea"></div>
@@ -392,6 +398,19 @@
   <script>
     const SINGLE_API = 'https://fortune-five-psi.vercel.app/api/oracle';
     const ALPHA = ['A','B','C','D','E'];
+    const PASS_KEY = 'itree_pass_choice';
+
+    function getPass() {
+      return document.getElementById('passInput').value.trim();
+    }
+
+    function initPass() {
+      const input = document.getElementById('passInput');
+      try { input.value = localStorage.getItem(PASS_KEY) || ''; } catch (e) {}
+      input.addEventListener('input', () => {
+        try { localStorage.setItem(PASS_KEY, input.value.trim()); } catch (e) {}
+      });
+    }
 
     let currentCount = 3;
     let typingTimers = [];
@@ -535,8 +554,10 @@
               lang: 'ja',
               positionLabel: label,
               mode: 'choice', // APIに選択肢モードであることを伝える
+              pass: getPass(),
             }),
           });
+          if (resp.status === 401) throw new Error('合言葉が違うようです');
           const data = await resp.json();
           const text = data.reading || '（読み取れませんでした）';
 
@@ -615,6 +636,7 @@
     // ── 初期化 ──
     setCount(3);
     renderChoiceInputs();
+    initPass();
   </script>
 </body>
 </html>
