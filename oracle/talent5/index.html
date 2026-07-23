@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたという木 ｜ 才能の五枚引き | The Integration Tree</title>
+<meta name="description" content="根・幹・枝・葉・花。五枚のカードで、あなたの「ふつう」を一本の木として読む。The Integration Tree の資質リーディング。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#171c24;
+    --night-deep:#10141b;
+    --moon:#e9e5da;
+    --moon-dim:#a8a496;
+    --gold:#c9a86a;
+    --gold-dim:rgba(201,168,106,.45);
+    --rain:rgba(190,200,215,.07);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:var(--night-deep);}
+  body{
+    font-family:'Shippori Mincho',serif;
+    color:var(--moon);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── 雨 ── */
+  .rain{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+  .rain span{
+    position:absolute;top:-12vh;width:1px;height:9vh;
+    background:linear-gradient(180deg,transparent,var(--rain));
+    animation:fall linear infinite;
+  }
+  @keyframes fall{to{transform:translateY(120vh);}}
+  @media (prefers-reduced-motion: reduce){
+    .rain{display:none;}
+    *{animation:none!important;transition:none!important;}
+  }
+
+  main{
+    position:relative;z-index:1;
+    width:100%;max-width:430px;
+    padding:56px 24px 40px;
+    display:flex;flex-direction:column;align-items:center;
+    flex:1;
+  }
+
+  /* ── 導入 ── */
+  .intro{text-align:center;}
+  .eyebrow{font-size:11px;letter-spacing:.35em;color:var(--gold);margin-bottom:26px;}
+  h1{font-size:21px;font-weight:500;letter-spacing:.12em;line-height:2;margin-bottom:26px;}
+  h1 .accent{color:var(--gold);border-bottom:1px solid var(--gold-dim);padding-bottom:2px;}
+  .lead{font-size:13.5px;color:var(--moon-dim);line-height:2.4;letter-spacing:.08em;margin-bottom:34px;}
+
+  /* ── 合言葉 ── */
+  .gate{margin-bottom:38px;}
+  .gate label{
+    display:block;font-size:11px;letter-spacing:.3em;
+    color:var(--moon-dim);margin-bottom:12px;
+  }
+  .gate input{
+    font-family:inherit;
+    width:100%;max-width:260px;
+    background:rgba(233,229,218,.04);
+    border:1px solid rgba(233,229,218,.2);
+    border-radius:6px;
+    color:var(--moon);
+    font-size:15px;letter-spacing:.18em;text-align:center;
+    padding:13px 14px 12px;
+    outline:none;
+    transition:border-color .3s;
+  }
+  .gate input:focus{border-color:var(--gold-dim);}
+  .gate input::placeholder{color:rgba(168,164,150,.4);letter-spacing:.1em;}
+
+  /* ── カード裏 ── */
+  .card-back{
+    width:170px;height:268px;
+    border:1px solid var(--gold-dim);border-radius:10px;
+    position:relative;cursor:pointer;
+    background:
+      radial-gradient(ellipse at 50% 42%,rgba(201,168,106,.09),transparent 65%),
+      var(--night-deep);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .5s ease, box-shadow .5s ease;
+    margin:0 auto;
+  }
+  .card-back::before{
+    content:"";position:absolute;inset:7px;
+    border:1px solid rgba(201,168,106,.22);border-radius:6px;
+  }
+  .card-back .mark{
+    color:var(--gold);font-size:26px;letter-spacing:.2em;
+    animation:breathe 4.5s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{opacity:.55;}50%{opacity:1;}}
+  .card-back:hover,.card-back:focus-visible{
+    transform:translateY(-6px);
+    box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 24px rgba(201,168,106,.12);
+    outline:none;
+  }
+  .card-back:focus-visible{border-color:var(--gold);}
+  .card-back.disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;}
+  .tap-hint{margin-top:20px;font-size:11.5px;letter-spacing:.3em;color:var(--moon-dim);}
+  .err{
+    margin-top:18px;font-size:12px;letter-spacing:.1em;
+    color:#d98d8d;line-height:2;min-height:1em;
+  }
+
+  /* ── 読み込み中 ── */
+  .loading{display:none;text-align:center;padding:60px 0;}
+  .loading.show{display:block;}
+  .sprout{
+    width:1px;height:0;background:var(--gold-dim);
+    margin:0 auto 26px;animation:grow 3.4s ease-in-out infinite;
+  }
+  @keyframes grow{0%{height:0;opacity:0;}45%{height:70px;opacity:1;}100%{height:70px;opacity:0;}}
+  .loading p{font-size:12.5px;letter-spacing:.24em;color:var(--moon-dim);line-height:2.4;}
+
+  /* ── 結果 ── */
+  .result{display:none;width:100%;}
+  .result.show{display:block;animation:rise .9s ease both;}
+  @keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  .result-head{text-align:center;margin-bottom:40px;}
+  .result-head .eyebrow{margin-bottom:18px;}
+  .result-head h2{
+    font-size:17px;font-weight:500;letter-spacing:.16em;
+    line-height:2;color:var(--moon);
+  }
+
+  /* ── 木の索引 ── */
+  .tree-index{
+    border:1px solid rgba(201,168,106,.18);
+    border-radius:10px;
+    padding:22px 20px 18px;
+    margin-bottom:46px;
+    background:rgba(233,229,218,.02);
+  }
+  .tree-row{
+    display:flex;align-items:baseline;gap:12px;
+    padding:9px 0;
+    border-bottom:1px solid rgba(201,168,106,.09);
+  }
+  .tree-row:last-child{border-bottom:none;}
+  .tree-row .pos{
+    flex:0 0 34px;
+    font-size:13px;letter-spacing:.1em;color:var(--gold);
+  }
+  .tree-row .nm{
+    flex:0 0 auto;
+    font-size:11.5px;letter-spacing:.08em;color:var(--moon-dim);
+  }
+  .tree-row .tl{
+    flex:1;text-align:right;
+    font-size:12.5px;letter-spacing:.04em;color:var(--moon);
+    line-height:1.7;
+  }
+
+  /* ── 各ポジション ── */
+  .pos-block{margin-bottom:52px;text-align:center;}
+  .pos-mark{
+    display:inline-block;
+    font-size:10.5px;letter-spacing:.3em;color:var(--gold);
+    border:1px solid var(--gold-dim);border-radius:999px;
+    padding:5px 18px 4px;margin-bottom:8px;
+  }
+  .pos-desc{
+    font-size:11.5px;letter-spacing:.12em;color:var(--moon-dim);
+    line-height:2.1;margin-bottom:22px;
+  }
+  .card-img-wrap{
+    width:158px;margin:0 auto 22px;
+    border-radius:9px;overflow:hidden;
+    border:1px solid var(--gold-dim);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);
+    background:var(--night-deep);
+  }
+  .card-img-wrap img{width:100%;display:block;}
+  .card-name{font-size:16px;letter-spacing:.18em;font-weight:500;margin-bottom:3px;}
+  .card-name-en{
+    font-size:9.5px;letter-spacing:.35em;color:var(--moon-dim);
+    text-transform:uppercase;margin-bottom:20px;
+  }
+  .talent{
+    font-size:18.5px;font-weight:600;letter-spacing:.09em;
+    line-height:1.9;color:var(--gold);margin-bottom:12px;
+  }
+  .hitokoto{
+    font-size:13px;line-height:2.2;letter-spacing:.05em;color:var(--moon-dim);
+  }
+
+  /* ── 特別カード ── */
+  .pos-block.special .pos-mark{
+    color:var(--moon);border-color:rgba(233,229,218,.4);
+  }
+  .pos-block.special .card-img-wrap{
+    border:1px solid rgba(233,229,218,.5);
+    box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 26px rgba(233,229,218,.13);
+  }
+  .pos-block.special .talent{color:var(--moon);}
+  .special-note{
+    margin:20px auto 0;max-width:310px;
+    font-size:11.5px;letter-spacing:.1em;line-height:2.1;
+    color:var(--moon-dim);
+    border-top:1px solid rgba(233,229,218,.18);
+    border-bottom:1px solid rgba(233,229,218,.18);
+    padding:13px 4px;
+  }
+  .tree-row .pos.sp{color:var(--moon);}
+
+  /* ── AI本文 ── */
+  .reading-wrap{
+    border-top:1px solid rgba(201,168,106,.2);
+    padding-top:44px;margin-top:12px;
+  }
+  .reading-title{
+    text-align:center;
+    font-size:12px;letter-spacing:.32em;color:var(--gold);
+    margin-bottom:34px;
+  }
+  .reading p{
+    text-align:left;
+    font-size:14px;line-height:2.4;letter-spacing:.05em;
+    color:var(--moon);margin-bottom:26px;
+  }
+  .reading p:last-child{margin-bottom:0;}
+
+  .closing{
+    font-size:12.5px;letter-spacing:.14em;color:var(--moon-dim);
+    line-height:2.3;text-align:center;
+    padding-top:34px;
+    border-top:1px solid rgba(201,168,106,.18);
+    margin-top:44px;margin-bottom:40px;
+  }
+
+  .again{
+    display:block;margin:0 auto;
+    font-family:inherit;background:none;color:var(--moon-dim);
+    border:1px solid rgba(233,229,218,.25);border-radius:999px;
+    font-size:12.5px;letter-spacing:.25em;
+    padding:12px 34px 11px;cursor:pointer;
+    transition:color .3s,border-color .3s;
+  }
+  .again:hover,.again:focus-visible{color:var(--gold);border-color:var(--gold-dim);outline:none;}
+
+  footer{position:relative;z-index:1;padding:26px 20px 34px;text-align:center;}
+  footer .deck{font-size:10px;letter-spacing:.35em;color:var(--moon-dim);margin-bottom:8px;}
+  footer a{
+    color:var(--gold);text-decoration:none;
+    font-size:11px;letter-spacing:.2em;border-bottom:1px solid transparent;
+  }
+  footer a:hover{border-bottom-color:var(--gold-dim);}
+</style>
+</head>
+<body>
+
+<div class="rain" id="rain" aria-hidden="true"></div>
+
+<main>
+  <!-- 導入 -->
+  <section class="intro" id="intro">
+    <p class="eyebrow">THE INTEGRATION TREE</p>
+    <h1>あなたという<span class="accent">木</span><br>才能の五枚引き</h1>
+    <p class="lead">
+      根、幹、枝、葉、花。<br>
+      あなたが「ふつう」だと思っている力を、<br>
+      一本の木として読みます。<br>
+      <br>
+      単体なら、たしかに、ふつう。<br>
+      でも、この五つが揃っているのは、<br>
+      ふつうじゃない。
+    </p>
+
+    <div class="gate">
+      <label for="passInput">合言葉</label>
+      <input id="passInput" type="password" autocomplete="off" placeholder="あいことば">
+    </div>
+
+    <div class="card-back" id="drawCard" role="button" tabindex="0" aria-label="カードを五枚引く">
+      <span class="mark">✦</span>
+    </div>
+    <p class="tap-hint">カードにふれて、五枚引く</p>
+    <p class="err" id="errText"></p>
+  </section>
+
+  <!-- 読み込み中 -->
+  <section class="loading" id="loading" aria-live="polite">
+    <div class="sprout"></div>
+    <p>木が、育っています<br>すこしだけ、お待ちください</p>
+  </section>
+
+  <!-- 結果 -->
+  <section class="result" id="result" aria-live="polite">
+    <div class="result-head">
+      <p class="eyebrow">YOUR TREE</p>
+      <h2>あなたが「ふつう」だと<br>思ってきた、五つの力</h2>
+    </div>
+
+    <div class="tree-index" id="treeIndex"></div>
+
+    <div id="posBlocks"></div>
+
+    <div class="reading-wrap">
+      <p class="reading-title">この 木 の こ と</p>
+      <div class="reading" id="readingText"></div>
+    </div>
+
+    <p class="closing">
+      この五つは、ずっとあなたの中にあったもの。<br>
+      新しく手に入れるものは、ひとつもない。<br>
+      <br>
+      見え方が変わるだけで、<br>
+      木は、同じ場所に立っている。
+    </p>
+    <button class="again" id="againBtn">もういちど 引く</button>
+  </section>
+</main>
+
+<footer>
+  <p class="deck">THE INTEGRATION TREE — AWAI KEIKO</p>
+  <a href="../">← オラクルのトップへ</a>
+</footer>
+
+<script>
+// ============================================================
+// 資質データ（68枚）— talent/index.html と同一
+// ============================================================
+const CARDS = [
+  // ── 在る／存在 ──
+  {id:"kether", name:"ケテル", en:"Kether", pillar:"在る", sub:"存在",
+   talent:"存在そのものを肯定する力",
+   h:"条件なしに「私は在っていい」と感じられる感度。",
+   b1:"たぶんあなたは、何も成し遂げていない日でも、どこかで「まあ、私は私だし」と思える瞬間を持っている。証明のために生きなくても、自分がここにいることを、根っこのところで疑っていない。",
+   b2:"でも、存在するだけでいいと感じられる人は、実はそんなに多くない。多くの人が、価値を証明し続けないと消えてしまう気がして、走り続けている。あなたのその静かな肯定は、そばにいる人の呼吸まで深くする。"},
+  {id:"midgard", name:"ミドガルズ", en:"Midgard", pillar:"在る", sub:"存在",
+   talent:"不完全さと共に生きる力",
+   h:"有限で脆い「今ここ」を味わえる。",
+   b1:"完璧じゃない今日を、それなりに味わえる。うまくいかない日も「まあ、こういう日もある」と抱えて、それでもちゃんと今日を生きている。",
+   b2:"脆さに圧倒されずに、脆いまま生きるのは、実は高度な技術。完璧を目指して息が詰まっている人にとって、あなたのその等身大は、避難所みたいな存在になっている。"},
+  {id:"malkuth", name:"マルクト", en:"Malkuth", pillar:"在る", sub:"存在",
+   talent:"居場所を築く力",
+   h:"自分の特性を現実に着地させ、活かせる場所をつくれる。",
+   b1:"自分に合う場所・合わない場所が、肌感覚でわかる。そして合う場所では、ちゃんと根を張れる。足元を固める作業を、地道に続けられる。",
+   b2:"居場所は与えられるものじゃなく、築くもの——それを体でわかっている人は少ない。あなたの根の張り方は、周りの人の「ここにいていい」という感覚まで作っている。"},
+  {id:"othala", name:"オシラ", en:"Othala", pillar:"在る", sub:"存在",
+   talent:"内なる故郷を持つ力",
+   h:"どこにいても自分の根っこに帰れる。",
+   b1:"環境が変わっても、時間が経てばちゃんと「自分」に戻ってこられる。外の世界がどれだけ揺れても、内側に帰る場所がある。",
+   b2:"根っこを外にばかり求めて彷徨う人が多い中で、自分の中に故郷を持てているのは、深い安定。あなたのその佇まいは、それだけで誰かの安心になっている。"},
+  {id:"yesod", name:"イエソド", en:"Yesod", pillar:"在る", sub:"存在",
+   talent:"根源の欲求を感じ取る力",
+   h:"無意識に根ざした本当の欲求に気づける内観力。",
+   b1:"ふとした瞬間に「私、本当はこれが欲しかったんだな」と気づける。表面の望みの、もうひとつ奥の声を聞き取れる耳がある。",
+   b2:"根っこの欲求から目をそらして生きる方が、ずっと簡単なのに、あなたはちゃんと見にいける。その内観力は、自分だけじゃなく、人の深い場所にも届く。"},
+
+  // ── 在る／内なる指針 ──
+  {id:"gimel", name:"ギメル", en:"Gimel", pillar:"在る", sub:"内なる指針",
+   talent:"内なる羅針盤",
+   h:"承認や正解に頼らず、自分の感覚で砂漠を渡れる。",
+   b1:"誰も答えをくれない場面で、「なんとなく、こっち」と進める。その感覚が、あとから振り返ると不思議と当たっている。",
+   b2:"正解も承認もない砂漠を、自分の羅針盤だけで渡れる人は少ない。あなたのその静かな確信は、同じ砂漠で迷っている誰かの、道しるべにもなっていく。"},
+  {id:"tiphareth", name:"ティファレト", en:"Tiphareth", pillar:"在る", sub:"内なる指針",
+   talent:"選択の軸",
+   h:"迷っても「自分で選んだ」と信じられる自己軸。",
+   b1:"人の意見を聞いても、最後は「で、私はどうしたい？」に戻ってこられる。選んだあとで、他人のせいにしない。",
+   b2:"正解探しに疲れている人だらけの世界で、「自分で選んだ」を軸にできるのは、静かな強さ。あなたのその軸は、迷っている人にとっての灯台になる。"},
+  {id:"zayin", name:"ザイン", en:"Zayin", pillar:"在る", sub:"内なる指針",
+   talent:"心が動く方を選ぶ決断力",
+   h:"何かを失っても、本当に大切なものを切り出せる。",
+   b1:"迷ったとき、最後は「心が動く方」を選んできた。失うものがあるとわかっていても、選べた。",
+   b2:"どちらも正しく見える場面で剣を振るえるのは、覚悟のいること。あなたの選択の跡をたどると、そのまま「本当に大切なもの」の地図になっている。"},
+  {id:"yod", name:"ヨッド", en:"Yod", pillar:"在る", sub:"内なる指針",
+   talent:"深く潜る内観力",
+   h:"孤独の中で自分の内なる光と対話できる。",
+   b1:"一人の時間が、ちゃんと充電になる。静けさの中で、自分と深く話せる。むしろその時間がないと、調子が狂う。",
+   b2:"一人でいられない人、静けさが怖い人は、実はたくさんいる。深く潜れるあなたが持ち帰ってくるものは、浅瀬では絶対に見つからないもの。"},
+  {id:"mannaz", name:"マンナズ", en:"Mannaz", pillar:"在る", sub:"内なる指針",
+   talent:"自己を知る知性",
+   h:"自分を見つめ続けることを恐れない。",
+   b1:"「私って、どういう人間なんだろう」を、考え続けてきた。都合の悪い自分が見えても、見つめることをやめなかった。",
+   b2:"自分と向き合うのは、実は一番怖い作業。それを続けてこられた人の言葉には、深さが宿る。あなたの自己理解は、そのまま他者理解の土台にもなっている。"},
+  {id:"lamed", name:"ラメッド", en:"Lamed", pillar:"在る", sub:"内なる指針",
+   talent:"公正な目",
+   h:"感情に流されず、物事をフラットに見られる均衡感覚。",
+   b1:"感情的な場面でも、どこか一歩引いて全体を見ている自分がいる。どっちの言い分も、わかってしまう。",
+   b2:"白黒の渦の中でフラットでいられるのは、冷たさじゃなくて、均衡の才能。あなたのその目は、裁き合いになりかけた場に、安心を持ち込む。"},
+
+  // ── 在る／感性 ──
+  {id:"netzach", name:"ネツァク", en:"Netzach", pillar:"在る", sub:"感性",
+   talent:"「好き」の輪郭を持つ力",
+   h:"心が動くものをはっきり感じられる感受性。",
+   b1:"「これ好き」「これは違う」が、はっきりある。理由を聞かれても「好きだから」で完結できる。",
+   b2:"好みを持つことすら許されなかった人にとって、それがどれだけ豊かなことか。あなたの「好き」の輪郭は、世界の解像度を上げている。"},
+  {id:"alfheim", name:"アルフヘイム", en:"Alfheim", pillar:"在る", sub:"感性",
+   talent:"感性の純度",
+   h:"繊細な美意識とインスピレーションの鋭さ。",
+   b1:"美しいものに、人より深く反応する。空の色、言葉の選び方、音の重なり——細部が、勝手に飛び込んでくる。",
+   b2:"その繊細さは「生きづらさ」と呼ばれがちだけど、本当は解像度の高さ。あなたが感じ取っている美しさは、鈍らされた世界への贈り物になる。"},
+  {id:"tzadi", name:"ツァディ", en:"Tzadi", pillar:"在る", sub:"感性",
+   talent:"「好き」を甦らせる力",
+   h:"眠っていた憧れや理想にもう一度火を灯せる。",
+   b1:"昔好きだったものの話になると、目に火が灯る。「好き」は消えたんじゃなくて、眠っているだけだと、どこかで知っている。",
+   b2:"諦めの上手な大人が多い中で、憧れを再点灯できるのは、若さじゃなくて才能。あなたのその火は、人の眠った「好き」まで起こしていく。"},
+  {id:"ayin", name:"アイン", en:"Ayin", pillar:"在る", sub:"感性",
+   talent:"本音を直視する眼",
+   h:"まやかしを見抜き、泥臭い欲望も認められる。",
+   b1:"綺麗事の奥にある本音が、見えてしまう。そして自分の欲望からも、目をそらさない。",
+   b2:"泥臭い本音を直視するのは、勇気がいる。でも、そこからしか本物は始まらない。あなたのその眼は、まやかしの多い世界で、ものすごく貴重。"},
+  {id:"qof", name:"コフ", en:"Qof", pillar:"在る", sub:"感性",
+   talent:"無意識の声を聴く力",
+   h:"モヤモヤや違和感をメッセージとして受け取れる。",
+   b1:"「なんか変だな」という違和感を、なかったことにしない。モヤモヤを、ちゃんとメッセージとして扱える。",
+   b2:"不安や違和感は無視するもの、と教えられてきた人がほとんど。あなたの聞き取る耳は、言葉になる前の大事な声を、確かに拾っている。"},
+
+  // ── 在る／可能性と力 ──
+  {id:"aleph", name:"アレフ", en:"Aleph", pillar:"在る", sub:"可能性と力",
+   talent:"可能性への無垢な信頼",
+   h:"計算抜きで最初の一歩を踏み出せる。",
+   b1:"「とりあえず、やってみよ」が言える。損得や計算が始まる前に、足が出ている。",
+   b2:"最初の一歩は、いつだって一番重い。それを軽く踏み出せるのは、無謀じゃなくて無垢の才能。あなたの一歩は、固まっていた場の空気を動かす。"},
+  {id:"beth", name:"ベート", en:"Beth", pillar:"在る", sub:"可能性と力",
+   talent:"内なる資質への信頼",
+   h:"必要な道具はすでに揃っていると知っている。",
+   b1:"「なんとかなる。道具は揃ってる」という感覚が、どこかにある。足りないものより、手元にあるものが見える。",
+   b2:"自分の中の資質を信頼できる人は、実は少ない。みんな「足りない」から始めてしまうから。あなたの棚卸しの目は、人の隠れた才能も見つけ出す。"},
+  {id:"heh", name:"ヘー", en:"Heh", pillar:"在る", sub:"可能性と力",
+   talent:"積み上げた力の主権",
+   h:"経験と実績を、自分の意思で使える。",
+   b1:"積み上げてきた経験を、自分の判断で使える。誰かの許可を待たずに、自分の王国を治められる。",
+   b2:"力を持っていても、それを使う許可を自分に出せない人は多い。あなたの主権は、周りの人にも「自分の力を使っていいんだ」と思わせていく。"},
+  {id:"sowilo", name:"ソウィロ", en:"Sowilo", pillar:"在る", sub:"可能性と力",
+   talent:"光と影を統合する力",
+   h:"自分の全体を受け入れて輝ける。",
+   b1:"自分のいいところも、ダメなところも、わりと両方知っている。光だけを見せようと、しなくなった。",
+   b2:"影を切り捨てずに輝ける人は、まぶしいだけの人より、ずっと信頼される。あなたの統合された輝きは、誰にも消せない種類の光。"},
+
+  // ── 燃える／衝動 ──
+  {id:"chokmah", name:"コクマー", en:"Chokmah", pillar:"燃える", sub:"衝動",
+   talent:"生命の衝動",
+   h:"理由抜きの「やりたい！」が湧き続ける。",
+   b1:"理由を聞かれる前に、もう動いている。「なんでそれやるの？」に答えられなくても、やりたいものはやりたい。",
+   b2:"その「理由のない衝動」を保ったまま大人になれた人は、貴重。ほとんどの人は、説明できないものを途中で手放してきたから。あなたの思いつきは、周りの空気に火を入れる。"},
+  {id:"vanaheim", name:"ヴァナヘイム", en:"Vanaheim", pillar:"燃える", sub:"衝動",
+   talent:"野生の生命力",
+   h:"本能と直感のままに動ける。",
+   b1:"体の声、直感の声に従って動ける。「なんとなく嫌」「なんとなく行きたい」を、ちゃんと大事にできる。",
+   b2:"本能は危険なもの、と抑え込まれてきた人が多いから、野生と仲良くできるのは希少なこと。あなたの生命力は、理屈で固まった場面を動かす。"},
+  {id:"uruz", name:"ウルズ", en:"Uruz", pillar:"燃える", sub:"衝動",
+   talent:"原初の力",
+   h:"古いものを壊して新しくする、身体ごとのエネルギー。",
+   b1:"いざというとき、底力が出る。古いものを壊して新しくしていく体力が、根っこのところにある。",
+   b2:"変化には、頭じゃなくて体のエネルギーがいる。あなたのその原初の力は、停滞した状況を根こそぎ変えてしまう。"},
+
+  // ── 燃える／熱の変換 ──
+  {id:"tet", name:"テット", en:"Tet", pillar:"燃える", sub:"熱の変換",
+   talent:"熱を知恵に変える力",
+   h:"強い衝動をねじ伏せず、手懐けられる。",
+   b1:"カッとなっても、その熱をそのままぶつけずに、どこかで手綱を握れる。強い感情との付き合い方を、知っている。",
+   b2:"衝動をねじ伏せるのでも垂れ流すのでもなく、手懐ける——それは大人の強さ。あなたの熱の扱い方は、周りに安心と迫力を同時に与えている。"},
+  {id:"muspelheim", name:"ムスペルスヘイム", en:"Muspelheim", pillar:"燃える", sub:"熱の変換",
+   talent:"激しさを創造に使う力",
+   h:"怒りや情熱を原料にできる。",
+   b1:"怒りや悔しさが、次の創作や行動の燃料になってきた。激しさを、産む力に変えられる。",
+   b2:"激情は危険物扱いされがちだけど、あなたはそれが原料だと知っている。あなたの炎は、壊すためじゃなく、創るためにある。"},
+  {id:"nauthiz", name:"ナウティズ", en:"Nauthiz", pillar:"燃える", sub:"熱の変換",
+   talent:"制約から火を起こす力",
+   h:"限られた条件の中でこそ生み出せる。",
+   b1:"制限があるほど、工夫が湧く。「ないなら、こうすればいい」が、わりと自然に出てくる。",
+   b2:"制約の中で火を起こせる人は、自由の中でしか動けない人より、実は強い。あなたの摩擦の火は、厳しい場面でこそ光る。"},
+
+  // ── 燃える／形にする ──
+  {id:"binah", name:"ビナー", en:"Binah", pillar:"燃える", sub:"形にする",
+   talent:"構造化の知性",
+   h:"混沌に形を与え、実現へ落とし込める。",
+   b1:"散らかったアイデアや話を聞いていると、自然に「つまり、こういうこと？」と形が見えてくる。段取りや器を用意するのが、呼吸みたいにできる。",
+   b2:"混沌を混沌のまま抱えて苦しむ人は多いけど、混沌に形を与えられる人はもっと少ない。あなたの整える力は、誰かの夢を現実に降ろす受け皿になっている。"},
+  {id:"asgard", name:"アースガルズ", en:"Asgard", pillar:"燃える", sub:"形にする",
+   talent:"築く意志",
+   h:"自分の価値観を礎に、堅固なものを建てられる。",
+   b1:"自分の価値観で、コツコツ積み上げてきたものがある。外の世界が荒れても、内側の城は簡単には揺れない。",
+   b2:"築く意志は、一朝一夕には持てないもの。しかもあなたの積み上げは、たとえ崩れても再建できる設計図ごと、あなたの中にある。"},
+  {id:"tiwaz", name:"ティワズ", en:"Tiwaz", pillar:"燃える", sub:"形にする",
+   talent:"信念を貫く力",
+   h:"大義のために選択できる誇り。",
+   b1:"「これは譲れない」というものがあって、そのためなら何かを差し出せる。損得じゃなく、信念で選べる。",
+   b2:"損得を超えて選択できる人の背中は、それだけで人を動かす。あなたの誇りある選択は、周りの基準まで静かに上げていく。"},
+
+  // ── 守る／境界線 ──
+  {id:"geburah", name:"ゲブラー", en:"Geburah", pillar:"守る", sub:"境界線",
+   talent:"尊厳を守るNOの力",
+   h:"本質でないものを断ち切れる。",
+   b1:"「それは違う」と思ったとき、ちゃんとNOが言える。言えないときでも、内側では境界線がはっきり見えている。",
+   b2:"断る力は、嫌われる勇気とセットだから、多くの人が持てないまま消耗していく。あなたの一線は、あなただけじゃなく、周りの人の尊厳も守っている。"},
+  {id:"thurisaz", name:"スリサズ", en:"Thurisaz", pillar:"守る", sub:"境界線",
+   talent:"意識的な防衛力",
+   h:"必要なときに、選んで棘を立てられる。",
+   b1:"危ないもの、合わないものへの察知が早い。そして必要なときは、ちゃんと棘を立てられる。",
+   b2:"守る力は攻撃性と混同されがちだけど、意識的に選んで使える棘は、知性そのもの。あなたの防衛線は、大切なものを守るための設計になっている。"},
+  {id:"cheth", name:"ヘット", en:"Cheth", pillar:"守る", sub:"境界線",
+   talent:"情熱の囲い",
+   h:"大切な熱を、自分で決めた聖域の中で守れる。",
+   b1:"自分の情熱や大事なものを、むやみに晒さない。柵の内側で、ちゃんと育てられる。",
+   b2:"何でもオープンが良しとされる時代に、聖域を持てるのは強さ。あなたの囲いの中で育ったものは、外に出たとき、本物の熱を放つ。"},
+
+  // ── 守る／聖域 ──
+  {id:"algiz", name:"アルギズ", en:"Algiz", pillar:"守る", sub:"聖域",
+   talent:"聖域の感覚",
+   h:"自分の内なる神聖な領域を保てる。",
+   b1:"自分の中に「ここだけは」という領域がある。それが侵されそうなとき、ちゃんと気づける。",
+   b2:"聖域の感覚は、自己肯定の土台になるもの。あなたが自分の聖域を保っている姿は、人にも「守っていいんだ」と教えている。"},
+  {id:"samekh", name:"サメフ", en:"Samekh", pillar:"守る", sub:"聖域",
+   talent:"内と外の一致",
+   h:"見せる自分と本当の自分を、ズレなく保てる誠実さ。",
+   b1:"見せている自分と、中身の自分が、だいたい一致している。裏表を作るのが、そもそも苦手。",
+   b2:"本音を隠して生きる方が楽な場面は多いのに、一致を保っていられるのは誠実さの才能。あなたの「ズレのなさ」は、周りの人の建前までほどいていく。"},
+
+  // ── 繋がる／開く・受け取る ──
+  {id:"chesed", name:"ケセド", en:"Chesed", pillar:"繋がる", sub:"開く・受け取る",
+   talent:"世界を信じる力",
+   h:"基本姿勢がALL YESの受容力。",
+   b1:"初対面でも、基本「この人は大丈夫」から入れる。疑うより先に、受け入れている。",
+   b2:"世界を信じる姿勢は、生きているうちに失われやすいもの。それを保っていること自体が、すごいこと。あなたのALL YESは、警戒で固まった心をほどく。"},
+  {id:"daleth", name:"ダレット", en:"Daleth", pillar:"繋がる", sub:"開く・受け取る",
+   talent:"心を開く力",
+   h:"開いた分だけ、豊かさを迎え入れられる。",
+   b1:"心を開くのが、実はそんなに怖くない。開いた分だけ、いいものが入ってくることを、体験として知っている。",
+   b2:"一度傷つくと、扉は重くなるもの。それでも開けてこられたあなたの元には、豊かさが流れ込む道が、もうできている。"},
+  {id:"kaf", name:"カフ", en:"Kaf", pillar:"繋がる", sub:"開く・受け取る",
+   talent:"受け取る手",
+   h:"流れを拳で掴まず、開いた手で受け取れる。",
+   b1:"手放すことが、自分で思っているより上手。握りしめずに、流れに手を開ける。",
+   b2:"掴んだものを離せない人がほとんどの中で、開いた手でいられるのは受容の才能。あなたの手のひらには、次のものが入る余白がいつもある。"},
+  {id:"gebo", name:"ゲボ", en:"Gebo", pillar:"繋がる", sub:"開く・受け取る",
+   talent:"対等に与え合う力",
+   h:"与えることと受け取ることの均衡感覚。",
+   b1:"与えることと受け取ることの、バランス感覚がある。もらったら返したいし、あげたら受け取ってほしい——それが自然にできる。",
+   b2:"交換が一方通行になって消耗していく関係は、世の中に多い。あなたの対等な感覚は、関係を長持ちさせる均衡そのもの。"},
+  {id:"fehu", name:"フェフ", en:"Fehu", pillar:"繋がる", sub:"開く・受け取る",
+   talent:"豊かさを循環させる力",
+   h:"貯め込まず、流すことで増やせる。",
+   b1:"お金でも知識でも、貯め込むより流す方が性に合う。回せば増えることを、感覚で知っている。",
+   b2:"枯渇の恐怖で固まってしまう人が多い中、循環を信じられるのは豊かさの才能。あなたの流れは、周りの経済も感情も動かしていく。"},
+
+  // ── 繋がる／伝える ──
+  {id:"hod", name:"ホド", en:"Hod", pillar:"繋がる", sub:"伝える",
+   talent:"翻訳する知性",
+   h:"感覚に名前を与え、伝わる形にできる言語化能力。",
+   b1:"モヤモヤした感覚に、ぴったりの言葉を見つけるのが得意。「それ、こういうことだよね」で人をハッとさせたことが、たぶん何度もある。",
+   b2:"感じることと伝えることは、別の才能。その両方に橋を架けられる人は少ない。あなたの言葉は、誰かの閉じた心の鍵になる。"},
+  {id:"vav", name:"ヴァヴ", en:"Vav", pillar:"繋がる", sub:"伝える",
+   talent:"架け橋の力",
+   h:"内なる知恵を外の世界と繋げられる。",
+   b1:"内側で感じたことを、外の世界に持ち出せる。直感と現実の間に、橋を架けられる。",
+   b2:"内なる知恵を、胸にしまったまま終わる人は多い。あなたの架け橋は、見えない世界と見える世界の通訳になっている。"},
+  {id:"pe", name:"ペー", en:"Pe", pillar:"繋がる", sub:"伝える",
+   talent:"解放の言葉",
+   h:"勇気を出して口にすることで、何かを動かせる。",
+   b1:"言いにくいことを、言うべきときに言えてきた。口にした瞬間、何かが動くのを知っている。",
+   b2:"沈黙の方が安全な場面で言葉を放つのは、破壊じゃなくて解放。あなたの一言は、詰まっていた場の栓を抜く。"},
+  {id:"ansuz", name:"アンスズ", en:"Ansuz", pillar:"繋がる", sub:"伝える",
+   talent:"媒介の声",
+   h:"自分に聞こえるもの・受け取ったものを、そのまま伝えられる。",
+   b1:"受け取ったこと、聞こえたことを、そのまま伝えられる。自分を通して、言葉が向こうへ渡っていく感覚がある。",
+   b2:"媒介として何かを渡す役割は、誰にでもできることじゃない。あなたの声には、ときどき、あなた以上のものが乗る。"},
+  {id:"resh", name:"レーシュ", en:"Resh", pillar:"繋がる", sub:"伝える",
+   talent:"惜しみなく輝く力",
+   h:"知性と輝きを、隠さず堂々と発揮できる。",
+   b1:"考えること、閃くこと、表現することを、出し惜しみしない。輝くことに、そこまで罪悪感がない。",
+   b2:"「目立つと危ない」と光を絞ってしまう人が多い中で、惜しみなく放てるのは器の広さ。あなたの輝きは、人の隠れた光にも許可を出す。"},
+  {id:"kenaz", name:"カウナズ", en:"Kenaz", pillar:"繋がる", sub:"伝える",
+   talent:"照らす光",
+   h:"どこに光を当てるかを選べる洞察力。",
+   b1:"「ここが大事」という場所に、光を当てるのがうまい。人の話を聞いていても、核心を照らせる。",
+   b2:"どこを照らすかの選択こそが、洞察。あなたの松明は、暗がりで迷う誰かの足元を、ちょうどいい明るさで照らしている。"},
+  {id:"wunjo", name:"ウィニョ", en:"Wunjo", pillar:"繋がる", sub:"伝える",
+   talent:"喜びを分かち合う力",
+   h:"感じた喜びを、そのまま誰かに渡せる。",
+   b1:"嬉しいことがあったら、素直に「嬉しい！」と分かち合える。喜びを、一人占めしない。",
+   b2:"喜びの共有は、簡単に見えて、一度流された経験があると難しくなるもの。あなたの分かち合いは、場の温度をたしかに上げている。"},
+  {id:"mem", name:"メム", en:"Mem", pillar:"繋がる", sub:"伝える",
+   talent:"温かい冷静さ",
+   h:"激しい感情を、静かな深い知恵に変換できる。",
+   b1:"感情の渦の中でも、飲み込まれずに、静かに深く受け止められる。冷たいんじゃなくて、深い。",
+   b2:"激流を静水に変える力は、感情を殺すのとは全然違う。あなたの温かい冷静さは、パニックの場に錨を降ろす。"},
+
+  // ── 繋がる／共に育つ ──
+  {id:"ehwaz", name:"エワズ", en:"Ehwaz", pillar:"繋がる", sub:"共に育つ",
+   talent:"対等な信頼を築く力",
+   h:"馬と乗り手のような相互尊重で共に進める。",
+   b1:"引っ張りすぎず、引っ張られすぎず、対等な関係を作れる。相手のペースと自分のペースを、すり合わせられる。",
+   b2:"対等は、口で言うほど簡単じゃない。あなたの信頼の作り方は、馬と乗り手みたいに、二人で遠くまで行ける形をしている。"},
+  {id:"berkana", name:"ベルカナ", en:"Berkana", pillar:"繋がる", sub:"共に育つ",
+   talent:"育む力",
+   h:"新しく芽吹くものを、恐れずに守り育てられる。",
+   b1:"芽吹いたばかりのもの——新しい企画、若い人、小さな習慣——を、育てるのが得意。",
+   b2:"育てる仕事は、成果が見えるまでが長い。それでも水をやり続けられるのは、持久力のある愛。あなたの手の中で、これまでいろんなものが育ってきた。"},
+  {id:"svartalfheim", name:"スヴァルタルヘイム", en:"Svartalfheim", pillar:"繋がる", sub:"共に育つ",
+   talent:"見えない場所で磨く力",
+   h:"誰にも見られなくても、作り続けられる。",
+   b1:"誰も見ていなくても、作り続けられる。評価より先に、手が動く。",
+   b2:"人知れず磨く時間に耐えられる人は少ない。あなたが暗闇の工房で打ってきたものは、光の下に出たとき、ちゃんと神器になる。"},
+
+  // ── 流れる／止まる ──
+  {id:"niflheim", name:"ニフルヘイム", en:"Niflheim", pillar:"流れる", sub:"止まる",
+   talent:"静止を信頼する力",
+   h:"止まっていることを、準備だと知っている。",
+   b1:"動けない時期を、焦り切らずに過ごせる。止まっている自分を、責め切らない。",
+   b2:"「常に動け」と言われる世界で、静止を準備だと信じられるのは、深い信頼。あなたの静けさの中で、次の命はちゃんと育っている。"},
+  {id:"isa", name:"イサ", en:"Isa", pillar:"流れる", sub:"止まる",
+   talent:"凍る時間を過ごせる力",
+   h:"完全な静止の中で、内側に向かえる。",
+   b1:"完全に止まって、内側だけを見る時間を持てる。凍る時間を、怖がりすぎない。",
+   b2:"氷の時間は、外からは何も起きていないように見える。でもあなたは知っている——氷の下で、何かが保存され、蓄えられていることを。"},
+  {id:"ingwaz", name:"イングワズ", en:"Ingwaz", pillar:"流れる", sub:"止まる",
+   talent:"内的完成を待つ力",
+   h:"見えない成熟を信じられる。",
+   b1:"目に見える成果がまだなくても、「内側では進んでいる」と信じられる。種の時間を、信頼できる。",
+   b2:"見えないプロセスを信じるのは、根拠のない楽観じゃなくて、成熟。あなたの内的完成は、時が来れば自然に外へ出ていく。"},
+  {id:"helheim", name:"ヘルヘイム", en:"Helheim", pillar:"流れる", sub:"止まる",
+   talent:"浮遊を許す力",
+   h:"何も感じない時間を、ただ自分に許せる。",
+   b1:"何も感じられない時期の自分に、「それでいい」と言える。無理に元気にならない。",
+   b2:"麻痺は、心が自分を守っている時間。それを急かさずにいられるのは、自分への深い許し。あなたのその許しは、頑張れない誰かの避難所にもなる。"},
+
+  // ── 流れる／熟す ──
+  {id:"jera", name:"ヤラ", en:"Jera", pillar:"流れる", sub:"熟す",
+   talent:"時の実りを信じる力",
+   h:"自然な時間の中で育つのを待てる忍耐。",
+   b1:"蒔いた種が実るまでの時間を、待てる。結果が出ない時期の自分を、見捨てない。",
+   b2:"速さがすべての時代に、熟すのを待てるのは忍耐というより信頼。あなたの待つ力は、途中経過にも光を当てられる目とセットになっている。"},
+  {id:"raidho", name:"ライドー", en:"Raidho", pillar:"流れる", sub:"熟す",
+   talent:"自分のリズムを保つ力",
+   h:"焦らされても、自分のペースで進める。",
+   b1:"周りがどれだけ速くても、自分のペースに戻ってこられる。急かされても、崩れない。",
+   b2:"リズムを保つのは、頑固さじゃなくて自己信頼。あなたのペースで進んだ道のりは、振り返るとちゃんと正しい場所に着いている。"},
+  {id:"eihwaz", name:"エイワズ", en:"Eihwaz", pillar:"流れる", sub:"熟す",
+   talent:"過程の全部を抱える力",
+   h:"葛藤も否定も受容も、どの自分も自分だと認められる。",
+   b1:"葛藤している自分も、否定している自分も、「これも自分」と抱えられる。過程の自分を、切り捨てない。",
+   b2:"完成形だけを自分と認める人が多い中で、途中の全部を抱えられるのは、深い受容。あなたという木は、根も枝も、全部でひとつ。"},
+
+  // ── 流れる／手放す・変わる ──
+  {id:"nun", name:"ヌン", en:"Nun", pillar:"流れる", sub:"手放す・変わる",
+   talent:"手放す力",
+   h:"古い形を終わらせて、新しいスペースを作れる。",
+   b1:"終わったものを、終わらせられる。古い形を手放して、スペースを空けられる。",
+   b2:"手放しは喪失じゃなくて、創造の準備——あなたはそれを体で知っている。あなたが空けたスペースには、いつも新しいものが泳ぎ込んでくる。"},
+  {id:"shin", name:"シン", en:"Shin", pillar:"流れる", sub:"手放す・変わる",
+   talent:"痛みを変容させる力",
+   h:"過去の傷を、反転の燃料に変えられる。",
+   b1:"過去の痛みを、ただの傷で終わらせてこなかった。「あの経験があったから今がある」と言える日が来ることを、知っている。",
+   b2:"痛みを燃料に変えるのは、時間だけの仕事じゃない。あなたのその変容力は、聖なる火そのもの。"},
+  {id:"hagalaz", name:"ハガラズ", en:"Hagalaz", pillar:"流れる", sub:"手放す・変わる",
+   talent:"破壊を再生に繋げる力",
+   h:"崩壊のあとに、種を見出せる。",
+   b1:"何かが壊れたとき、呆然としながらも、どこかで「ここから何かが始まる」と感じられる。",
+   b2:"崩壊の中に種を見出す目は、楽観じゃなくて、経験からくる智慧。あなたに降った雹は、いつも溶けて、次の大地を潤してきた。"},
+  {id:"dagaz", name:"ダガズ", en:"Dagaz", pillar:"流れる", sub:"手放す・変わる",
+   talent:"夜明けを渡る力",
+   h:"閾値の上で、一歩を踏み出せる。",
+   b1:"長い暗闇の終わりかけで、ちゃんと一歩を踏み出せる。夜明けの気配に、気づける。",
+   b2:"閾値の上の一歩は、小さく見えて、一番勇気がいる。あなたはそれを、これまで何度も渡ってきた。"},
+  {id:"tav", name:"タヴ", en:"Tav", pillar:"流れる", sub:"手放す・変わる",
+   talent:"完成を認める力",
+   h:"「やり切った」と自分に言ってあげられる。",
+   b1:"「ここまでやった」を、自分で認められる——少なくとも、認めようとしてきた。完成に、印を押せる。",
+   b2:"終わらせて満足するのは、実は始めるより難しい。あなたの「完成の承認」は、次のサイクルへの一番きれいな入り口になる。"},
+
+  // ── 流れる／未知に乗る ──
+  {id:"jotunheim", name:"ヨトゥンヘイム", en:"Jotunheim", pillar:"流れる", sub:"未知に乗る",
+   talent:"わからないまま進む力",
+   h:"答えを急がず、混沌と共存できる。",
+   b1:"わからないことを、わからないまま持っていられる。答えを、急がない。",
+   b2:"全部理解しないと進めない人が多い中、混沌と共存できるのは巨人の知恵。あなたの「わからなさ」の抱え方には、原初の落ち着きがある。"},
+  {id:"perthro", name:"ペルスロ", en:"Perthro", pillar:"流れる", sub:"未知に乗る",
+   talent:"賭ける力",
+   h:"わからなさを、面白がれる。",
+   b1:"先が見えないことを、怖がるだけじゃなくて、ちょっと面白がれる。賭けられる。",
+   b2:"わからなさは、恐怖にも遊びにもなる。あなたはそれを、遊びにできる側。その余白が、人生に運命の入る隙間を作っている。"},
+  {id:"laguz", name:"ラグズ", en:"Laguz", pillar:"流れる", sub:"未知に乗る",
+   talent:"流れに乗る力",
+   h:"常識より感受性を信じて、波に乗れる。",
+   b1:"常識や正しさより、自分の感受性を信じて、流れに乗れる。波を読むのが、うまい。",
+   b2:"頭で固めずに、感覚で泳げるのは、直感への信頼が育っている証拠。あなたの流れ方は、力まないのに、ちゃんと遠くへ運ばれていく。"},
+
+  // ── 特別カード ──
+  {id:"daat", name:"ダアト", en:"Da'at", special:true,
+   reading:"今まで繰り返してきた課題の中に、大事な資質がある",
+   b1:"何度も同じような課題にぶつかってきた——そう感じているなら、それは偶然じゃないのかもしれない。繰り返し呼ばれる場所には、あなたの一番大事な資質が埋まっている。",
+   b2:"課題は、資質の在り処を示す地図。最近よく浮かぶテーマがあったら、少しだけ思い出してみて。その真ん中に、宝が眠っているから。"},
+  {id:"valhalla", name:"ヴァルハラ", en:"Valhalla", special:true,
+   reading:"その資質は、すでにふんだんに使われてきた",
+   b1:"あなたが「大したことない」と思っているその力は、実はもう、数え切れないほど使われてきた。本人が無意識なだけで、ずっとあなたを支えてきた、歴戦の装備。",
+   b2:"これまでの軌跡を、少しだけ振り返ってみて。あなたが当たり前のように乗り越えてきた場面に、それは必ず写っている。"},
+  {id:"bifrost", name:"ビフロスト", en:"Bifrost", special:true,
+   reading:"見えない力を、味方につけられる",
+   b1:"才能は、自分の中だけにあるものじゃないのかもしれない。あなたには、橋の向こうから来るものを受け取る——見えない力を味方につける才能がある。",
+   b2:"努力でも実力でもない何かに、助けられた記憶はないかな。それを受け取れたこと自体が、才能だから。"},
+];
+
+// ============================================================
+// 五つの位置
+// ============================================================
+const POSITIONS = [
+  {key:"根", en:"ROOT",   desc:"誰にも見えないところで、いちばん長く<br>あなたを支えてきた力"},
+  {key:"幹", en:"TRUNK",  desc:"人生を通して一本、通っているもの<br>周りが「あなたらしさ」と呼んできた力"},
+  {key:"枝", en:"BRANCH", desc:"いま、伸びようとしている方向<br>最近になって使われはじめた力"},
+  {key:"葉", en:"LEAF",   desc:"日々の呼吸のように出ている力<br>あなたのエネルギーが作られる場所"},
+  {key:"花", en:"FLOWER", desc:"もう誰かに届いているのに<br>あなただけが気づいていない力"},
+];
+
+// ============================================================
+// 雨の生成
+// ============================================================
+(function(){
+  const rain = document.getElementById("rain");
+  for(let i=0;i<26;i++){
+    const s = document.createElement("span");
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDuration = (5 + Math.random()*6) + "s";
+    s.style.animationDelay = (-Math.random()*10) + "s";
+    rain.appendChild(s);
+  }
+})();
+
+// ============================================================
+// 五枚引き
+// ============================================================
+const API      = "https://fortune-five-psi.vercel.app/api/oracle";
+const intro    = document.getElementById("intro");
+const loading  = document.getElementById("loading");
+const result   = document.getElementById("result");
+const drawEl   = document.getElementById("drawCard");
+const passEl   = document.getElementById("passInput");
+const errEl    = document.getElementById("errText");
+const againBtn = document.getElementById("againBtn");
+
+let busy = false;
+
+function pickFive(){
+  const pool = CARDS.slice();
+  const out = [];
+  for(let i=0;i<5;i++){
+    const idx = Math.floor(Math.random()*pool.length);
+    out.push(pool.splice(idx,1)[0]);
+  }
+  return out;
+}
+
+function imgSrc(img, wrap, id){
+  wrap.style.display = "";
+  img.onerror = function(){
+    if(img.src.endsWith(".webp"))      img.src = "../images/" + id + ".png";
+    else if(img.src.endsWith(".png"))  img.src = "../images/" + id + ".jpg";
+    else                               wrap.style.display = "none";
+  };
+  img.src = "../images/" + id + ".webp";
+}
+
+function labelOf(card){
+  return card.special ? "特別なカード" : (card.pillar + "／" + card.sub);
+}
+function talentOf(card){
+  return card.special ? card.reading : card.talent;
+}
+function hitokotoOf(card){
+  return card.special ? card.b1 : card.h;
+}
+
+function render(cards, reading){
+  // 索引
+  const idxEl = document.getElementById("treeIndex");
+  idxEl.innerHTML = cards.map((c,i)=>
+    '<div class="tree-row">'+
+      '<span class="pos'+(c.special?' sp':'')+'">'+POSITIONS[i].key+'</span>'+
+      '<span class="nm">'+(c.special?'✦ ':'')+c.name+'</span>'+
+      '<span class="tl">'+talentOf(c)+'</span>'+
+    '</div>'
+  ).join("");
+
+  // 各ポジション
+  const blocks = document.getElementById("posBlocks");
+  blocks.innerHTML = cards.map((c,i)=>
+    '<div class="pos-block'+(c.special?' special':'')+'">'+
+      '<div class="pos-mark">'+POSITIONS[i].key+'　'+POSITIONS[i].en+'</div>'+
+      '<p class="pos-desc">'+POSITIONS[i].desc+'</p>'+
+      '<div class="card-img-wrap" id="w'+i+'"><img id="i'+i+'" alt="'+c.name+'"></div>'+
+      '<h3 class="card-name">'+c.name+'</h3>'+
+      '<p class="card-name-en">'+c.en+'</p>'+
+      '<p class="talent">'+talentOf(c)+'</p>'+
+      '<p class="hitokoto">'+hitokotoOf(c)+'</p>'+
+      (c.special
+        ? '<p class="special-note">このカードは、資質そのものではなく<br>資質の「ありか」を指しています。</p>'
+        : '')+
+    '</div>'
+  ).join("");
+  cards.forEach((c,i)=>{
+    imgSrc(document.getElementById("i"+i), document.getElementById("w"+i), c.id);
+  });
+
+  // AI本文
+  const rEl = document.getElementById("readingText");
+  rEl.innerHTML = reading.split(/\n\s*\n/).filter(s=>s.trim())
+    .map(p=>"<p>"+p.trim().replace(/\n/g,"<br>")+"</p>").join("");
+}
+
+async function draw(){
+  if(busy) return;
+  const pass = passEl.value.trim();
+  errEl.textContent = "";
+  if(!pass){
+    errEl.textContent = "合言葉を入れてください";
+    passEl.focus();
+    return;
+  }
+
+  busy = true;
+  drawEl.classList.add("disabled");
+
+  const cards = pickFive();
+
+  intro.style.display = "none";
+  result.classList.remove("show");
+  loading.classList.add("show");
+  window.scrollTo({top:0, behavior:"smooth"});
+
+  try{
+    const res = await fetch(API, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        mode:"talent5",
+        pass: pass,
+        lang:"ja",
+        cards: cards.map((c,i)=>({
+          position: POSITIONS[i].key,
+          name: c.name,
+          en: c.en,
+          pillar: c.pillar || "特別",
+          sub: c.sub || "",
+          talent: talentOf(c),
+          h: hitokotoOf(c),
+          special: !!c.special,
+        })),
+      }),
+    });
+
+    if(res.status === 401){
+      throw new Error("合言葉が違うようです");
+    }
+    if(res.status === 429){
+      throw new Error("すこし時間をおいて、もう一度どうぞ");
+    }
+    const data = await res.json();
+    if(!res.ok || !data.reading) throw new Error(data.error || "うまく読み取れませんでした");
+
+    loading.classList.remove("show");
+    render(cards, data.reading);
+    void result.offsetWidth;
+    result.classList.add("show");
+    window.scrollTo({top:0, behavior:"smooth"});
+
+  }catch(e){
+    loading.classList.remove("show");
+    intro.style.display = "";
+    errEl.textContent = e.message || "うまく読み取れませんでした";
+    window.scrollTo({top:0, behavior:"smooth"});
+  }finally{
+    busy = false;
+    drawEl.classList.remove("disabled");
+  }
+}
+
+drawEl.addEventListener("click", draw);
+drawEl.addEventListener("keydown", e=>{
+  if(e.key==="Enter"||e.key===" "){ e.preventDefault(); draw(); }
+});
+passEl.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ e.preventDefault(); draw(); }
+});
+againBtn.addEventListener("click", ()=>{
+  result.classList.remove("show");
+  intro.style.display = "";
+  errEl.textContent = "";
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+</script>
+</body>
+</html>
