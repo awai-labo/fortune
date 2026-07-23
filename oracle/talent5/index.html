@@ -272,13 +272,34 @@
   .print-head{display:none;}
   @media print{
     @page{margin:14mm 12mm;}
+    /* Firefox が1ページ目で切れるのを防ぐ：
+       flex / height:100% / overflow:hidden をすべて解除する */
     html,body{
       background:var(--night-deep)!important;
       -webkit-print-color-adjust:exact;print-color-adjust:exact;
+      height:auto!important;min-height:0!important;
+      overflow:visible!important;overflow-x:visible!important;
+      display:block!important;
+      position:static!important;
     }
     .rain,.intro,.loading,.actions,.save-hint,.txt-link,footer{display:none!important;}
-    main{max-width:100%;padding:0;}
-    .result{display:block!important;animation:none!important;}
+    main{
+      display:block!important;
+      flex:none!important;
+      max-width:100%!important;width:100%!important;
+      padding:0!important;
+      height:auto!important;overflow:visible!important;
+      position:static!important;
+    }
+    .result{
+      display:block!important;
+      animation:none!important;
+      height:auto!important;overflow:visible!important;
+    }
+    .result.show{animation:none!important;}
+    .tree-index,.pos-block,.reading-wrap,.reading{
+      overflow:visible!important;height:auto!important;
+    }
     .print-head{
       display:block;text-align:center;margin-bottom:26px;
     }
