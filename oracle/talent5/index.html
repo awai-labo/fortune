@@ -249,6 +249,54 @@
   }
   .again:hover,.again:focus-visible{color:var(--gold);border-color:var(--gold-dim);outline:none;}
 
+  .actions{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    margin-bottom:16px;
+  }
+  .save-hint{
+    text-align:center;
+    font-size:10.5px;letter-spacing:.12em;line-height:2.1;
+    color:rgba(168,164,150,.65);
+    margin-bottom:14px;
+  }
+  .txt-link{text-align:center;margin-bottom:8px;}
+  .txt-link a{
+    color:var(--moon-dim);text-decoration:none;
+    font-size:11px;letter-spacing:.18em;
+    border-bottom:1px solid rgba(233,229,218,.2);
+    padding-bottom:2px;
+  }
+  .txt-link a:hover{color:var(--gold);border-bottom-color:var(--gold-dim);}
+
+  /* ── 印刷／PDF ── */
+  .print-head{display:none;}
+  @media print{
+    @page{margin:14mm 12mm;}
+    html,body{
+      background:var(--night-deep)!important;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact;
+    }
+    .rain,.intro,.loading,.actions,.save-hint,.txt-link,footer{display:none!important;}
+    main{max-width:100%;padding:0;}
+    .result{display:block!important;animation:none!important;}
+    .print-head{
+      display:block;text-align:center;margin-bottom:26px;
+    }
+    .print-head .pd-deck{
+      font-size:9px;letter-spacing:.35em;color:var(--gold);margin-bottom:6px;
+    }
+    .print-head .pd-date{
+      font-size:9px;letter-spacing:.2em;color:var(--moon-dim);
+    }
+    .pos-block,.tree-index,.reading p{
+      page-break-inside:avoid;break-inside:avoid;
+    }
+    .pos-block{margin-bottom:34px;}
+    .card-img-wrap{width:128px;box-shadow:none;}
+    .reading-wrap{page-break-before:always;break-before:page;}
+    .closing{margin-bottom:0;}
+  }
+
   footer{position:relative;z-index:1;padding:26px 20px 34px;text-align:center;}
   footer .deck{font-size:10px;letter-spacing:.35em;color:var(--moon-dim);margin-bottom:8px;}
   footer a{
@@ -297,6 +345,10 @@
 
   <!-- 結果 -->
   <section class="result" id="result" aria-live="polite">
+    <div class="print-head" aria-hidden="true">
+      <p class="pd-deck">THE INTEGRATION TREE</p>
+      <p class="pd-date" id="printDate"></p>
+    </div>
     <div class="result-head">
       <p class="eyebrow">YOUR TREE</p>
       <h2>あなたが「ふつう」だと<br>思ってきた、五つの力</h2>
@@ -318,7 +370,15 @@
       見え方が変わるだけで、<br>
       木は、同じ場所に立っている。
     </p>
-    <button class="again" id="againBtn">もういちど 引く</button>
+    <div class="actions">
+      <button class="again" id="saveBtn">この結果を 保存する</button>
+      <button class="again" id="againBtn">もういちど 引く</button>
+    </div>
+    <p class="save-hint">
+      保存すると PDF になります。<br>
+      スマートフォンの場合は「PDF で保存」をお選びください。
+    </p>
+    <p class="txt-link"><a href="#" id="txtBtn">テキストで保存する</a></p>
   </section>
 </main>
 
@@ -742,6 +802,7 @@ const errEl    = document.getElementById("errText");
 const againBtn = document.getElementById("againBtn");
 
 let busy = false;
+let lastCards = null, lastReading = "";
 
 function pickFive(){
   const pool = CARDS.slice();
@@ -774,6 +835,13 @@ function hitokotoOf(card){
 }
 
 function render(cards, reading){
+  lastCards = cards; lastReading = reading;
+
+  // 日付（PDF用）
+  const d = new Date();
+  document.getElementById("printDate").textContent =
+    d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日";
+
   // 索引
   const idxEl = document.getElementById("treeIndex");
   idxEl.innerHTML = cards.map((c,i)=>
@@ -884,6 +952,63 @@ drawEl.addEventListener("keydown", e=>{
 passEl.addEventListener("keydown", e=>{
   if(e.key==="Enter"){ e.preventDefault(); draw(); }
 });
+// ── 保存（PDF） ──
+document.getElementById("saveBtn").addEventListener("click", ()=>{
+  window.print();
+});
+
+// ── 保存（テキスト） ──
+document.getElementById("txtBtn").addEventListener("click", (e)=>{
+  e.preventDefault();
+  if(!lastCards) return;
+  const d = new Date();
+  const stamp = d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+
+  const lines = [];
+  lines.push("あなたという木 — 才能の五枚引き");
+  lines.push("THE INTEGRATION TREE");
+  lines.push(d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日");
+  lines.push("");
+  lines.push("────────────────────");
+  lines.push("");
+  lastCards.forEach((c,i)=>{
+    lines.push("【"+POSITIONS[i].key+"】"+POSITIONS[i].en);
+    lines.push(POSITIONS[i].desc.replace(/<br>/g,"　"));
+    lines.push("");
+    lines.push("  "+c.name+"（"+c.en+"）");
+    lines.push("  "+talentOf(c));
+    lines.push("  "+hitokotoOf(c));
+    if(c.special) lines.push("  ※このカードは、資質そのものではなく資質の「ありか」を指しています。");
+    lines.push("");
+    lines.push("────────────────────");
+    lines.push("");
+  });
+  lines.push("この木のこと");
+  lines.push("");
+  lines.push(lastReading.trim());
+  lines.push("");
+  lines.push("────────────────────");
+  lines.push("");
+  lines.push("この五つは、ずっとあなたの中にあったもの。");
+  lines.push("新しく手に入れるものは、ひとつもない。");
+  lines.push("見え方が変わるだけで、木は、同じ場所に立っている。");
+  lines.push("");
+  lines.push("THE INTEGRATION TREE — AWAI KEIKO");
+  lines.push("あわいの雨宿り");
+
+  const blob = new Blob(["\uFEFF"+lines.join("\n")], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "あなたという木_" + stamp + ".txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+});
+
 againBtn.addEventListener("click", ()=>{
   result.classList.remove("show");
   intro.style.display = "";
