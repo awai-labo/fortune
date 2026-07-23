@@ -948,8 +948,18 @@ async function draw(){
     if(res.status === 429){
       throw new Error("すこし時間をおいて、もう一度どうぞ");
     }
-    const data = await res.json();
-    if(!res.ok || !data.reading) throw new Error(data.error || "うまく読み取れませんでした");
+    // JSON 以外が返ってきても落ちないようにする
+    const raw = await res.text();
+    let data = null;
+    try{ data = JSON.parse(raw); }catch(_){ data = null; }
+
+    if(!data){
+      console.error("非JSONレスポンス:", res.status, raw.slice(0,400));
+      throw new Error("サーバーがうまく応答しませんでした（" + res.status + "）");
+    }
+    if(!res.ok || !data.reading){
+      throw new Error(data.error || "うまく読み取れませんでした");
+    }
 
     loading.classList.remove("show");
     render(cards, data.reading);
