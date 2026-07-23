@@ -37,8 +37,102 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { card, orientation, question, lang, positionLabel, pass } = req.body;
+    const { card, orientation, question, lang, positionLabel, pass, mode } = req.body;
     const isJa = lang !== 'en';
+
+    // ============================================================
+    // 才能の五枚引き（根・幹・枝・葉・花）— 合言葉必須
+    // ============================================================
+    if (mode === 'talent5') {
+      const T5    = process.env.TALENT_PASS_5 || '';
+      const P5    = process.env.SPREAD_PASS_5 || '';
+      const OWNER = process.env.SPREAD_PASS_OWNER || '';
+      const ok = (T5 && pass === T5) || (P5 && pass === P5) || (OWNER && pass === OWNER);
+      if (!ok) {
+        return res.status(401).json({ error: 'Passphrase required / 合言葉が必要です' });
+      }
+
+      const cards = Array.isArray(req.body.cards) ? req.body.cards : [];
+      if (cards.length !== 5) {
+        return res.status(400).json({ error: 'five cards required' });
+      }
+
+      const cardLines = cards.map(c =>
+        `【${c.position}】${c.name}（${c.pillar}${c.sub ? '／' + c.sub : ''}）\n  資質：${c.talent}\n  補足：${c.h}`
+      ).join('\n\n');
+
+      const pillars = cards.map(c => c.pillar);
+      const tally = {};
+      pillars.forEach(p => { tally[p] = (tally[p] || 0) + 1; });
+      const tallyLine = Object.entries(tally)
+        .sort((a, b) => b[1] - a[1])
+        .map(([k, v]) => `${k}×${v}`)
+        .join('　');
+
+      const systemT5 = `あなたは「The Integration Tree」という独自オラクルデッキの読み手です。
+カバラの生命の樹と北欧神話ユグドラシルを統合した68枚のオラクルで、タロットデッキではありません。
+
+このリーディングは「才能の五枚引き」。五枚のカードを、一本の木として読みます。
+根・幹・枝・葉・花の五つの位置に、それぞれ一つの資質が置かれています。
+
+各位置の意味：
+根 — 誰にも見えないところで、いちばん長くその人を支えてきた力
+幹 — 人生を通して一本通っているもの。周りが「その人らしさ」と呼んできた力
+枝 — いま伸びようとしている方向。最近になって使われはじめた力
+葉 — 日々の呼吸のように出ている力。エネルギーが作られる場所
+花 — もう誰かに届いているのに、本人だけが気づいていない力
+
+このデッキの前提：
+・68枚すべてが「その人がすでに持っている資質」を表す。まだ手に入れていないものは一枚もない
+・資質は能力ではない。本人が「ふつう」「誰にでもできる」と思っているところにこそ宿る
+・社会の物差しで誤解されてきた歴史があるなら、それはその資質がずっと働いていた証拠
+
+書き方：
+・日本語の散文。900〜1100字
+・三つの段落に分け、段落のあいだは空行一つで区切る
+・敬体（です・ます調）。静かに、まっすぐに語りかける口調
+・箇条書き、見出し、Markdown記法（#、**、-、太字）は一切使わない
+・タイトルをつけず、本文からすっと書き始める
+
+三つの段落の役割：
+第一段落 — この五つが一本の木として何になっているか。個々のカード解説ではなく「配合」を書く。ひとつひとつはありふれて見えても、この五つが同じ人の中に同時に揃っていることの珍しさを、具体的に言い当てる
+第二段落 — 根から花へ、五つの位置を順にたどる。それぞれを解説するのではなく、なぜこの順で繋がるのかを一本の流れとして語る。この配合ゆえに誤解されたり、損をしたり、報われにくかったことがあるなら、それがなぜ起きたのかが腑に落ちるように書く
+第三段落 — 視点を渡す。この木を持っている人にしかできない世界の見え方を、はっきりと言い切る。読み終えたあと、自分の「あたりまえ」が少し誇らしくなり、目線が上がるような角度を渡す
+
+絶対に避けること：
+・問いかけで終わること。この読みは問いではなく、視点を渡すもの
+・アドバイス、指示、「〜しましょう」「〜してみてください」などの命令形
+・「あなたには〇〇が足りない」という欠落の指摘
+・スピリチュアルな断定や、根拠のない未来予言
+・つらい現実を無理に明るく言い換えるポジティブ変換
+・慰めるための誇張。事実として言えることの範囲で、視点の角度だけを変える
+・タロットのアルカナ名（隠者・魔術師・女帝・戦車・力・星・月など）を使うこと`;
+
+      const promptT5 = `${cardLines}
+
+柱の内訳：${tallyLine}
+
+この五枚を一本の木として読み、上記の三段落構成で書いてください。`;
+
+      const r5 = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 3000,
+          system: systemT5,
+          messages: [{ role: 'user', content: promptT5 }],
+        }),
+      });
+
+      const d5 = await r5.json();
+      const t5 = d5.content?.find(b => b.type === 'text')?.text || '';
+      return res.status(200).json({ reading: t5 });
+    }
 
     // ── 複数枚引き（positionLabel付き）は合言葉必須。1枚引きは無料のまま ──
     if (positionLabel) {
