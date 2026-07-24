@@ -57,27 +57,6 @@
   h1 .accent{color:var(--gold);border-bottom:1px solid var(--gold-dim);padding-bottom:2px;}
   .lead{font-size:13.5px;color:var(--moon-dim);line-height:2.4;letter-spacing:.08em;margin-bottom:34px;}
 
-  /* ── 合言葉 ── */
-  .gate{margin-bottom:38px;}
-  .gate label{
-    display:block;font-size:11px;letter-spacing:.3em;
-    color:var(--moon-dim);margin-bottom:12px;
-  }
-  .gate input{
-    font-family:inherit;
-    width:100%;max-width:260px;
-    background:rgba(233,229,218,.04);
-    border:1px solid rgba(233,229,218,.2);
-    border-radius:6px;
-    color:var(--moon);
-    font-size:15px;letter-spacing:.18em;text-align:center;
-    padding:13px 14px 12px;
-    outline:none;
-    transition:border-color .3s;
-  }
-  .gate input:focus{border-color:var(--gold-dim);}
-  .gate input::placeholder{color:rgba(168,164,150,.4);letter-spacing:.1em;}
-
   /* ── カード裏 ── */
   .card-back{
     width:170px;height:268px;
@@ -286,6 +265,7 @@
     padding-bottom:2px;
   }
   .txt-link a:hover{color:var(--gold);border-bottom-color:var(--gold-dim);}
+  .lsep{color:rgba(168,164,150,.35);font-size:11px;margin:0 10px;}
 
   /* ── 印刷／PDF ── */
   .print-head{display:none;}
@@ -520,11 +500,6 @@
       その木がもう実らせてきたものを。
     </p>
 
-    <div class="gate">
-      <label for="passInput">合言葉</label>
-      <input id="passInput" type="password" autocomplete="off" placeholder="あいことば">
-    </div>
-
     <div class="card-back" id="drawCard" role="button" tabindex="0" aria-label="カードを五枚引く">
       <span class="mark">✦</span>
     </div>
@@ -595,7 +570,11 @@
       保存すると PDF になります。<br>
       スマートフォンの場合は「PDF で保存」をお選びください。
     </p>
-    <p class="txt-link"><a href="#" id="txtBtn">テキストで保存する</a></p>
+    <p class="txt-link">
+      <a href="#" id="txtBtn">テキストで保存</a>
+      <span class="lsep">／</span>
+      <a href="#" id="csvBtn">Canva一括作成用のCSV</a>
+    </p>
   </section>
 </main>
 
@@ -1014,8 +993,23 @@ const intro    = document.getElementById("intro");
 const loading  = document.getElementById("loading");
 const result   = document.getElementById("result");
 const drawEl   = document.getElementById("drawCard");
-const passEl   = document.getElementById("passInput");
 const errEl    = document.getElementById("errText");
+
+// 鍵は URL（#k=... または ?k=...）から受け取り、以後は端末に保存して使う。
+// 一度アクセスすれば、次からは素のURLで開いても引ける。
+const KEYSTORE = "t5key";
+function resolveKey(){
+  const fromHash  = new URLSearchParams(location.hash.replace(/^#/,"")).get("k");
+  const fromQuery = new URLSearchParams(location.search).get("k");
+  const given = fromHash || fromQuery;
+  if(given){
+    try{ localStorage.setItem(KEYSTORE, given); }catch(_){}
+    history.replaceState(null, "", location.pathname);  // URLから鍵を消す
+    return given;
+  }
+  try{ return localStorage.getItem(KEYSTORE) || ""; }catch(_){ return ""; }
+}
+let PASS = resolveKey();
 const againBtn = document.getElementById("againBtn");
 
 let busy = false;
@@ -1099,11 +1093,9 @@ function render(cards, reading){
 
 async function draw(){
   if(busy) return;
-  const pass = passEl.value.trim();
   errEl.textContent = "";
-  if(!pass){
-    errEl.textContent = "合言葉を入れてください";
-    passEl.focus();
+  if(!PASS){
+    errEl.textContent = "このページを開く鍵がありません。鍵つきのURLから開いてください。";
     return;
   }
 
@@ -1123,7 +1115,7 @@ async function draw(){
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
         mode:"talent5",
-        pass: pass,
+        pass: PASS,
         lang:"ja",
         cards: cards.map((c,i)=>({
           position: POSITIONS[i].key,
@@ -1141,7 +1133,9 @@ async function draw(){
     });
 
     if(res.status === 401){
-      throw new Error("合言葉が違うようです");
+      try{ localStorage.removeItem(KEYSTORE); }catch(_){}
+      PASS = "";
+      throw new Error("鍵が違うようです。鍵つきのURLから開き直してください。");
     }
     if(res.status === 429){
       throw new Error("すこし時間をおいて、もう一度どうぞ");
@@ -1179,9 +1173,6 @@ async function draw(){
 drawEl.addEventListener("click", draw);
 drawEl.addEventListener("keydown", e=>{
   if(e.key==="Enter"||e.key===" "){ e.preventDefault(); draw(); }
-});
-passEl.addEventListener("keydown", e=>{
-  if(e.key==="Enter"){ e.preventDefault(); draw(); }
 });
 // ── 保存（PDF） ──
 document.getElementById("saveBtn").addEventListener("click", ()=>{
@@ -1239,6 +1230,55 @@ document.getElementById("txtBtn").addEventListener("click", (e)=>{
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+});
+
+// ── Canva 一括作成用CSV ──
+document.getElementById("csvBtn").addEventListener("click", (e)=>{
+  e.preventDefault();
+  if(!lastCards) return;
+
+  const d = new Date();
+  const stamp = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+
+  // 本文を3段落に整える（多ければ3つ目にまとめる）
+  let paras = lastReading.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+  if(paras.length > 3) paras = [paras[0], paras[1], paras.slice(2).join("\n\n")];
+  while(paras.length < 3) paras.push("");
+
+  const head = ["日付"], row = [d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"];
+
+  lastCards.forEach((c,i)=>{
+    const k = POSITIONS[i].key;
+    head.push(k+"_位置", k+"_位置英", k+"_位置説明",
+              k+"_名前", k+"_英名", k+"_資質", k+"_一言",
+              k+"_補足", k+"_画像ID");
+    row.push(
+      POSITIONS[i].key,
+      POSITIONS[i].en,
+      POSITIONS[i].desc.replace(/<br>/g, " "),
+      c.name,
+      c.en,
+      talentOf(c),
+      hitokotoOf(c),
+      c.special ? "このカードは、資質そのものではなく資質の「ありか」を指しています。"
+        : (i===0 ? "これは、あなたの欠点ではありません。あまりに自然に使えるせいで、力だと気づけなかったものです。" : ""),
+      c.id
+    );
+  });
+
+  head.push("本文1","本文2","本文3");
+  row.push(paras[0], paras[1], paras[2]);
+
+  const esc = v => '"' + String(v).replace(/"/g,'""').replace(/\r?\n/g,"\n") + '"';
+  const csv = "\uFEFF" + head.map(esc).join(",") + "\r\n" + row.map(esc).join(",") + "\r\n";
+
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "talent5_canva_" + stamp + ".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
 });
 
