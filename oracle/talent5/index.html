@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>あなたという木 ｜ 才能の五枚引き | The Integration Tree</title>
-<meta name="description" content="根・幹・枝・葉・花。五枚のカードで、あなたの「ふつう」を一本の木として読む。The Integration Tree の資質リーディング。">
+<title>霧のむこうの木 ｜ 才能の五枚引き | The Integration Tree</title>
+<meta name="description" content="霧・根・幹・葉・実。なぜ「自分には何もない」と思ってきたのか。その霧を晴らして、もう立っている木を読む。The Integration Tree の資質リーディング。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
@@ -214,6 +214,25 @@
   }
   .tree-row .pos.sp{color:var(--moon);}
 
+  /* ── 霧（一枚目） ── */
+  .pos-block.mist .pos-mark{
+    color:#9fb0c4;border-color:rgba(159,176,196,.4);
+  }
+  .pos-block.mist .card-img-wrap{
+    border:1px solid rgba(159,176,196,.45);
+    box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 26px rgba(159,176,196,.1);
+  }
+  .pos-block.mist .talent{color:#b9c6d6;}
+  .mist-note{
+    margin:20px auto 0;max-width:320px;
+    font-size:11.5px;letter-spacing:.1em;line-height:2.1;
+    color:var(--moon-dim);
+    border-top:1px solid rgba(159,176,196,.22);
+    border-bottom:1px solid rgba(159,176,196,.22);
+    padding:13px 4px;
+  }
+  .tree-row .pos.mistpos{color:#9fb0c4;}
+
   /* ── AI本文 ── */
   .reading-wrap{
     border-top:1px solid rgba(201,168,106,.2);
@@ -335,15 +354,17 @@
   <!-- 導入 -->
   <section class="intro" id="intro">
     <p class="eyebrow">THE INTEGRATION TREE</p>
-    <h1>あなたという<span class="accent">木</span><br>才能の五枚引き</h1>
+    <h1><span class="accent">霧</span>のむこうの木<br>才能の五枚引き</h1>
     <p class="lead">
-      根、幹、枝、葉、花。<br>
-      あなたが「ふつう」だと思っている力を、<br>
-      一本の木として読みます。<br>
+      「私には、これといったものがない」<br>
+      そう思ってきたなら、<br>
+      木がなかったからではなく、<br>
+      霧が出ていたからかもしれません。<br>
       <br>
-      単体なら、たしかに、ふつう。<br>
-      でも、この五つが揃っているのは、<br>
-      ふつうじゃない。
+      一枚目で、霧の正体を。<br>
+      三枚で、その奥に立っている木を。<br>
+      最後の一枚で、<br>
+      その木がもう実らせてきたものを。
     </p>
 
     <div class="gate">
@@ -372,7 +393,7 @@
     </div>
     <div class="result-head">
       <p class="eyebrow">YOUR TREE</p>
-      <h2>あなたが「ふつう」だと<br>思ってきた、五つの力</h2>
+      <h2>霧のむこうに、<br>ずっと立っていた木</h2>
     </div>
 
     <div class="tree-index" id="treeIndex"></div>
@@ -385,9 +406,10 @@
     </div>
 
     <p class="closing">
-      この五つは、ずっとあなたの中にあったもの。<br>
-      新しく手に入れるものは、ひとつもない。<br>
+      霧は、木がなかった証拠ではなく、<br>
+      木が近すぎて、端が見えなかっただけ。<br>
       <br>
+      新しく手に入れるものは、ひとつもない。<br>
       見え方が変わるだけで、<br>
       木は、同じ場所に立っている。
     </p>
@@ -789,11 +811,11 @@ const CARDS = [
 // 五つの位置
 // ============================================================
 const POSITIONS = [
+  {key:"霧", en:"MIST",   desc:"「自分には何もない」と<br>あなたに思わせてきたものの正体"},
   {key:"根", en:"ROOT",   desc:"誰にも見えないところで、いちばん長く<br>あなたを支えてきた力"},
   {key:"幹", en:"TRUNK",  desc:"人生を通して一本、通っているもの<br>周りが「あなたらしさ」と呼んできた力"},
-  {key:"枝", en:"BRANCH", desc:"いま、伸びようとしている方向<br>最近になって使われはじめた力"},
   {key:"葉", en:"LEAF",   desc:"日々の呼吸のように出ている力<br>あなたのエネルギーが作られる場所"},
-  {key:"花", en:"FLOWER", desc:"もう誰かに届いているのに<br>あなただけが気づいていない力"},
+  {key:"実", en:"FRUIT",  desc:"その力が、これまでに<br>すでに実らせてきたもの"},
 ];
 
 // ============================================================
@@ -867,7 +889,7 @@ function render(cards, reading){
   const idxEl = document.getElementById("treeIndex");
   idxEl.innerHTML = cards.map((c,i)=>
     '<div class="tree-row">'+
-      '<span class="pos'+(c.special?' sp':'')+'">'+POSITIONS[i].key+'</span>'+
+      '<span class="pos'+(c.special?' sp':(i===0?' mistpos':''))+'">'+POSITIONS[i].key+'</span>'+
       '<span class="nm">'+(c.special?'✦ ':'')+c.name+'</span>'+
       '<span class="tl">'+talentOf(c)+'</span>'+
     '</div>'
@@ -876,7 +898,7 @@ function render(cards, reading){
   // 各ポジション
   const blocks = document.getElementById("posBlocks");
   blocks.innerHTML = cards.map((c,i)=>
-    '<div class="pos-block'+(c.special?' special':'')+'">'+
+    '<div class="pos-block'+(c.special?' special':(i===0?' mist':''))+'">'+
       '<div class="pos-mark">'+POSITIONS[i].key+'　'+POSITIONS[i].en+'</div>'+
       '<p class="pos-desc">'+POSITIONS[i].desc+'</p>'+
       '<div class="card-img-wrap" id="w'+i+'"><img id="i'+i+'" alt="'+c.name+'"></div>'+
@@ -886,7 +908,9 @@ function render(cards, reading){
       '<p class="hitokoto">'+hitokotoOf(c)+'</p>'+
       (c.special
         ? '<p class="special-note">このカードは、資質そのものではなく<br>資質の「ありか」を指しています。</p>'
-        : '')+
+        : (i===0
+          ? '<p class="mist-note">これは、あなたの欠点ではありません。<br>あまりに自然に使えるせいで、<br>力だと気づけなかったものです。</p>'
+          : ''))+
     '</div>'
   ).join("");
   cards.forEach((c,i)=>{
@@ -1000,7 +1024,7 @@ document.getElementById("txtBtn").addEventListener("click", (e)=>{
     String(d.getDate()).padStart(2,"0");
 
   const lines = [];
-  lines.push("あなたという木 — 才能の五枚引き");
+  lines.push("霧のむこうの木 — 才能の五枚引き");
   lines.push("THE INTEGRATION TREE");
   lines.push(d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日");
   lines.push("");
@@ -1024,7 +1048,9 @@ document.getElementById("txtBtn").addEventListener("click", (e)=>{
   lines.push("");
   lines.push("────────────────────");
   lines.push("");
-  lines.push("この五つは、ずっとあなたの中にあったもの。");
+  lines.push("霧は、木がなかった証拠ではなく、");
+  lines.push("木が近すぎて、端が見えなかっただけ。");
+  lines.push("");
   lines.push("新しく手に入れるものは、ひとつもない。");
   lines.push("見え方が変わるだけで、木は、同じ場所に立っている。");
   lines.push("");
@@ -1035,7 +1061,7 @@ document.getElementById("txtBtn").addEventListener("click", (e)=>{
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "あなたという木_" + stamp + ".txt";
+  a.download = "霧のむこうの木_" + stamp + ".txt";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
