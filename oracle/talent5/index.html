@@ -293,7 +293,7 @@
   .pp{display:none;}
 
   @media print{
-    @page{ size:A4 portrait; margin:0; }
+    @page{ size:A5 portrait; margin:0; }
 
     /* Firefox が1ページ目で切れるのを防ぐ：
        flex / height:100% / overflow:hidden をすべて解除する */
@@ -323,7 +323,7 @@
     /* ── 全ページ共通の版面 ── */
     .pp,.tree-index,.pos-block,.reading-wrap{
       box-sizing:border-box;
-      padding:24mm 20mm;
+      padding:16mm 14mm;
       overflow:visible!important;height:auto!important;
       break-inside:avoid;page-break-inside:avoid;
       break-after:page;page-break-after:always;
@@ -332,68 +332,68 @@
 
     /* ── 表紙 ── */
     .pp{display:block!important;text-align:center;}
-    .pp-cover{padding-top:74mm;}
+    .pp-cover{padding-top:50mm;}
     .pp-latin{
       font-family:'Cormorant Garamond',serif;
-      font-size:9pt;letter-spacing:.62em;
-      color:#c9a86a;text-indent:.62em;
-      margin-bottom:26mm;
+      font-size:7.5pt;letter-spacing:.55em;
+      color:#c9a86a;text-indent:.55em;
+      margin-bottom:18mm;
     }
-    .pp-crest{margin-bottom:22mm;line-height:0;}
+    .pp-crest{margin-bottom:15mm;line-height:0;}
     .pp-crest span{
       display:inline-block;width:3px;height:3px;border-radius:50%;
       background:#c9a86a;opacity:.75;margin:0 5px;vertical-align:middle;
     }
     .pp-crest span:nth-child(2){width:5px;height:5px;opacity:1;}
     .pp-title{
-      font-size:30pt;font-weight:500;letter-spacing:.30em;
-      color:#e9e5da;text-indent:.30em;line-height:1.9;margin-bottom:9mm;
+      font-size:21pt;font-weight:500;letter-spacing:.28em;
+      color:#e9e5da;text-indent:.28em;line-height:1.9;margin-bottom:6mm;
     }
     .pp-sub{
-      font-size:11pt;letter-spacing:.42em;color:#a8a496;
-      text-indent:.42em;margin-bottom:24mm;
+      font-size:9pt;letter-spacing:.4em;color:#a8a496;
+      text-indent:.4em;margin-bottom:16mm;
     }
     .pp-rule{
-      width:26mm;height:1px;margin:0 auto 12mm;
+      width:20mm;height:1px;margin:0 auto 9mm;
       background:linear-gradient(90deg,transparent,#c9a86a,transparent);
     }
     .pp-date{
       font-family:'Cormorant Garamond','Shippori Mincho',serif;
-      font-size:9.5pt;letter-spacing:.34em;color:#a8a496;
-      text-indent:.34em;margin-bottom:40mm;
+      font-size:8pt;letter-spacing:.3em;color:#a8a496;
+      text-indent:.3em;margin-bottom:26mm;
     }
-    .pp-shop{font-size:9pt;letter-spacing:.5em;color:#6f7a86;text-indent:.5em;}
+    .pp-shop{font-size:7.5pt;letter-spacing:.45em;color:#6f7a86;text-indent:.45em;}
 
     /* ── 奥付 ── */
-    .pp-colophon{padding-top:78mm;}
-    .pp-colophon .pp-rule{margin-bottom:20mm;}
+    .pp-colophon{padding-top:54mm;}
+    .pp-colophon .pp-rule{margin-bottom:14mm;}
     .pp-poem{
-      font-size:11.5pt;line-height:2.7;letter-spacing:.16em;
-      color:#e9e5da;margin-bottom:16mm;
+      font-size:9.5pt;line-height:2.6;letter-spacing:.14em;
+      color:#e9e5da;margin-bottom:11mm;
     }
-    .pp-poem2{color:#a8a496;margin-bottom:20mm;}
-    .pp-c-latin{margin:0 0 5mm;font-size:8pt;letter-spacing:.5em;}
-    .pp-c-name{font-size:8pt;letter-spacing:.5em;color:#6f7a86;text-indent:.5em;}
+    .pp-poem2{color:#a8a496;margin-bottom:14mm;}
+    .pp-c-latin{margin:0 0 4mm;font-size:7pt;letter-spacing:.45em;}
+    .pp-c-name{font-size:7pt;letter-spacing:.45em;color:#6f7a86;text-indent:.45em;}
 
     /* ── 一覧（樹の背骨） ── */
     .tree-index{
       background:none!important;border:none!important;
-      padding-top:44mm!important;padding-left:44mm!important;
-      padding-right:24mm!important;
+      padding-top:30mm!important;padding-left:32mm!important;
+      padding-right:16mm!important;
     }
     .tree-row{
       display:block!important;position:relative;
-      border:none!important;padding:0 0 17mm 0!important;
+      border:none!important;padding:0 0 12mm 0!important;
     }
     .tree-row:last-child{padding-bottom:0!important;}
     .tree-row::before{
-      content:"";position:absolute;left:-15mm;top:2.6mm;
-      width:2.2mm;height:2.2mm;border-radius:50%;
+      content:"";position:absolute;left:-12mm;top:2.2mm;
+      width:2mm;height:2mm;border-radius:50%;
       background:#0d1117;border:1px solid #c9a86a;
     }
     .tree-row::after{
-      content:"";position:absolute;left:calc(-15mm + 1.1mm);
-      top:5.2mm;height:calc(100% - 5.2mm);width:1px;
+      content:"";position:absolute;left:calc(-12mm + 1mm);
+      top:4.4mm;height:calc(100% - 4.4mm);width:1px;
       background:rgba(201,168,106,.32);
     }
     .tree-row:last-child::after{display:none;}
@@ -403,64 +403,65 @@
     }
     .tree-row .pos{
       display:block!important;flex:none!important;
-      font-size:12.5pt;letter-spacing:.3em;color:#c9a86a;
-      margin-bottom:3.2mm;
+      font-size:10.5pt;letter-spacing:.28em;color:#c9a86a;
+      margin-bottom:2.4mm;
     }
     .tree-row.mistrow .pos{color:#9fb0c4;}
     .tree-row .nm{
       display:block!important;flex:none!important;
       font-family:'Cormorant Garamond','Shippori Mincho',serif;
-      font-size:8pt;letter-spacing:.34em;color:#6f7a86;
-      margin-bottom:2.4mm;
+      font-size:6.8pt;letter-spacing:.3em;color:#6f7a86;
+      margin-bottom:1.8mm;
     }
     .tree-row .tl{
       display:block!important;flex:none!important;text-align:left!important;
-      font-size:13.5pt;line-height:1.9;letter-spacing:.09em;color:#e9e5da;
+      font-size:11pt;line-height:1.85;letter-spacing:.08em;color:#e9e5da;
     }
 
     /* ── カード（1枚1ページ） ── */
     .pos-block{
-      padding-top:26mm!important;text-align:center;margin:0!important;
+      padding-top:15mm!important;text-align:center;margin:0!important;
     }
     .pos-mark{
-      display:inline-block;font-size:8.5pt;letter-spacing:.4em;
+      display:inline-block;font-size:7.5pt;letter-spacing:.36em;
       color:#c9a86a;border:1px solid rgba(201,168,106,.4);
-      border-radius:999px;padding:2.2mm 6mm 1.8mm;
-      margin-bottom:5mm;text-indent:.4em;
+      border-radius:999px;padding:1.8mm 5mm 1.5mm;
+      margin-bottom:4mm;text-indent:.36em;
     }
     .pos-desc{
-      font-size:9.5pt;letter-spacing:.14em;line-height:2.1;
-      color:#8a8f98;margin-bottom:12mm;
+      font-size:8pt;letter-spacing:.12em;line-height:2;
+      color:#8a8f98;margin-bottom:8mm;
     }
     .card-img-wrap{
-      width:64mm!important;margin:0 auto 12mm!important;
+      width:50mm!important;margin:0 auto 8mm!important;
       border:1px solid rgba(201,168,106,.4)!important;
       border-radius:2mm;box-shadow:none!important;
     }
-    .card-name{font-size:15pt;letter-spacing:.28em;text-indent:.28em;margin-bottom:2mm;}
+    .card-name{font-size:12.5pt;letter-spacing:.26em;text-indent:.26em;margin-bottom:1.6mm;}
     .card-name-en{
       font-family:'Cormorant Garamond',serif;
-      font-size:8.5pt;letter-spacing:.5em;text-indent:.5em;
-      color:#6f7a86;margin-bottom:11mm;
+      font-size:7pt;letter-spacing:.45em;text-indent:.45em;
+      color:#6f7a86;margin-bottom:8mm;
     }
     .talent{
-      font-size:19pt;font-weight:600;letter-spacing:.13em;
-      line-height:1.85;color:#c9a86a;margin-bottom:7mm;text-indent:.13em;
+      font-size:15pt;font-weight:600;letter-spacing:.11em;
+      line-height:1.8;color:#c9a86a;margin-bottom:5mm;text-indent:.11em;
+      max-width:112mm;margin-left:auto;margin-right:auto;
     }
     .hitokoto{
-      font-size:10.5pt;line-height:2.3;letter-spacing:.09em;
-      color:#a8a496;max-width:112mm;margin:0 auto;
+      font-size:9pt;line-height:2.2;letter-spacing:.07em;
+      color:#a8a496;max-width:104mm;margin:0 auto;
     }
     .pos-block.mist .pos-mark{color:#9fb0c4;border-color:rgba(159,176,196,.45);}
     .pos-block.mist .talent{color:#b9c6d6;}
     .pos-block.mist .card-img-wrap{border-color:rgba(159,176,196,.45)!important;}
     .pos-block.special .card-img-wrap{border-color:rgba(233,229,218,.5)!important;}
     .special-note,.mist-note{
-      margin:11mm auto 0!important;max-width:98mm;
-      font-size:9pt;line-height:2.1;letter-spacing:.1em;color:#8a8f98;
+      margin:8mm auto 0!important;max-width:96mm;
+      font-size:7.8pt;line-height:2;letter-spacing:.08em;color:#8a8f98;
       border-top:1px solid rgba(201,168,106,.22)!important;
       border-bottom:1px solid rgba(201,168,106,.22)!important;
-      padding:4.5mm 0!important;
+      padding:3.5mm 0!important;
     }
     .mist-note{
       border-top-color:rgba(159,176,196,.26)!important;
@@ -470,22 +471,22 @@
     /* ── 本文 ── */
     .reading-wrap{
       border:none!important;margin:0!important;
-      padding-top:34mm!important;
+      padding-top:22mm!important;
       break-inside:auto;page-break-inside:auto;
       break-after:auto;page-break-after:auto;
     }
-    .reading{max-width:132mm;margin:0 auto;}
+    .reading{max-width:116mm;margin:0 auto;}
     .reading::before{
       content:"この木のこと";
       display:block;text-align:center;
-      font-size:10pt;letter-spacing:.55em;color:#c9a86a;
-      text-indent:.55em;margin-bottom:5mm;
+      font-size:8.5pt;letter-spacing:.5em;color:#c9a86a;
+      text-indent:.5em;margin-bottom:4mm;
     }
     .reading p{
-      font-size:11pt;line-height:2.5;letter-spacing:.055em;
-      color:#e9e5da;margin-bottom:9mm;text-align:justify;
+      font-size:9.3pt;line-height:2.3;letter-spacing:.04em;
+      color:#e9e5da;margin-bottom:7mm;text-align:justify;
     }
-    .reading p:first-of-type{margin-top:14mm;}
+    .reading p:first-of-type{margin-top:10mm;}
     .reading p:last-child{margin-bottom:0;}
   }
 
