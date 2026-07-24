@@ -7,7 +7,7 @@
 <meta name="description" content="霧・根・幹・葉・実。なぜ「自分には何もない」と思ってきたのか。その霧を晴らして、もう立っている木を読む。The Integration Tree の資質リーディング。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Shippori+Mincho:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --night:#171c24;
@@ -289,52 +289,204 @@
 
   /* ── 印刷／PDF ── */
   .print-head{display:none;}
+  /* 表紙・奥付は画面では出さない */
+  .pp{display:none;}
+
   @media print{
-    @page{margin:14mm 12mm;}
+    @page{ size:A4 portrait; margin:0; }
+
     /* Firefox が1ページ目で切れるのを防ぐ：
        flex / height:100% / overflow:hidden をすべて解除する */
     html,body{
-      background:var(--night-deep)!important;
+      background:#0d1117!important;
       -webkit-print-color-adjust:exact;print-color-adjust:exact;
       height:auto!important;min-height:0!important;
       overflow:visible!important;overflow-x:visible!important;
-      display:block!important;
-      position:static!important;
+      display:block!important;position:static!important;
+      font-family:'Shippori Mincho',serif;
     }
-    .rain,.intro,.loading,.actions,.save-hint,.txt-link,footer{display:none!important;}
+    .rain,.intro,.loading,.actions,.save-hint,.txt-link,footer,
+    .result-head,.closing,.reading-title{display:none!important;}
+
     main{
-      display:block!important;
-      flex:none!important;
+      display:block!important;flex:none!important;
       max-width:100%!important;width:100%!important;
-      padding:0!important;
-      height:auto!important;overflow:visible!important;
-      position:static!important;
+      padding:0!important;margin:0!important;
+      height:auto!important;overflow:visible!important;position:static!important;
     }
     .result{
-      display:block!important;
-      animation:none!important;
+      display:block!important;animation:none!important;
       height:auto!important;overflow:visible!important;
     }
     .result.show{animation:none!important;}
-    .tree-index,.pos-block,.reading-wrap,.reading{
+
+    /* ── 全ページ共通の版面 ── */
+    .pp,.tree-index,.pos-block,.reading-wrap{
+      box-sizing:border-box;
+      padding:24mm 20mm;
       overflow:visible!important;height:auto!important;
+      break-inside:avoid;page-break-inside:avoid;
+      break-after:page;page-break-after:always;
     }
-    .print-head{
-      display:block;text-align:center;margin-bottom:26px;
+    .pp-colophon{break-after:auto;page-break-after:auto;}
+
+    /* ── 表紙 ── */
+    .pp{display:block!important;text-align:center;}
+    .pp-cover{padding-top:74mm;}
+    .pp-latin{
+      font-family:'Cormorant Garamond',serif;
+      font-size:9pt;letter-spacing:.62em;
+      color:#c9a86a;text-indent:.62em;
+      margin-bottom:26mm;
     }
-    .print-head .pd-deck{
-      font-size:9px;letter-spacing:.35em;color:var(--gold);margin-bottom:6px;
+    .pp-crest{margin-bottom:22mm;line-height:0;}
+    .pp-crest span{
+      display:inline-block;width:3px;height:3px;border-radius:50%;
+      background:#c9a86a;opacity:.75;margin:0 5px;vertical-align:middle;
     }
-    .print-head .pd-date{
-      font-size:9px;letter-spacing:.2em;color:var(--moon-dim);
+    .pp-crest span:nth-child(2){width:5px;height:5px;opacity:1;}
+    .pp-title{
+      font-size:30pt;font-weight:500;letter-spacing:.30em;
+      color:#e9e5da;text-indent:.30em;line-height:1.9;margin-bottom:9mm;
     }
-    .pos-block,.tree-index,.reading p{
-      page-break-inside:avoid;break-inside:avoid;
+    .pp-sub{
+      font-size:11pt;letter-spacing:.42em;color:#a8a496;
+      text-indent:.42em;margin-bottom:24mm;
     }
-    .pos-block{margin-bottom:34px;}
-    .card-img-wrap{width:128px;box-shadow:none;}
-    .reading-wrap{page-break-before:always;break-before:page;}
-    .closing{margin-bottom:0;}
+    .pp-rule{
+      width:26mm;height:1px;margin:0 auto 12mm;
+      background:linear-gradient(90deg,transparent,#c9a86a,transparent);
+    }
+    .pp-date{
+      font-family:'Cormorant Garamond','Shippori Mincho',serif;
+      font-size:9.5pt;letter-spacing:.34em;color:#a8a496;
+      text-indent:.34em;margin-bottom:40mm;
+    }
+    .pp-shop{font-size:9pt;letter-spacing:.5em;color:#6f7a86;text-indent:.5em;}
+
+    /* ── 奥付 ── */
+    .pp-colophon{padding-top:78mm;}
+    .pp-colophon .pp-rule{margin-bottom:20mm;}
+    .pp-poem{
+      font-size:11.5pt;line-height:2.7;letter-spacing:.16em;
+      color:#e9e5da;margin-bottom:16mm;
+    }
+    .pp-poem2{color:#a8a496;margin-bottom:20mm;}
+    .pp-c-latin{margin:0 0 5mm;font-size:8pt;letter-spacing:.5em;}
+    .pp-c-name{font-size:8pt;letter-spacing:.5em;color:#6f7a86;text-indent:.5em;}
+
+    /* ── 一覧（樹の背骨） ── */
+    .tree-index{
+      background:none!important;border:none!important;
+      padding-top:44mm!important;padding-left:44mm!important;
+      padding-right:24mm!important;
+    }
+    .tree-row{
+      display:block!important;position:relative;
+      border:none!important;padding:0 0 17mm 0!important;
+    }
+    .tree-row:last-child{padding-bottom:0!important;}
+    .tree-row::before{
+      content:"";position:absolute;left:-15mm;top:2.6mm;
+      width:2.2mm;height:2.2mm;border-radius:50%;
+      background:#0d1117;border:1px solid #c9a86a;
+    }
+    .tree-row::after{
+      content:"";position:absolute;left:calc(-15mm + 1.1mm);
+      top:5.2mm;height:calc(100% - 5.2mm);width:1px;
+      background:rgba(201,168,106,.32);
+    }
+    .tree-row:last-child::after{display:none;}
+    .tree-row.mistrow::before{border-color:#9fb0c4;}
+    .tree-row.mistrow::after{
+      background:linear-gradient(180deg,rgba(159,176,196,.4),rgba(201,168,106,.06));
+    }
+    .tree-row .pos{
+      display:block!important;flex:none!important;
+      font-size:12.5pt;letter-spacing:.3em;color:#c9a86a;
+      margin-bottom:3.2mm;
+    }
+    .tree-row.mistrow .pos{color:#9fb0c4;}
+    .tree-row .nm{
+      display:block!important;flex:none!important;
+      font-family:'Cormorant Garamond','Shippori Mincho',serif;
+      font-size:8pt;letter-spacing:.34em;color:#6f7a86;
+      margin-bottom:2.4mm;
+    }
+    .tree-row .tl{
+      display:block!important;flex:none!important;text-align:left!important;
+      font-size:13.5pt;line-height:1.9;letter-spacing:.09em;color:#e9e5da;
+    }
+
+    /* ── カード（1枚1ページ） ── */
+    .pos-block{
+      padding-top:26mm!important;text-align:center;margin:0!important;
+    }
+    .pos-mark{
+      display:inline-block;font-size:8.5pt;letter-spacing:.4em;
+      color:#c9a86a;border:1px solid rgba(201,168,106,.4);
+      border-radius:999px;padding:2.2mm 6mm 1.8mm;
+      margin-bottom:5mm;text-indent:.4em;
+    }
+    .pos-desc{
+      font-size:9.5pt;letter-spacing:.14em;line-height:2.1;
+      color:#8a8f98;margin-bottom:12mm;
+    }
+    .card-img-wrap{
+      width:64mm!important;margin:0 auto 12mm!important;
+      border:1px solid rgba(201,168,106,.4)!important;
+      border-radius:2mm;box-shadow:none!important;
+    }
+    .card-name{font-size:15pt;letter-spacing:.28em;text-indent:.28em;margin-bottom:2mm;}
+    .card-name-en{
+      font-family:'Cormorant Garamond',serif;
+      font-size:8.5pt;letter-spacing:.5em;text-indent:.5em;
+      color:#6f7a86;margin-bottom:11mm;
+    }
+    .talent{
+      font-size:19pt;font-weight:600;letter-spacing:.13em;
+      line-height:1.85;color:#c9a86a;margin-bottom:7mm;text-indent:.13em;
+    }
+    .hitokoto{
+      font-size:10.5pt;line-height:2.3;letter-spacing:.09em;
+      color:#a8a496;max-width:112mm;margin:0 auto;
+    }
+    .pos-block.mist .pos-mark{color:#9fb0c4;border-color:rgba(159,176,196,.45);}
+    .pos-block.mist .talent{color:#b9c6d6;}
+    .pos-block.mist .card-img-wrap{border-color:rgba(159,176,196,.45)!important;}
+    .pos-block.special .card-img-wrap{border-color:rgba(233,229,218,.5)!important;}
+    .special-note,.mist-note{
+      margin:11mm auto 0!important;max-width:98mm;
+      font-size:9pt;line-height:2.1;letter-spacing:.1em;color:#8a8f98;
+      border-top:1px solid rgba(201,168,106,.22)!important;
+      border-bottom:1px solid rgba(201,168,106,.22)!important;
+      padding:4.5mm 0!important;
+    }
+    .mist-note{
+      border-top-color:rgba(159,176,196,.26)!important;
+      border-bottom-color:rgba(159,176,196,.26)!important;
+    }
+
+    /* ── 本文 ── */
+    .reading-wrap{
+      border:none!important;margin:0!important;
+      padding-top:34mm!important;
+      break-inside:auto;page-break-inside:auto;
+      break-after:auto;page-break-after:auto;
+    }
+    .reading{max-width:132mm;margin:0 auto;}
+    .reading::before{
+      content:"この木のこと";
+      display:block;text-align:center;
+      font-size:10pt;letter-spacing:.55em;color:#c9a86a;
+      text-indent:.55em;margin-bottom:5mm;
+    }
+    .reading p{
+      font-size:11pt;line-height:2.5;letter-spacing:.055em;
+      color:#e9e5da;margin-bottom:9mm;text-align:justify;
+    }
+    .reading p:first-of-type{margin-top:14mm;}
+    .reading p:last-child{margin-bottom:0;}
   }
 
   footer{position:relative;z-index:1;padding:26px 20px 34px;text-align:center;}
@@ -387,10 +539,15 @@
 
   <!-- 結果 -->
   <section class="result" id="result" aria-live="polite">
-    <div class="print-head" aria-hidden="true">
-      <p class="pd-deck">THE INTEGRATION TREE</p>
-      <p class="pd-date" id="printDate"></p>
-    </div>
+    <section class="pp pp-cover" aria-hidden="true">
+      <p class="pp-latin">The Integration Tree</p>
+      <div class="pp-crest"><span></span><span></span><span></span></div>
+      <h1 class="pp-title">霧のむこうの木</h1>
+      <p class="pp-sub">才能の五枚引き</p>
+      <div class="pp-rule"></div>
+      <p class="pp-date" id="printDate"></p>
+      <p class="pp-shop">あわいの雨宿り</p>
+    </section>
     <div class="result-head">
       <p class="eyebrow">YOUR TREE</p>
       <h2>霧のむこうに、<br>ずっと立っていた木</h2>
@@ -404,6 +561,22 @@
       <p class="reading-title">この 木 の こ と</p>
       <div class="reading" id="readingText"></div>
     </div>
+
+    <section class="pp pp-colophon" aria-hidden="true">
+      <div class="pp-rule"></div>
+      <p class="pp-poem">
+        霧は、木がなかった証拠ではなく、<br>
+        木が近すぎて、端が見えなかっただけ。
+      </p>
+      <p class="pp-poem pp-poem2">
+        新しく手に入れるものは、ひとつもない。<br>
+        見え方が変わるだけで、<br>
+        木は、同じ場所に立っている。
+      </p>
+      <div class="pp-rule"></div>
+      <p class="pp-latin pp-c-latin">The Integration Tree</p>
+      <p class="pp-c-name">AWAI KEIKO</p>
+    </section>
 
     <p class="closing">
       霧は、木がなかった証拠ではなく、<br>
@@ -888,7 +1061,7 @@ function render(cards, reading){
   // 索引
   const idxEl = document.getElementById("treeIndex");
   idxEl.innerHTML = cards.map((c,i)=>
-    '<div class="tree-row">'+
+    '<div class="tree-row'+(i===0?' mistrow':'')+'">'+
       '<span class="pos'+(c.special?' sp':(i===0?' mistpos':''))+'">'+POSITIONS[i].key+'</span>'+
       '<span class="nm">'+(c.special?'✦ ':'')+c.name+'</span>'+
       '<span class="tl">'+talentOf(c)+'</span>'+
