@@ -317,6 +317,14 @@
       break-inside:avoid;page-break-inside:avoid;
       break-after:page;page-break-after:always;
     }
+
+    /* ── カードページの調整つまみ ──
+       1枚のカードが A5 一枚に収まらないときは、この数値を小さくする。
+       32mm あたりまでは崩れずに縮む。 */
+    :root{ --pcard-w:34mm; }
+
+    /* カードページだけ、余白を詰めて縦を稼ぐ */
+    .pos-block{ padding:10mm 13mm!important; }
     .pp-colophon{break-after:auto;page-break-after:auto;}
 
     /* ── 表紙 ── */
@@ -414,52 +422,55 @@
     .pos-mark{
       display:inline-block;font-size:7.5pt;letter-spacing:.36em;
       color:#c9a86a;border:1px solid rgba(201,168,106,.4);
-      border-radius:999px;padding:1.8mm 5mm 1.5mm;
-      margin-bottom:4mm;text-indent:.36em;
+      border-radius:999px;padding:1.6mm 5mm 1.3mm;
+      margin-bottom:3mm;text-indent:.36em;
     }
     .pos-desc{
-      font-size:8pt;letter-spacing:.12em;line-height:2;
-      color:#8a8f98;margin-bottom:8mm;
+      font-size:8pt;letter-spacing:.12em;line-height:1.8;
+      color:#8a8f98;margin-bottom:4mm;
     }
     .card-img-wrap{
-      width:50mm!important;margin:0 auto 8mm!important;
+      width:var(--pcard-w)!important;margin:0 auto 5mm!important;
       border:1px solid rgba(201,168,106,.4)!important;
-      border-radius:2mm;box-shadow:none!important;
+      border-radius:1.5mm;box-shadow:none!important;
     }
-    .card-name{font-size:12.5pt;letter-spacing:.26em;text-indent:.26em;margin-bottom:1.6mm;}
+    .card-name{font-size:12.5pt;letter-spacing:.26em;text-indent:.26em;margin-bottom:1.4mm;}
     .card-name-en{
       font-family:'Cormorant Garamond',serif;
       font-size:7pt;letter-spacing:.45em;text-indent:.45em;
-      color:#6f7a86;margin-bottom:8mm;
+      color:#6f7a86;margin-bottom:3.5mm;
     }
     .talent{
-      font-size:15pt;font-weight:600;letter-spacing:.11em;
-      line-height:1.8;color:#c9a86a;margin-bottom:5mm;text-indent:.11em;
+      font-size:12.5pt;font-weight:600;letter-spacing:.11em;
+      line-height:1.6;color:#c9a86a;margin-bottom:3.5mm;text-indent:.11em;
       max-width:112mm;margin-left:auto;margin-right:auto;
     }
     .hitokoto{
-      font-size:9pt;line-height:2.2;letter-spacing:.07em;
-      color:#a8a496;max-width:104mm;margin:0 auto;
+      font-size:8.2pt;line-height:2;letter-spacing:.07em;
+      color:#a8a496;max-width:110mm;margin:0 auto;
     }
     .detail{
-      margin:6mm auto 0!important;max-width:104mm;text-align:left;
-      border-top:1px solid rgba(201,168,106,.18)!important;padding-top:5mm;
+      margin:4mm auto 0!important;max-width:112mm;text-align:left;
+      border-top:1px solid rgba(201,168,106,.18)!important;padding-top:3.5mm;
     }
     .detail p{
-      font-size:8.5pt;line-height:2;letter-spacing:.05em;
-      color:#a8a496;margin-bottom:3mm;
+      font-size:7.8pt;line-height:1.85;letter-spacing:.05em;
+      color:#a8a496;margin-bottom:2.5mm;
     }
     .detail p:last-child{margin-bottom:0;}
+
+    /* 特別カードは一言欄が長文になるうえ注記も付くので、そこだけさらに詰める */
+    .pos-block.special .hitokoto{font-size:7.4pt;}
     .pos-block.mist .pos-mark{color:#9fb0c4;border-color:rgba(159,176,196,.45);}
     .pos-block.mist .talent{color:#b9c6d6;}
     .pos-block.mist .card-img-wrap{border-color:rgba(159,176,196,.45)!important;}
     .pos-block.special .card-img-wrap{border-color:rgba(233,229,218,.5)!important;}
     .special-note,.mist-note{
-      margin:8mm auto 0!important;max-width:96mm;
-      font-size:7.8pt;line-height:2;letter-spacing:.08em;color:#8a8f98;
+      margin:4mm auto 0!important;max-width:100mm;
+      font-size:6.2pt;line-height:1.8;letter-spacing:.08em;color:#8a8f98;
       border-top:1px solid rgba(201,168,106,.22)!important;
       border-bottom:1px solid rgba(201,168,106,.22)!important;
-      padding:3.5mm 0!important;
+      padding:2.5mm 0!important;
     }
     .mist-note{
       border-top-color:rgba(159,176,196,.26)!important;
