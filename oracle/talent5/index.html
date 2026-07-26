@@ -173,6 +173,15 @@
   .hitokoto{
     font-size:13px;line-height:2.2;letter-spacing:.05em;color:var(--moon-dim);
   }
+  .detail{
+    margin:22px auto 0;max-width:340px;text-align:left;
+    border-top:1px solid rgba(233,229,218,.12);padding-top:18px;
+  }
+  .detail p{
+    font-size:12.5px;line-height:2.15;letter-spacing:.04em;
+    color:var(--moon-dim);margin-bottom:14px;
+  }
+  .detail p:last-child{margin-bottom:0;}
 
   /* ── 特別カード ── */
   .pos-block.special .pos-mark{
@@ -432,6 +441,15 @@
       font-size:9pt;line-height:2.2;letter-spacing:.07em;
       color:#a8a496;max-width:104mm;margin:0 auto;
     }
+    .detail{
+      margin:6mm auto 0!important;max-width:104mm;text-align:left;
+      border-top:1px solid rgba(201,168,106,.18)!important;padding-top:5mm;
+    }
+    .detail p{
+      font-size:8.5pt;line-height:2;letter-spacing:.05em;
+      color:#a8a496;margin-bottom:3mm;
+    }
+    .detail p:last-child{margin-bottom:0;}
     .pos-block.mist .pos-mark{color:#9fb0c4;border-color:rgba(159,176,196,.45);}
     .pos-block.mist .talent{color:#b9c6d6;}
     .pos-block.mist .card-img-wrap{border-color:rgba(159,176,196,.45)!important;}
@@ -478,6 +496,9 @@
   }
   footer a:hover{border-bottom-color:var(--gold-dim);}
 </style>
+
+<!-- 68枚の解説テキスト（talent/ と共有） -->
+<script src="../cards-text.js"></script>
 </head>
 <body>
 
@@ -1044,6 +1065,16 @@ function talentOf(card){
 function hitokotoOf(card){
   return card.special ? card.b1 : card.h;
 }
+// cards-text.js の解説テキストを取り出す（未読み込みでも落ちないようにする）
+function descOf(card){
+  var t = (window.CARD_TEXT && window.CARD_TEXT[card.id]) || null;
+  if(!t || !t.desc || !t.desc.length) return "";
+  return t.desc.map(function(p){ return "<p>" + p + "</p>"; }).join("");
+}
+function descLinesOf(card){
+  var t = (window.CARD_TEXT && window.CARD_TEXT[card.id]) || null;
+  return (t && t.desc) ? t.desc : [];
+}
 
 function render(cards, reading){
   lastCards = cards; lastReading = reading;
@@ -1074,6 +1105,7 @@ function render(cards, reading){
       '<p class="card-name-en">'+c.en+'</p>'+
       '<p class="talent">'+talentOf(c)+'</p>'+
       '<p class="hitokoto">'+hitokotoOf(c)+'</p>'+
+      '<div class="detail">'+descOf(c)+'</div>'+
       (c.special
         ? '<p class="special-note">このカードは、資質そのものではなく<br>資質の「ありか」を指しています。</p>'
         : (i===0
@@ -1202,6 +1234,11 @@ document.getElementById("txtBtn").addEventListener("click", (e)=>{
     lines.push("  "+c.name+"（"+c.en+"）");
     lines.push("  "+talentOf(c));
     lines.push("  "+hitokotoOf(c));
+    var dl = descLinesOf(c);
+    if(dl.length){
+      lines.push("");
+      dl.forEach(function(p){ lines.push("  "+p); });
+    }
     if(c.special) lines.push("  ※このカードは、資質そのものではなく資質の「ありか」を指しています。");
     lines.push("");
     lines.push("────────────────────");
@@ -1250,8 +1287,10 @@ document.getElementById("csvBtn").addEventListener("click", (e)=>{
 
   lastCards.forEach((c,i)=>{
     const k = POSITIONS[i].key;
+    const dl = descLinesOf(c);
     head.push(k+"_位置", k+"_位置英", k+"_位置説明",
               k+"_名前", k+"_英名", k+"_資質", k+"_一言",
+              k+"_解説1", k+"_解説2",
               k+"_補足", k+"_画像ID");
     row.push(
       POSITIONS[i].key,
@@ -1261,6 +1300,8 @@ document.getElementById("csvBtn").addEventListener("click", (e)=>{
       c.en,
       talentOf(c),
       hitokotoOf(c),
+      dl[0] || "",
+      dl[1] || "",
       c.special ? "このカードは、資質そのものではなく資質の「ありか」を指しています。"
         : (i===0 ? "これは、あなたの欠点ではありません。あまりに自然に使えるせいで、力だと気づけなかったものです。" : ""),
       c.id
