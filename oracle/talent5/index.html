@@ -321,7 +321,7 @@
     /* ── カードページの調整つまみ ──
        1枚のカードが A5 一枚に収まらないときは、この数値を小さくする。
        32mm あたりまでは崩れずに縮む。 */
-    :root{ --pcard-w:40mm; }
+    :root{ --pcard-w:34mm; }
 
     /* カードページだけ、余白を詰めて縦を稼ぐ */
     .pos-block{ padding:10mm 13mm!important; }
@@ -1057,14 +1057,23 @@ function pickFive(){
   return out;
 }
 
+// 実際に表示できた画像URLを控えておく（CSV書き出しで使う）
+const RESOLVED_IMG = {};
+
 function imgSrc(img, wrap, id){
   wrap.style.display = "";
   img.onerror = function(){
     if(img.src.endsWith(".webp"))      img.src = "../images/" + id + ".png";
     else if(img.src.endsWith(".png"))  img.src = "../images/" + id + ".jpg";
-    else                               wrap.style.display = "none";
+    else                             { wrap.style.display = "none"; delete RESOLVED_IMG[id]; }
   };
+  img.onload = function(){ RESOLVED_IMG[id] = img.src; };
   img.src = "../images/" + id + ".webp";
+}
+
+// Canva に渡す画像URL。表示できた形式があればそれを、無ければ webp を既定にする。
+function imgUrlOf(id){
+  return RESOLVED_IMG[id] || new URL("../images/" + id + ".webp", location.href).href;
 }
 
 function labelOf(card){
@@ -1302,7 +1311,7 @@ document.getElementById("csvBtn").addEventListener("click", (e)=>{
     head.push(k+"_位置", k+"_位置英", k+"_位置説明",
               k+"_名前", k+"_英名", k+"_資質", k+"_一言",
               k+"_解説1", k+"_解説2",
-              k+"_補足", k+"_画像ID");
+              k+"_補足", k+"_画像URL");
     row.push(
       POSITIONS[i].key,
       POSITIONS[i].en,
@@ -1315,7 +1324,7 @@ document.getElementById("csvBtn").addEventListener("click", (e)=>{
       dl[1] || "",
       c.special ? "このカードは、資質そのものではなく資質の「ありか」を指しています。"
         : (i===0 ? "これは、あなたの欠点ではありません。あまりに自然に使えるせいで、力だと気づけなかったものです。" : ""),
-      c.id
+      imgUrlOf(c.id)
     );
   });
 
