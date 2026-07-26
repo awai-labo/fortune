@@ -1057,23 +1057,14 @@ function pickFive(){
   return out;
 }
 
-// 実際に表示できた画像URLを控えておく（CSV書き出しで使う）
-const RESOLVED_IMG = {};
-
 function imgSrc(img, wrap, id){
   wrap.style.display = "";
   img.onerror = function(){
     if(img.src.endsWith(".webp"))      img.src = "../images/" + id + ".png";
     else if(img.src.endsWith(".png"))  img.src = "../images/" + id + ".jpg";
-    else                             { wrap.style.display = "none"; delete RESOLVED_IMG[id]; }
+    else                               wrap.style.display = "none";
   };
-  img.onload = function(){ RESOLVED_IMG[id] = img.src; };
   img.src = "../images/" + id + ".webp";
-}
-
-// Canva に渡す画像URL。表示できた形式があればそれを、無ければ webp を既定にする。
-function imgUrlOf(id){
-  return RESOLVED_IMG[id] || new URL("../images/" + id + ".webp", location.href).href;
 }
 
 function labelOf(card){
@@ -1303,33 +1294,35 @@ document.getElementById("csvBtn").addEventListener("click", (e)=>{
   if(paras.length > 3) paras = [paras[0], paras[1], paras.slice(2).join("\n\n")];
   while(paras.length < 3) paras.push("");
 
-  const head = ["日付"], row = [d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"];
+  // 位置（霧・根・幹・葉・実）と日付は Canva 側で固定するため、CSV には入れない。
+  // Canva の一括作成は、中身が空の列をフィールドとして認識しない。
+  // 補足はほとんどの回で空欄になるため、不可視文字（ノーブレークスペース）を入れて
+  // 「空ではない列」にしておく。画面上は何も表示されない。
+  const BLANK = "\u00A0";
+  const head = [], row = [];
 
   lastCards.forEach((c,i)=>{
     const k = POSITIONS[i].key;
     const dl = descLinesOf(c);
-    head.push(k+"_位置", k+"_位置英", k+"_位置説明",
-              k+"_名前", k+"_英名", k+"_資質", k+"_一言",
+    head.push(k+"_名前", k+"_英名", k+"_資質", k+"_一言",
               k+"_解説1", k+"_解説2",
-              k+"_補足", k+"_画像URL");
+              k+"_補足", k+"_画像ID");
     row.push(
-      POSITIONS[i].key,
-      POSITIONS[i].en,
-      POSITIONS[i].desc.replace(/<br>/g, " "),
       c.name,
       c.en,
       talentOf(c),
       hitokotoOf(c),
-      dl[0] || "",
-      dl[1] || "",
+      dl[0] || BLANK,
+      dl[1] || BLANK,
+      // 補足は5ポジション全部に列を用意する。該当しない位置は不可視文字で埋める。
       c.special ? "このカードは、資質そのものではなく資質の「ありか」を指しています。"
-        : (i===0 ? "これは、あなたの欠点ではありません。あまりに自然に使えるせいで、力だと気づけなかったものです。" : ""),
-      imgUrlOf(c.id)
+        : (i===0 ? "これは、あなたの欠点ではありません。あまりに自然に使えるせいで、力だと気づけなかったものです。" : BLANK),
+      c.id
     );
   });
 
   head.push("本文1","本文2","本文3");
-  row.push(paras[0], paras[1], paras[2]);
+  row.push(paras[0] || BLANK, paras[1] || BLANK, paras[2] || BLANK);
 
   const esc = v => '"' + String(v).replace(/"/g,'""').replace(/\r?\n/g,"\n") + '"';
   const csv = "\uFEFF" + head.map(esc).join(",") + "\r\n" + row.map(esc).join(",") + "\r\n";
