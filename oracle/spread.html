@@ -486,6 +486,16 @@
     }
     .copy-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
     .copy-btn.copied { opacity: 0.5; cursor: default; }
+    .copy-wrap .copy-btn { margin: 0 5px 10px; }
+
+    .csv-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+      line-height: 1.7;
+    }
 
     @media (max-width: 480px) {
       .card-inner { flex-direction: column; align-items: center; }
@@ -557,6 +567,8 @@
       </div>
       <div class="copy-wrap" id="copyWrap" style="display:none">
         <button class="copy-btn" id="copyBtn" onclick="copyReading()">✦ Copy Reading ✦</button>
+        <button class="copy-btn" id="csvBtn" onclick="downloadCsv()">✦ Canva用CSV ✦</button>
+        <p class="csv-hint" id="csvHint">CSVは Canva の「一括作成」にそのまま読み込めます。</p>
       </div>
     </div>
 
@@ -577,6 +589,7 @@
   </div>
 
   <script src="cards-data.js"></script>
+  <script src="canva-csv.js"></script>
   <script>
     const SPREAD_API = 'https://fortune-five-psi.vercel.app/api/spread';
     const SINGLE_API = 'https://fortune-five-psi.vercel.app/api/oracle';
@@ -610,6 +623,11 @@
       document.getElementById('gateError').textContent = isJa
         ? '合言葉が違うようです。もう一度確認してください。'
         : 'That passphrase doesn\'t seem right. Please check again.';
+
+      document.getElementById('csvBtn').textContent = csvBtnLabel();
+      document.getElementById('csvHint').textContent = isJa
+        ? 'CSVは Canva の「一括作成」にそのまま読み込めます。'
+        : 'The CSV can be loaded directly into Canva Bulk Create.';
 
       // プレースホルダー更新
       renderPositionInputs();
@@ -861,6 +879,7 @@
       copyWrap.style.display = 'block';
       copyBtn.className = 'copy-btn';
       copyBtn.textContent = isJa ? '✦ 鑑定文をコピー ✦' : '✦ Copy Reading ✦';
+      document.getElementById('csvBtn').textContent = csvBtnLabel();
 
       // コピー用テキストをグローバルに保持
       window._lastResults = results;
@@ -896,6 +915,39 @@
           btn.className = 'copy-btn';
         }, 2500);
       });
+    }
+
+    // ── Canva 一括作成用CSV ──
+    // 位置ごとに pos1_… という列を並べ、末尾に問いとまとめを置く。
+    // 日付などの固定要素は Canva 側のテンプレートで持たせる前提で CSV には入れない。
+    function csvBtnLabel() {
+      return currentLang === 'ja' ? '✦ Canva用CSV ✦' : '✦ CSV for Canva ✦';
+    }
+
+    function downloadCsv() {
+      const results = window._lastResults || [];
+      if (!results.length) return;
+
+      const isJa = currentLang === 'ja';
+      const csv = CanvaCSV.sheet();
+
+      results.forEach((r, i) => {
+        const k = 'pos' + (i + 1);
+        csv.add(k + '_番号', toRoman(i + 1));
+        csv.add(k + '_ポジション', r.posLabel);
+        csv.addCard(k, r.card, r.isReversed, currentLang);
+        csv.add(k + '_鑑定', r.reading, { split: 2 });
+      });
+
+      csv.add('問い', document.getElementById('userQ').value.trim());
+      csv.add('まとめ', window._lastSynthesis || '', { split: 3 });
+
+      // spread5.html の書き出しと名前が衝突しないよう free を挟む
+      csv.download('spread_free' + results.length + '_canva');
+
+      const btn = document.getElementById('csvBtn');
+      btn.textContent = isJa ? '✦ CSVを保存しました ✦' : '✦ CSV saved ✦';
+      setTimeout(() => { btn.textContent = csvBtnLabel(); }, 2500);
     }
 
     // ── タイピングアニメーション ──

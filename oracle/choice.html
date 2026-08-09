@@ -304,6 +304,16 @@
     }
     .copy-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
     .copy-btn.copied { opacity: 0.5; cursor: default; }
+    .copy-wrap .copy-btn { margin: 0 5px 10px; }
+
+    .csv-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+      line-height: 1.7;
+    }
 
     /* フッター */
     footer { margin-top: 4rem; text-align: center; }
@@ -378,6 +388,8 @@
       <div id="choiceBlocks"></div>
       <div class="copy-wrap" id="copyWrap" style="display:none">
         <button class="copy-btn" id="copyBtn" onclick="copyAll()">✦ 投稿文をコピー ✦</button>
+        <button class="copy-btn" id="csvBtn" onclick="downloadCsv()">✦ Canva用CSV ✦</button>
+        <p class="csv-hint">CSVは Canva の「一括作成」にそのまま読み込めます。</p>
       </div>
     </div>
 
@@ -395,6 +407,7 @@
   </div>
 
   <script src="cards-data.js"></script>
+  <script src="canva-csv.js"></script>
   <script>
     const SINGLE_API = 'https://fortune-five-psi.vercel.app/api/oracle';
     const ALPHA = ['A','B','C','D','E'];
@@ -609,6 +622,30 @@
           btn.className = 'copy-btn';
         }, 2500);
       });
+    }
+
+    // ── Canva 一括作成用CSV ──
+    // 選択肢ごとに A_… B_… という列を並べ、末尾にテーマを置く。
+    // 日付などの固定要素は Canva 側のテンプレートで持たせる前提で CSV には入れない。
+    function downloadCsv() {
+      if (!lastResults.length) return;
+
+      const csv = CanvaCSV.sheet();
+
+      lastResults.forEach((r, i) => {
+        const k = ALPHA[i];
+        csv.add(k + '_ラベル', r.label);
+        csv.addCard(k, r.card, r.isReversed, 'ja');
+        csv.add(k + '_メッセージ', r.reading, { split: 2 });
+      });
+
+      csv.add('テーマ', document.getElementById('themeInput').value.trim());
+
+      csv.download('choice' + lastResults.length + '_canva');
+
+      const btn = document.getElementById('csvBtn');
+      btn.textContent = '✦ CSVを保存しました ✦';
+      setTimeout(() => { btn.textContent = '✦ Canva用CSV ✦'; }, 2500);
     }
 
     // ── タイピングアニメーション ──
