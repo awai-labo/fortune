@@ -172,6 +172,26 @@
       margin-top: 4px;
     }
 
+    .card-msg-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15.5px;
+      font-style: italic;
+      line-height: 1.5;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.78);
+      margin-top: 16px;
+      padding: 0 0.5rem;
+    }
+
+    .card-msg-ja {
+      font-size: 12.5px;
+      line-height: 1.7;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-top: 6px;
+      padding: 0 0.5rem;
+    }
+
     .reading-box {
       background: rgba(255,255,255,0.025);
       border: 0.5px solid rgba(201,168,76,0.18);
@@ -266,6 +286,8 @@
         </div>
         <p class="card-name" id="cardName"></p>
         <p class="card-orient" id="cardOrient"></p>
+        <p class="card-msg-en" id="cardMsgEn"></p>
+        <p class="card-msg-ja" id="cardMsgJa"></p>
       </div>
 
       <div class="reading-box">
@@ -356,6 +378,11 @@
       const face = document.getElementById('cardFace');
       face.className = 'card-face' + (isReversed ? ' reversed' : '');
       document.getElementById('cardName').textContent = card.name + ' · ' + card.type.toUpperCase();
+      document.getElementById('cardMsgEn').textContent = (card.message && card.message.en) || '';
+      const msgJaEl = document.getElementById('cardMsgJa');
+      msgJaEl.textContent = (card.message && card.message.ja) || '';
+      // 英語モードのときは日本語訳を隠したい場合、次の行のコメントを外す
+      // msgJaEl.style.display = currentLang === 'en' ? 'none' : 'block';
       document.getElementById('cardOrient').textContent = isReversed
         ? (currentLang === 'ja' ? '↓ Reversed' : '↓ Reversed')
         : (currentLang === 'ja' ? '↑ Upright' : '↑ Upright');
