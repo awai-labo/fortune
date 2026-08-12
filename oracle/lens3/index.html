@@ -143,6 +143,9 @@ const POS = [
 const esc4html = s => String(s==null?'':s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+// 核＝その位置でカードが立てている一文。1・2枚目は「今の視点」、3枚目は「問いかけ」
+const coreOf = (id, i) => !id ? '' : (i === 2 ? (LENS[id].ask || LENS[id].view) : LENS[id].view);
+
 const byId = {};
 CARDS.forEach(c => byId[c.id] = c);
 const IDS = CARDS.map(c => c.id);
@@ -179,7 +182,7 @@ function render(){
         <div class="meta">
           <div class="slot-label">${POS[i].ja}</div>
           <div class="slot-title">${L ? L.ja : '—'}<span class="en">${C ? C.name : ''}</span></div>
-          ${L ? `<div class="core">核：${esc4html(i===2 ? (L.ask||L.view) : L.view)}</div>` : ''}
+          ${L ? `<div class="core">核：${esc4html(coreOf(id, i))}</div>` : ''}
           <div style="margin-top:8px">
             <select data-slot="${i}" class="pick">${id?opts:'<option>—</option>'}</select>
           </div>
@@ -349,14 +352,14 @@ function esc(s){ return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '
 document.getElementById('csv').onclick = () => {
   if (!records.length) return say('保存された組がありません');
   const head = ['no',
-    'name1','en1','img1','text1',
-    'name2','en2','img2','text2',
-    'name3','en3','img3','text3',
+    'name1','en1','img1','core1','text1',
+    'name2','en2','img2','core2','text2',
+    'name3','en3','img3','core3','text3',
     'text4'];
   const rows = records.map((r, i) => {
     const cells = [i + 1];
     r.cards.forEach((id, k) => {
-      cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, r.texts[k]);
+      cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, coreOf(id, k), r.texts[k]);
     });
     cells.push(r.texts[3] || '');
     return cells.map(esc).join(',');
