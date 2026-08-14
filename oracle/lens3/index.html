@@ -144,7 +144,10 @@ const esc4html = s => String(s==null?'':s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 // 核＝その位置でカードが立てている一文。1・2枚目は「今の視点」、3枚目は「問いかけ」
-const coreOf = (id, i) => !id ? '' : (i === 2 ? (LENS[id].ask || LENS[id].view) : LENS[id].view);
+const coreOf = (id, i) => !id ? '' :
+  i === 0 ? LENS[id].core1 :
+  i === 1 ? LENS[id].core2 :
+            (LENS[id].ask || LENS[id].view);
 
 const byId = {};
 CARDS.forEach(c => byId[c.id] = c);
@@ -250,6 +253,8 @@ document.getElementById('gen').onclick = async () => {
     pillar:   LENS[id].pillar,
     role:     LENS[id].role,
     view:     LENS[id].view,
+    core1:    LENS[id].core1,
+    core2:    LENS[id].core2,
     ask:      LENS[id].ask,
     seedname: LENS[id].seedname,
     grow:     LENS[id].grow,
