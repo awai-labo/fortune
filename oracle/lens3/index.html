@@ -137,6 +137,7 @@ const POS = [
   { n:'I',   ja:'まず、ここが見えている',     en:'First, This Is Visible' },
   { n:'II',  ja:'その隣には、これもある',     en:'And Beside It, This Too' },
   { n:'III', ja:'さらに、こんなものも見えてくる', en:'And Further, This Comes Into View' },
+  { n:'—',   ja:'カードの余白',             en:'Card Margin' },
   { n:'IV',  ja:'景色が立ち上がる場所',       en:'Where the View Rises' },
 ];
 
@@ -151,7 +152,7 @@ CARDS.forEach(c => byId[c.id] = c);
 const IDS = CARDS.map(c => c.id);
 
 let current = [null, null, null];   // card id
-let texts   = ['', '', '', ''];
+let texts   = ['', '', '', '', ''];
 let records = [];
 
 // ---------- 表示 ----------
@@ -166,11 +167,23 @@ function render(){
         <span class="pos">${POS[3].n}</span>
         <div class="meta">
           <div class="slot-label">${POS[3].ja}</div>
-          <div class="slot-title" style="font-size:16px;opacity:.75">三枚の総括（カードなし）</div>
+          <div class="slot-title" style="font-size:16px;opacity:.75">三枚のうちどれか一枚の由来・象徴の小話（AIが選ぶ／カード指定なし）</div>
         </div>
       </div>
       <textarea data-slot="3" placeholder="「生成」を押すと入ります">${esc4html(texts[3])}</textarea>
       <div class="chars" id="ch3">${(texts[3]||'').length} 字</div>
+    </div>`;
+    if (i === 4) return `
+    <div class="slot summary">
+      <div class="slot-head">
+        <span class="pos">${POS[4].n}</span>
+        <div class="meta">
+          <div class="slot-label">${POS[4].ja}</div>
+          <div class="slot-title" style="font-size:16px;opacity:.75">三枚の総括（カードなし）</div>
+        </div>
+      </div>
+      <textarea data-slot="4" placeholder="「生成」を押すと入ります">${esc4html(texts[4])}</textarea>
+      <div class="chars" id="ch4">${(texts[4]||'').length} 字</div>
     </div>`;
     const opts = IDS.map(x =>
       `<option value="${x}" ${x===id?'selected':''}>${LENS[x].ja}</option>`).join('');
@@ -224,7 +237,7 @@ document.getElementById('draw').onclick = () => {
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
   current = pool.slice(0, 3);
-  texts = ['', '', '', ''];
+  texts = ['', '', '', '', ''];
   render();
 };
 
@@ -284,13 +297,14 @@ document.getElementById('gen').onclick = async () => {
     texts[0] = d.card1 || '';
     texts[1] = d.card2 || '';
     texts[2] = d.card3 || '';
-    texts[3] = d.card4 || '';
+    texts[3] = d.column || '';
+    texts[4] = d.card4 || '';
     if (!d._meta?.split) {
       say('区切りで割れませんでした。枠を確認してください');
       if (d._meta?.raw && !texts[0]) texts[0] = d._meta.raw;
     } else {
       const n = d._meta.lens;
-      say(`生成しました（${n[0]} / ${n[1]} / ${n[2]} / ${n[3]} 字）`, true);
+      say(`生成しました（${n[0]} / ${n[1]} / ${n[2]} / 余白${n[3]} / 総括${n[4]} 字）`, true);
     }
     render();
   } catch(e){
@@ -355,13 +369,14 @@ document.getElementById('csv').onclick = () => {
     'name1','en1','img1','core1','text1',
     'name2','en2','img2','core2','text2',
     'name3','en3','img3','core3','text3',
-    'text4'];
+    'aside','text4'];
   const rows = records.map((r, i) => {
     const cells = [i + 1];
     r.cards.forEach((id, k) => {
       cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, coreOf(id), r.texts[k]);
     });
     cells.push(r.texts[3] || '');
+    cells.push(r.texts[4] || '');
     return cells.map(esc).join(',');
   });
   const csv = '\uFEFF' + head.map(esc).join(',') + '\r\n' + rows.join('\r\n');
