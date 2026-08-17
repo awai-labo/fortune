@@ -134,20 +134,17 @@
 <script>
 const BASE = 'https://fortune-five-psi.vercel.app/oracle/';
 const POS = [
-  { n:'I',   ja:'かけているレンズ',       en:'The Lens You Wear' },
-  { n:'II',  ja:'外せることを忘れた日',   en:'The Day You Forgot It Comes Off' },
-  { n:'III', ja:'お試しレンズ',           en:'A Lens to Try' },
-  { n:'IV',  ja:'レンズを置いて、全体をみる', en:'Setting the Lenses Down' },
+  { n:'I',   ja:'まず、ここが見えている',     en:'First, This Is Visible' },
+  { n:'II',  ja:'その隣には、これもある',     en:'And Beside It, This Too' },
+  { n:'III', ja:'さらに、こんなものも見えてくる', en:'And Further, This Comes Into View' },
+  { n:'IV',  ja:'景色が立ち上がる場所',       en:'Where the View Rises' },
 ];
 
 const esc4html = s => String(s==null?'':s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-// 核＝その位置でカードが立てている一文。1・2枚目は「今の視点」、3枚目は「問いかけ」
-const coreOf = (id, i) => !id ? '' :
-  i === 0 ? LENS[id].core1 :
-  i === 1 ? LENS[id].core2 :
-            (LENS[id].ask || LENS[id].view);
+// 核＝そのカードの「見落とさないもの」。v3では位置に関係なく同じ核から書く
+const coreOf = (id) => !id ? '' : LENS[id].overlooked;
 
 const byId = {};
 CARDS.forEach(c => byId[c.id] = c);
@@ -185,7 +182,7 @@ function render(){
         <div class="meta">
           <div class="slot-label">${POS[i].ja}</div>
           <div class="slot-title">${L ? L.ja : '—'}<span class="en">${C ? C.name : ''}</span></div>
-          ${L ? `<div class="core">核：${esc4html(coreOf(id, i))}</div>` : ''}
+          ${L ? `<div class="core">見落とさないもの：${esc4html(coreOf(id))}</div>` : ''}
           <div style="margin-top:8px">
             <select data-slot="${i}" class="pick">${id?opts:'<option>—</option>'}</select>
           </div>
@@ -249,20 +246,18 @@ document.getElementById('gen').onclick = async () => {
   document.querySelectorAll('textarea').forEach(t => t.classList.add('loading'));
 
   const pack = (id, useReversed) => ({
-    ja:       LENS[id].ja,
-    pillar:   LENS[id].pillar,
-    role:     LENS[id].role,
-    view:     LENS[id].view,
-    core1:    LENS[id].core1,
-    core2:    LENS[id].core2,
-    ask:      LENS[id].ask,
-    seedname: LENS[id].seedname,
-    grow:     LENS[id].grow,
-    appear:   LENS[id].appear,
-    misread:  LENS[id].misread,
-    fruit:    LENS[id].fruit,
-    special:  LENS[id].special,
-    material: useReversed ? byId[id].reversed : byId[id].upright,
+    ja:         LENS[id].ja,
+    pillar:     LENS[id].pillar,
+    role:       LENS[id].role,
+    view:       LENS[id].view,
+    overlooked: LENS[id].overlooked,
+    seedname:   LENS[id].seedname,
+    grow:       LENS[id].grow,
+    appear:     LENS[id].appear,
+    misread:    LENS[id].misread,
+    fruit:      LENS[id].fruit,
+    special:    LENS[id].special,
+    material:   useReversed ? byId[id].reversed : byId[id].upright,
   });
 
   try {
@@ -364,7 +359,7 @@ document.getElementById('csv').onclick = () => {
   const rows = records.map((r, i) => {
     const cells = [i + 1];
     r.cards.forEach((id, k) => {
-      cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, coreOf(id, k), r.texts[k]);
+      cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, coreOf(id), r.texts[k]);
     });
     cells.push(r.texts[3] || '');
     return cells.map(esc).join(',');
