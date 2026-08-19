@@ -121,6 +121,19 @@
     <button id="clear" class="danger">全消去</button>
   </div>
 
+  <div class="slot" id="profileSlot">
+    <div class="slot-head">
+      <div class="meta">
+        <div class="slot-label">下ごしらえ（内部資料・読み手には見せません）</div>
+        <div class="slot-title" style="font-size:16px">人物像を10パターン</div>
+      </div>
+      <button id="profileBtn">10パターン出す</button>
+    </div>
+    <textarea id="profileOut" readonly placeholder="「10パターン出す」を押すと、3枚を持つ人物像の案が10個入ります" style="min-height:180px;font-size:14px;line-height:1.85"></textarea>
+    <div class="slot-label" style="margin-top:14px">使う土台（自由記述。上から選んで書き写す／混ぜる／自分で書く、なんでもOK。空欄なら生成時にAIが自分で場面を作ります）</div>
+    <textarea id="foundation" placeholder="例：2番の関係性をベースに、3番の内的葛藤を混ぜる、など自由に" style="min-height:100px;font-size:14px;line-height:1.85"></textarea>
+  </div>
+
   <div id="slots"></div>
 
   <div class="saved">
@@ -238,7 +251,43 @@ document.getElementById('draw').onclick = () => {
   }
   current = pool.slice(0, 3);
   texts = ['', '', '', '', ''];
+  document.getElementById('profileOut').value = '';
+  document.getElementById('foundation').value = '';
   render();
+};
+
+// ---------- 下ごしらえ：人物像10パターン ----------
+document.getElementById('profileBtn').onclick = async () => {
+  if (current.some(x => !x)) return say('先に3枚引いてください');
+  const pass = document.getElementById('pass').value.trim();
+  if (!pass) return say('合言葉を入れてください');
+  localStorage.setItem('lens3_pass', pass);
+
+  const btn = document.getElementById('profileBtn');
+  const out = document.getElementById('profileOut');
+  btn.disabled = true; btn.textContent = '考え中…';
+  out.classList.add('loading');
+
+  try {
+    const r = await fetch('/api/oracle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'lens3_profile',
+        pass,
+        cards: current.map(id => ({ ja: LENS[id].ja, overlooked: LENS[id].overlooked, view: LENS[id].view })),
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || '生成に失敗しました');
+    out.value = d.profiles || '';
+    say('10パターン出しました', true);
+  } catch (e) {
+    say(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '10パターン出す';
+    out.classList.remove('loading');
+  }
 };
 
 // ---------- 生成 ----------
@@ -284,6 +333,7 @@ document.getElementById('gen').onclick = async () => {
         cards: [pack(current[0], false), pack(current[1], true), pack(current[2], false)],
         rx12: reactionOf(current[0], current[1]),
         rx13: reactionOf(current[0], current[2]),
+        foundation: document.getElementById('foundation').value.trim(),
         climate: (() => {
           const t = {};
           current.forEach(id => { const p = LENS[id].pillar; t[p] = (t[p]||0)+1; });
