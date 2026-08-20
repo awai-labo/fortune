@@ -45,10 +45,11 @@ export default async function handler(req, res) {
 
 
 // ============================================================
-    // 三枚のレンズ｜下ごしらえ（人物像10パターン）— 合言葉必須／内部資料
-    // 読み手には見せない。断定的に、具体的に書かせるための別モード。
+    // 三枚のレンズ｜下ごしらえ（今の解釈を見る）— 合言葉必須／内部資料
+    // 本文を書く前に使う解釈を一つだけ、断定的な言葉でそのまま出力する。
+    // けいこさんが読んで直し、その修正版を土台として本生成に渡す想定。
     // ============================================================
-    if (mode === 'lens3_profile') {
+    if (mode === 'lens3_interpret') {
       const P3    = process.env.SPREAD_PASS_3 || '';
       const OWNER = process.env.SPREAD_PASS_OWNER || '';
       const okP = (P3 && pass === P3) || (OWNER && pass === OWNER);
@@ -62,39 +63,42 @@ export default async function handler(req, res) {
       }
       const [p1, p2, p3] = PL;
 
-      const systemProfile = `あなたは「The Integration Tree」というオラクルデッキの、下ごしらえを行う思考パートナーです。
+      const systemInterpret = `あなたは「The Integration Tree」というオラクルデッキの読み手が、本文を書く前に行う内部の解釈作業を担当します。
 これは読み手には一切見せない内部資料です。最終的な鑑定文ではありません。
 
 三枚のカードそれぞれの核（見落とさないもの）が渡されます。
-この三枚が同時に動いているとしたら、どんな内的な心理の動きになりうるか、10パターン考えてください。
+この三枚を、実際に一〜三枚目・総括の本文を書くときに使う、一つの内的な心理の流れとして解釈してください。
+10通り考えるのではなく、今この場でいちばん筋が通ると思う解釈を一つだけ、はっきり書いてください。
 
-・一般論や当たり障りのない言い方をしないこと。「傷ついた経験があるかもしれない」のような曖昧な言い方は禁止です
-・各案は、きっかけ（何によってその動きが始まるか）→内側で起きること（感情・判断・防衛のはたらき）→それがどう行動や態度に表れるか、という流れで、具体的に描くこと
-・対人関係の種類（恋愛・仕事・家族・友人など）は特定しないこと。特定の関係に紐づけると、その関係に当てはまらない読み手を最初から締め出してしまいます。「誰との」ではなく「何が起きているか」を描くこと
-・年代や人生のフェーズも特定しないこと
-・行動・感情・身体感覚は具体的に書くこと。「不安になる」のような抽象語だけで済ませないこと
-・10パターンはそれぞれ違う方向を向くこと。同じ動きの言い換えを10個作らないこと
-・ここは内部の下ごしらえです。断定的に書いてよく、「〜のかもしれません」のような保留は不要です
-・三枚の核をすべて律儀に均等に使う必要はありません。一枚を強く軸にして、残り二枚を従える案があってもかまいません
-・各案は3〜5行程度
+・断定的に書いてよいこと。「〜のかもしれません」のような保留は不要です
+・対人関係の種類（恋愛・仕事・家族など）や年代は、無理に特定しなくてよい。ただし、自然に絞れると感じるなら、絞ってかまいません
+・きっかけ（何によってこの動きが始まるか）→内側で起きること（感情・判断・防衛のはたらき）→それが今どう行動や態度に表れているか、という流れで書くこと
+・三枚それぞれが、この流れの中でどんな役割を担っているかにも触れること
+・具体的に書くこと。「不安になる」のような抽象語だけで済ませないこと
+・これは下書きの解釈です。読んだ人（けいこさん）がこのあと手を入れて、本生成の土台にします。直しやすいよう、以下の見出しに沿って書くこと
 
-出力形式（前置き・説明は書かないこと）：
-1. （案の本文）
+出力形式（前置き・締めの挨拶は書かないこと。見出しはそのまま使うこと）：
 
-2. （案の本文）
+全体の流れ：
+（きっかけ→内側で起きること→今の表れ、を3〜5行で）
 
-…
+一枚目の役割：
+（この流れの中で、一枚目のカードが担っている部分を1〜2行で）
 
-10. （案の本文）`;
+二枚目の役割：
+（同上）
 
-      const promptProfile = `三枚の核（見落とさないもの）：
-・${p1.ja}：${p1.overlooked || p1.view}
-・${p2.ja}：${p2.overlooked || p2.view}
-・${p3.ja}：${p3.overlooked || p3.view}
+三枚目の役割：
+（同上）`;
 
-この三枚が同時に動いているとしたら、どんな内的な心理の動きになりうるか、指示に従って10パターン考えてください。`;
+      const promptInterpret = `三枚の核（見落とさないもの）：
+・一枚目｜${p1.ja}：${p1.overlooked || p1.view}
+・二枚目｜${p2.ja}：${p2.overlooked || p2.view}
+・三枚目｜${p3.ja}：${p3.overlooked || p3.view}
 
-      const rProfile = await fetch('https://api.anthropic.com/v1/messages', {
+この三枚を、指示に従って一つの内的な心理の流れとして解釈してください。`;
+
+      const rInterpret = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -103,16 +107,16 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 3000,
-          system: systemProfile,
-          messages: [{ role: 'user', content: promptProfile }],
+          max_tokens: 1500,
+          system: systemInterpret,
+          messages: [{ role: 'user', content: promptInterpret }],
         }),
       });
 
-      const dProfile = await rProfile.json();
-      const profiles = dProfile.content?.find(b => b.type === 'text')?.text || '';
+      const dInterpret = await rInterpret.json();
+      const interpretation = dInterpret.content?.find(b => b.type === 'text')?.text || '';
 
-      return res.status(200).json({ profiles });
+      return res.status(200).json({ interpretation });
     }
 
 // ============================================================
