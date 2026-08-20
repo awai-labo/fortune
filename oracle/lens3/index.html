@@ -125,13 +125,11 @@
     <div class="slot-head">
       <div class="meta">
         <div class="slot-label">下ごしらえ（内部資料・読み手には見せません）</div>
-        <div class="slot-title" style="font-size:16px">内的な心理の動きを10パターン</div>
+        <div class="slot-title" style="font-size:16px">今の解釈（土台）</div>
       </div>
-      <button id="profileBtn">10パターン出す</button>
+      <button id="profileBtn">解釈を出す</button>
     </div>
-    <textarea id="profileOut" readonly placeholder="「10パターン出す」を押すと、3枚に流れる心理の動きの案が10個入ります（関係性や年代は特定しません）" style="min-height:180px;font-size:14px;line-height:1.85"></textarea>
-    <div class="slot-label" style="margin-top:14px">使う土台（自由記述。上から選んで書き写す／混ぜる／自分で書く、なんでもOK。空欄なら生成時にAIが自分で場面を作ります）</div>
-    <textarea id="foundation" placeholder="例：2番の動きをベースに、3番の要素を混ぜる、など自由に" style="min-height:100px;font-size:14px;line-height:1.85"></textarea>
+    <textarea id="foundation" placeholder="「解釈を出す」を押すと、AIが本文を書く前に使う内的な心理の流れが入ります。そのまま自由に書き換えてから「生成」を押してください。空欄のまま生成すると、AIが自分で場面を作ります" style="min-height:220px;font-size:14px;line-height:1.85"></textarea>
   </div>
 
   <div id="slots"></div>
@@ -251,12 +249,11 @@ document.getElementById('draw').onclick = () => {
   }
   current = pool.slice(0, 3);
   texts = ['', '', '', '', ''];
-  document.getElementById('profileOut').value = '';
   document.getElementById('foundation').value = '';
   render();
 };
 
-// ---------- 下ごしらえ：人物像10パターン ----------
+// ---------- 下ごしらえ：今の解釈を出す ----------
 document.getElementById('profileBtn').onclick = async () => {
   if (current.some(x => !x)) return say('先に3枚引いてください');
   const pass = document.getElementById('pass').value.trim();
@@ -264,7 +261,7 @@ document.getElementById('profileBtn').onclick = async () => {
   localStorage.setItem('lens3_pass', pass);
 
   const btn = document.getElementById('profileBtn');
-  const out = document.getElementById('profileOut');
+  const out = document.getElementById('foundation');
   btn.disabled = true; btn.textContent = '考え中…';
   out.classList.add('loading');
 
@@ -273,19 +270,19 @@ document.getElementById('profileBtn').onclick = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        mode: 'lens3_profile',
+        mode: 'lens3_interpret',
         pass,
         cards: current.map(id => ({ ja: LENS[id].ja, overlooked: LENS[id].overlooked, view: LENS[id].view })),
       }),
     });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || '生成に失敗しました');
-    out.value = d.profiles || '';
-    say('10パターン出しました', true);
+    out.value = d.interpretation || '';
+    say('解釈を出しました。直してから生成してください', true);
   } catch (e) {
     say(e.message);
   } finally {
-    btn.disabled = false; btn.textContent = '10パターン出す';
+    btn.disabled = false; btn.textContent = '解釈を出す';
     out.classList.remove('loading');
   }
 };
