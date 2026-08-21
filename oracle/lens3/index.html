@@ -165,6 +165,7 @@ const IDS = CARDS.map(c => c.id);
 let current = [null, null, null];   // card id
 let texts   = ['', '', '', '', ''];
 let records = [];
+let lastInterpretation = '';        // AIが最初に出した解釈（生データ、比較用）
 
 // ---------- 表示 ----------
 function render(){
@@ -250,6 +251,7 @@ document.getElementById('draw').onclick = () => {
   current = pool.slice(0, 3);
   texts = ['', '', '', '', ''];
   document.getElementById('foundation').value = '';
+  lastInterpretation = '';
   render();
 };
 
@@ -277,7 +279,8 @@ document.getElementById('profileBtn').onclick = async () => {
     });
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || '生成に失敗しました');
-    out.value = d.interpretation || '';
+    lastInterpretation = d.interpretation || '';
+    out.value = lastInterpretation;
     say('解釈を出しました。直してから生成してください', true);
   } catch (e) {
     say(e.message);
@@ -388,7 +391,10 @@ function renderRecs(){
   });
   document.querySelectorAll('[data-load]').forEach(b => b.onclick = e => {
     const r = records[+e.target.dataset.load];
-    current = r.cards.slice(); texts = r.texts.slice(); render();
+    current = r.cards.slice(); texts = r.texts.slice();
+    lastInterpretation = r.interpretationAI || '';
+    document.getElementById('foundation').value = r.interpretationEdited || '';
+    render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
@@ -396,7 +402,13 @@ function renderRecs(){
 document.getElementById('save').onclick = () => {
   if (current.some(x => !x)) return say('先に3枚引いてください');
   if (texts.some(t => !t.trim())) return say('空の枠があります');
-  records.push({ cards: current.slice(), texts: texts.slice(), at: Date.now() });
+  records.push({
+    cards: current.slice(),
+    texts: texts.slice(),
+    interpretationAI: lastInterpretation,
+    interpretationEdited: document.getElementById('foundation').value,
+    at: Date.now(),
+  });
   persist();
   say('保存しました（' + records.length + '組）', true);
 };
@@ -416,7 +428,8 @@ document.getElementById('csv').onclick = () => {
     'name1','en1','img1','core1','text1',
     'name2','en2','img2','core2','text2',
     'name3','en3','img3','core3','text3',
-    'aside','text4'];
+    'aside','text4',
+    'ai_interpretation','edited_interpretation','changed'];
   const rows = records.map((r, i) => {
     const cells = [i + 1];
     r.cards.forEach((id, k) => {
@@ -424,6 +437,9 @@ document.getElementById('csv').onclick = () => {
     });
     cells.push(r.texts[3] || '');
     cells.push(r.texts[4] || '');
+    const ai = r.interpretationAI || '';
+    const edited = r.interpretationEdited || '';
+    cells.push(ai, edited, ai.trim() === edited.trim() ? '' : 'yes');
     return cells.map(esc).join(',');
   });
   const csv = '\uFEFF' + head.map(esc).join(',') + '\r\n' + rows.join('\r\n');
