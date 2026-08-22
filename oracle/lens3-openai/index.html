@@ -255,7 +255,17 @@ document.getElementById('draw').onclick = () => {
   lastInterpretation = '';
   render();
 };
-
+  
+// ---------- 手元のカードを指定 ----------
+document.getElementById('manual').onclick = () => {
+  current = [IDS[0], IDS[1], IDS[2]];
+  texts = ['', '', '', '', ''];
+  document.getElementById('foundation').value = '';
+  lastInterpretation = '';
+  render();
+  say('プルダウンから、実際にひいたカードを3枚とも選んでください', true);
+};
+  
 // ---------- 下ごしらえ：今の解釈を出す ----------
 document.getElementById('profileBtn').onclick = async () => {
   if (current.some(x => !x)) return say('先に3枚引いてください');
