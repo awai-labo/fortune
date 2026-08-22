@@ -511,23 +511,11 @@ ${foundation}
 カードの余白では、三枚のうち一枚を選び、その由来・象徴・逸話をひとつだけ、読み物として軽く紹介してください。「あなた」に語りかけず、心理や読みには結びつけないこと。
 総括では、三枚の下に共通して流れているものを一本はっきり名指し、三枚のあいだの関係を書き、必ず一度、疑問符で終わる問いを相手に渡してください。関係は説明で終わらせず、同時に動いている場面を新しく作って見せること。締めは時間の話ではなく、相手が今すでに持っているものの話で終え、最後の一文でだけ「メガネ」という語を使ってください。`;
 
-      const rL3 = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 6000,
-          system: systemL3,
-          messages: [{ role: 'user', content: promptL3 }],
-        }),
-      });
-
-      const dL3 = await rL3.json();
-      const raw = dL3.content?.find(b => b.type === 'text')?.text || '';
+      const raw = await callOpenAI({
+  system: systemL3,
+  prompt: promptL3,
+  maxOutputTokens: 6000,
+});
 
       // ===1=== ===2=== ===3=== ===column=== ===4=== で割る。割れなかった分は空で返し、フロント側で手当てする。
       const parts = raw.split(/===\s*(?:1|2|3|column|4)\s*===/).map(s => s.trim());
