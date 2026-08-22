@@ -198,8 +198,12 @@ function render(){
       <textarea data-slot="4" placeholder="「生成」を押すと入ります">${esc4html(texts[4])}</textarea>
       <div class="chars" id="ch4">${(texts[4]||'').length} 字</div>
     </div>`;
-    const opts = IDS.map(x =>
-      `<option value="${x}" ${x===id?'selected':''}>${LENS[x].ja}</option>`).join('');
+    const opts = [
+  `<option value="">— カードを選択 —</option>`,
+  ...IDS.map(x =>
+    `<option value="${x}" ${x===id?'selected':''} ${current.some((chosen, index) => index !== i && chosen === x) ? 'disabled' : ''}>${LENS[x].ja}</option>`
+  )
+].join('');
     return `
     <div class="slot">
       <div class="slot-head">
@@ -258,7 +262,7 @@ document.getElementById('draw').onclick = () => {
   
 // ---------- 手元のカードを指定 ----------
 document.getElementById('manual').onclick = () => {
-  current = [IDS[0], IDS[1], IDS[2]];
+  current = [null, null, null];
   texts = ['', '', '', '', ''];
   document.getElementById('foundation').value = '';
   lastInterpretation = '';
