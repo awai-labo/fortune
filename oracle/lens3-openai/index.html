@@ -113,6 +113,7 @@
   <div class="bar">
     <input type="password" id="pass" placeholder="合言葉" style="width:150px">
     <button id="draw" class="primary">3枚引く</button>
+    <button id="manual">手元のカードを指定</button>
     <button id="gen">生成</button>
     <span class="spacer"></span>
     <span class="count" id="count">保存 0 組</span>
@@ -197,8 +198,12 @@ function render(){
       <textarea data-slot="4" placeholder="「生成」を押すと入ります">${esc4html(texts[4])}</textarea>
       <div class="chars" id="ch4">${(texts[4]||'').length} 字</div>
     </div>`;
-    const opts = IDS.map(x =>
-      `<option value="${x}" ${x===id?'selected':''}>${LENS[x].ja}</option>`).join('');
+    const opts = [
+  `<option value="">— カードを選択 —</option>`,
+  ...IDS.map(x =>
+    `<option value="${x}" ${x===id?'selected':''} ${current.some((chosen, index) => index !== i && chosen === x) ? 'disabled' : ''}>${LENS[x].ja}</option>`
+  )
+].join('');
     return `
     <div class="slot">
       <div class="slot-head">
@@ -209,7 +214,7 @@ function render(){
           <div class="slot-title">${L ? L.ja : '—'}<span class="en">${C ? C.name : ''}</span></div>
           ${L ? `<div class="core">見落とさないもの：${esc4html(coreOf(id))}</div>` : ''}
           <div style="margin-top:8px">
-            <select data-slot="${i}" class="pick">${id?opts:'<option>—</option>'}</select>
+            <select data-slot="${i}" class="pick">${opts}</select>
           </div>
         </div>
       </div>
@@ -228,7 +233,7 @@ function render(){
   document.querySelectorAll('.pick').forEach(s => {
     s.addEventListener('change', e => {
       const i = +e.target.dataset.slot;
-      current[i] = e.target.value;
+      current[i] = e.target.value || null;
       render();
     });
   });
@@ -254,7 +259,17 @@ document.getElementById('draw').onclick = () => {
   lastInterpretation = '';
   render();
 };
-
+  
+// ---------- 手元のカードを指定 ----------
+document.getElementById('manual').onclick = () => {
+  current = [null, null, null];
+  texts = ['', '', '', '', ''];
+  document.getElementById('foundation').value = '';
+  lastInterpretation = '';
+  render();
+  say('プルダウンから、実際にひいたカードを3枚とも選んでください', true);
+};
+  
 // ---------- 下ごしらえ：今の解釈を出す ----------
 document.getElementById('profileBtn').onclick = async () => {
   if (current.some(x => !x)) return say('先に3枚引いてください');
