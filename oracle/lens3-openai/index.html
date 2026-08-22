@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>三枚のレンズ — OpenAI版</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080f;
+    --ink:#e8e0d0;
+    --gold:#c9a84c;
+    --line:rgba(201,168,76,.28);
+    --panel:rgba(232,224,208,.035);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:28px 20px 80px;
+    background:var(--bg); color:var(--ink);
+    font-family:'Cormorant Garamond',"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:16px; line-height:1.85;
+  }
+  .wrap{max-width:1000px;margin:0 auto}
+  h1{
+    font-family:'Cinzel Decorative',serif; font-size:26px; letter-spacing:.06em;
+    color:var(--gold); margin:0 0 4px; font-weight:400;
+  }
+  .sub{font-size:13px;opacity:.55;margin:0 0 26px;letter-spacing:.08em}
+
+  .bar{
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    padding:14px 16px;border:1px solid var(--line);border-radius:3px;
+    background:var(--panel);margin-bottom:22px;
+  }
+  button{
+    font-family:inherit;font-size:14px;letter-spacing:.05em;
+    background:transparent;color:var(--gold);
+    border:1px solid var(--line);border-radius:2px;
+    padding:8px 18px;cursor:pointer;transition:.2s;
+  }
+  button:hover:not(:disabled){background:rgba(201,168,76,.12)}
+  button:disabled{opacity:.3;cursor:not-allowed}
+  button.primary{background:rgba(201,168,76,.16);border-color:var(--gold)}
+  button.danger{color:#c98080;border-color:rgba(201,128,128,.3)}
+  input[type=password],input[type=text]{
+    font-family:inherit;font-size:14px;
+    background:rgba(0,0,0,.35);color:var(--ink);
+    border:1px solid var(--line);border-radius:2px;padding:8px 12px;
+  }
+  select{
+    font-family:inherit;font-size:13px;
+    background:#0d0d18;color:var(--ink);
+    border:1px solid var(--line);border-radius:2px;padding:6px 8px;
+  }
+  .spacer{flex:1}
+  .count{font-size:13px;opacity:.6;letter-spacing:.06em}
+
+  .slot{
+    border:1px solid var(--line);border-radius:3px;
+    background:var(--panel);padding:18px;margin-bottom:16px;
+  }
+  .slot-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap}
+  .pos{
+    font-family:'Cinzel Decorative',serif;font-size:12px;letter-spacing:.14em;
+    color:var(--gold);opacity:.85;padding-top:3px;min-width:26px;
+  }
+  .slot-title{font-size:19px;letter-spacing:.04em}
+  .slot-title .en{font-size:12px;opacity:.45;letter-spacing:.1em;margin-left:8px}
+  .slot-label{font-size:12px;opacity:.5;letter-spacing:.1em;margin-bottom:2px}
+  .thumb{
+    width:62px;height:93px;object-fit:cover;border:1px solid var(--line);
+    border-radius:2px;background:#111;
+  }
+  .meta{flex:1;min-width:200px}
+  .slot.summary{border-color:rgba(201,168,76,.5)}
+  .core{font-size:12.5px;opacity:.45;line-height:1.6;margin-top:5px;max-width:520px}
+  .fixed-tag{
+    font-size:10px;letter-spacing:.12em;border:1px solid var(--line);
+    border-radius:2px;padding:2px 7px;opacity:.6;margin-left:8px;
+  }
+  textarea{
+    width:100%;font-family:inherit;font-size:15.5px;line-height:1.95;
+    background:rgba(0,0,0,.3);color:var(--ink);
+    border:1px solid var(--line);border-radius:2px;padding:14px;
+    resize:vertical;min-height:70px;
+  }
+  textarea:focus{outline:none;border-color:var(--gold)}
+  .chars{font-size:11px;opacity:.4;text-align:right;margin-top:4px;letter-spacing:.06em}
+
+  .saved{margin-top:34px;border-top:1px solid var(--line);padding-top:20px}
+  .saved h2{font-size:15px;letter-spacing:.1em;color:var(--gold);font-weight:400;margin:0 0 12px}
+  .rec{
+    display:flex;gap:12px;align-items:center;padding:9px 12px;
+    border:1px solid rgba(232,224,208,.09);border-radius:2px;margin-bottom:6px;font-size:14px;
+  }
+  .rec .n{opacity:.4;min-width:30px;font-size:12px}
+  .rec .cards{flex:1}
+  .rec button{padding:3px 10px;font-size:12px}
+  .msg{font-size:13px;padding:10px 14px;border-radius:2px;margin-bottom:14px;display:none}
+  .msg.err{display:block;background:rgba(201,128,128,.12);border:1px solid rgba(201,128,128,.3);color:#e0b0b0}
+  .msg.ok{display:block;background:rgba(201,168,76,.1);border:1px solid var(--line);color:var(--gold)}
+  .loading{opacity:.5;font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Three Lenses — OpenAI</h1>
+  <p class="sub">三枚のレンズ　—　制作ツール</p>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="bar">
+    <input type="password" id="pass" placeholder="合言葉" style="width:150px">
+    <button id="draw" class="primary">3枚引く</button>
+    <button id="gen">生成</button>
+    <span class="spacer"></span>
+    <span class="count" id="count">保存 0 組</span>
+    <button id="save">保存</button>
+    <button id="csv">CSV</button>
+    <button id="clear" class="danger">全消去</button>
+  </div>
+
+  <div class="slot" id="profileSlot">
+    <div class="slot-head">
+      <div class="meta">
+        <div class="slot-label">下ごしらえ（内部資料・読み手には見せません）</div>
+        <div class="slot-title" style="font-size:16px">今の解釈（土台）</div>
+      </div>
+      <button id="profileBtn">解釈を出す</button>
+    </div>
+    <textarea id="foundation" placeholder="「解釈を出す」を押すと、AIが本文を書く前に使う内的な心理の流れが入ります。そのまま自由に書き換えてから「生成」を押してください。空欄のまま生成すると、AIが自分で場面を作ります" style="min-height:220px;font-size:14px;line-height:1.85"></textarea>
+  </div>
+
+  <div id="slots"></div>
+
+  <div class="saved">
+    <h2>保存済み</h2>
+    <div id="reclist"></div>
+  </div>
+</div>
+
+<script src="../cards-data.js"></script>
+<script src="../lens3/lens-data.js"></script>
+<script>
+const BASE = 'https://fortune-five-psi.vercel.app/oracle/';
+const POS = [
+  { n:'I',   ja:'まず、ここが見えている',     en:'First, This Is Visible' },
+  { n:'II',  ja:'その隣には、これもある',     en:'And Beside It, This Too' },
+  { n:'III', ja:'さらに、こんなものも見えてくる', en:'And Further, This Comes Into View' },
+  { n:'—',   ja:'カードの余白',             en:'Card Margin' },
+  { n:'IV',  ja:'景色が立ち上がる場所',       en:'Where the View Rises' },
+];
+
+const esc4html = s => String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// 核＝そのカードの「見落とさないもの」。v3では位置に関係なく同じ核から書く
+const coreOf = (id) => !id ? '' : LENS[id].overlooked;
+
+const byId = {};
+CARDS.forEach(c => byId[c.id] = c);
+const IDS = CARDS.map(c => c.id);
+
+let current = [null, null, null];   // card id
+let texts   = ['', '', '', '', ''];
+let records = [];
+let lastInterpretation = '';        // AIが最初に出した解釈（生データ、比較用）
+
+// ---------- 表示 ----------
+function render(){
+  document.getElementById('slots').innerHTML = texts.map((_, i) => {
+    const id = current[i] || null;
+    const L = id ? LENS[id] : null;
+    const C = id ? byId[id] : null;
+    if (i === 3) return `
+    <div class="slot summary">
+      <div class="slot-head">
+        <span class="pos">${POS[3].n}</span>
+        <div class="meta">
+          <div class="slot-label">${POS[3].ja}</div>
+          <div class="slot-title" style="font-size:16px;opacity:.75">三枚のうちどれか一枚の由来・象徴の小話（AIが選ぶ／カード指定なし）</div>
+        </div>
+      </div>
+      <textarea data-slot="3" placeholder="「生成」を押すと入ります">${esc4html(texts[3])}</textarea>
+      <div class="chars" id="ch3">${(texts[3]||'').length} 字</div>
+    </div>`;
+    if (i === 4) return `
+    <div class="slot summary">
+      <div class="slot-head">
+        <span class="pos">${POS[4].n}</span>
+        <div class="meta">
+          <div class="slot-label">${POS[4].ja}</div>
+          <div class="slot-title" style="font-size:16px;opacity:.75">三枚の総括（カードなし）</div>
+        </div>
+      </div>
+      <textarea data-slot="4" placeholder="「生成」を押すと入ります">${esc4html(texts[4])}</textarea>
+      <div class="chars" id="ch4">${(texts[4]||'').length} 字</div>
+    </div>`;
+    const opts = IDS.map(x =>
+      `<option value="${x}" ${x===id?'selected':''}>${LENS[x].ja}</option>`).join('');
+    return `
+    <div class="slot">
+      <div class="slot-head">
+        <span class="pos">${POS[i].n}</span>
+        ${C ? `<img class="thumb" src="../${C.image}" alt="">` : ''}
+        <div class="meta">
+          <div class="slot-label">${POS[i].ja}</div>
+          <div class="slot-title">${L ? L.ja : '—'}<span class="en">${C ? C.name : ''}</span></div>
+          ${L ? `<div class="core">見落とさないもの：${esc4html(coreOf(id))}</div>` : ''}
+          <div style="margin-top:8px">
+            <select data-slot="${i}" class="pick">${id?opts:'<option>—</option>'}</select>
+          </div>
+        </div>
+      </div>
+      <textarea data-slot="${i}" placeholder="「生成」を押すと入ります">${esc4html(texts[i])}</textarea>
+      <div class="chars" id="ch${i}">${(texts[i]||'').length} 字</div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('textarea').forEach(t => {
+    t.addEventListener('input', e => {
+      const i = +e.target.dataset.slot;
+      texts[i] = e.target.value;
+      document.getElementById('ch'+i).textContent = e.target.value.length + ' 字';
+    });
+  });
+  document.querySelectorAll('.pick').forEach(s => {
+    s.addEventListener('change', e => {
+      const i = +e.target.dataset.slot;
+      current[i] = e.target.value;
+      render();
+    });
+  });
+}
+
+function say(t, ok){
+  const m = document.getElementById('msg');
+  m.textContent = t;
+  m.className = 'msg ' + (ok ? 'ok' : 'err');
+  if (ok) setTimeout(() => { m.className = 'msg'; }, 3000);
+}
+
+// ---------- 引く ----------
+document.getElementById('draw').onclick = () => {
+  const pool = IDS.slice();
+  for (let i = pool.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  current = pool.slice(0, 3);
+  texts = ['', '', '', '', ''];
+  document.getElementById('foundation').value = '';
+  lastInterpretation = '';
+  render();
+};
+
+// ---------- 下ごしらえ：今の解釈を出す ----------
+document.getElementById('profileBtn').onclick = async () => {
+  if (current.some(x => !x)) return say('先に3枚引いてください');
+  const pass = document.getElementById('pass').value.trim();
+  if (!pass) return say('合言葉を入れてください');
+  localStorage.setItem('lens3_pass', pass);
+
+  const btn = document.getElementById('profileBtn');
+  const out = document.getElementById('foundation');
+  btn.disabled = true; btn.textContent = '考え中…';
+  out.classList.add('loading');
+
+  try {
+    const r = await fetch('/api/oracle-openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'lens3_interpret',
+        pass,
+        cards: current.map(id => ({ ja: LENS[id].ja, overlooked: LENS[id].overlooked, view: LENS[id].view })),
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || '生成に失敗しました');
+    lastInterpretation = d.interpretation || '';
+    out.value = lastInterpretation;
+    say('解釈を出しました。直してから生成してください', true);
+  } catch (e) {
+    say(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '解釈を出す';
+    out.classList.remove('loading');
+  }
+};
+
+// ---------- 生成 ----------
+function reactionOf(a, b){
+  const pa = LENS[a].pillar, pb = LENS[b].pillar;
+  if (pa === '証' || pb === '証') return null;
+  return REACTIONS[[pa, pb].sort().join('|')] || null;
+}
+
+document.getElementById('gen').onclick = async () => {
+  if (current.some(x => !x)) return say('先に3枚引いてください');
+  const pass = document.getElementById('pass').value.trim();
+  if (!pass) return say('合言葉を入れてください');
+  localStorage.setItem('lens3_pass', pass);
+
+  const btn = document.getElementById('gen');
+  btn.disabled = true; btn.textContent = '生成中…';
+  document.querySelectorAll('textarea').forEach(t => t.classList.add('loading'));
+
+  const pack = (id, useReversed) => ({
+    ja:         LENS[id].ja,
+    pillar:     LENS[id].pillar,
+    role:       LENS[id].role,
+    view:       LENS[id].view,
+    overlooked: LENS[id].overlooked,
+    seedname:   LENS[id].seedname,
+    grow:       LENS[id].grow,
+    appear:     LENS[id].appear,
+    misread:    LENS[id].misread,
+    fruit:      LENS[id].fruit,
+    special:    LENS[id].special,
+    material:   useReversed ? byId[id].reversed : byId[id].upright,
+  });
+
+  try {
+    const r = await fetch('/api/oracle-openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'lens3',
+        pass,
+        lang: 'ja',
+        cards: [pack(current[0], false), pack(current[1], true), pack(current[2], false)],
+        rx12: reactionOf(current[0], current[1]),
+        rx13: reactionOf(current[0], current[2]),
+        foundation: document.getElementById('foundation').value.trim(),
+        climate: (() => {
+          const t = {};
+          current.forEach(id => { const p = LENS[id].pillar; t[p] = (t[p]||0)+1; });
+          return Object.entries(t).sort((a,b) => b[1]-a[1])
+            .map(([k,v]) => `${k}×${v}`).join('　');
+        })(),
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || '生成に失敗しました');
+    texts[0] = d.card1 || '';
+    texts[1] = d.card2 || '';
+    texts[2] = d.card3 || '';
+    texts[3] = d.column || '';
+    texts[4] = d.card4 || '';
+    if (!d._meta?.split) {
+      say('区切りで割れませんでした。枠を確認してください');
+      if (d._meta?.raw && !texts[0]) texts[0] = d._meta.raw;
+    } else {
+      const n = d._meta.lens;
+      say(`生成しました（${n[0]} / ${n[1]} / ${n[2]} / 余白${n[3]} / 総括${n[4]} 字）`, true);
+    }
+    render();
+  } catch(e){
+    say(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '生成';
+  }
+};
+
+// ---------- 保存 ----------
+function load(){
+  try { records = JSON.parse(localStorage.getItem('lens3_records') || '[]'); }
+  catch(e){ records = []; }
+  renderRecs();
+}
+function persist(){
+  localStorage.setItem('lens3_records', JSON.stringify(records));
+  renderRecs();
+}
+function renderRecs(){
+  document.getElementById('count').textContent = '保存 ' + records.length + ' 組';
+  document.getElementById('reclist').innerHTML = records.length
+    ? records.map((r, i) => `
+      <div class="rec">
+        <span class="n">${String(i+1).padStart(2,'0')}</span>
+        <span class="cards">${r.cards.map(c => LENS[c].ja).join(' ／ ')}</span>
+        <button data-load="${i}">開く</button>
+        <button data-del="${i}" class="danger">削除</button>
+      </div>`).join('')
+    : '<p style="opacity:.35;font-size:14px">まだありません</p>';
+
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = e => {
+    records.splice(+e.target.dataset.del, 1); persist();
+  });
+  document.querySelectorAll('[data-load]').forEach(b => b.onclick = e => {
+    const r = records[+e.target.dataset.load];
+    current = r.cards.slice(); texts = r.texts.slice();
+    lastInterpretation = r.interpretationAI || '';
+    document.getElementById('foundation').value = r.interpretationEdited || '';
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+document.getElementById('save').onclick = () => {
+  if (current.some(x => !x)) return say('先に3枚引いてください');
+  if (texts.some(t => !t.trim())) return say('空の枠があります');
+  records.push({
+    cards: current.slice(),
+    texts: texts.slice(),
+    interpretationAI: lastInterpretation,
+    interpretationEdited: document.getElementById('foundation').value,
+    at: Date.now(),
+  });
+  persist();
+  say('保存しました（' + records.length + '組）', true);
+};
+
+document.getElementById('clear').onclick = () => {
+  if (!records.length) return;
+  if (!confirm('保存した ' + records.length + ' 組をすべて消します。よろしいですか？')) return;
+  records = []; persist();
+};
+
+// ---------- CSV ----------
+function esc(s){ return '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"'; }
+
+document.getElementById('csv').onclick = () => {
+  if (!records.length) return say('保存された組がありません');
+  const head = ['no',
+    'name1','en1','img1','core1','text1',
+    'name2','en2','img2','core2','text2',
+    'name3','en3','img3','core3','text3',
+    'aside','text4',
+    'ai_interpretation','edited_interpretation','changed'];
+  const rows = records.map((r, i) => {
+    const cells = [i + 1];
+    r.cards.forEach((id, k) => {
+      cells.push(LENS[id].ja, byId[id].name, BASE + byId[id].image, coreOf(id), r.texts[k]);
+    });
+    cells.push(r.texts[3] || '');
+    cells.push(r.texts[4] || '');
+    const ai = r.interpretationAI || '';
+    const edited = r.interpretationEdited || '';
+    cells.push(ai, edited, ai.trim() === edited.trim() ? '' : 'yes');
+    return cells.map(esc).join(',');
+  });
+  const csv = '\uFEFF' + head.map(esc).join(',') + '\r\n' + rows.join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  const d = new Date();
+  const p = n => String(n).padStart(2, '0');
+  a.href = url;
+  a.download = `lens3_${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${records.length}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  say('CSVを書き出しました', true);
+};
+
+// ---------- init ----------
+document.getElementById('pass').value = localStorage.getItem('lens3_pass') || '';
+render();
+load();
+</script>
+</body>
+</html>
