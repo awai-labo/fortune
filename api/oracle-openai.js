@@ -128,23 +128,11 @@ export default async function handler(req, res) {
 
 この三枚を、指示に従って一つの内的な心理の流れとして解釈してください。`;
 
-      const rInterpret = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 1500,
-          system: systemInterpret,
-          messages: [{ role: 'user', content: promptInterpret }],
-        }),
-      });
-
-      const dInterpret = await rInterpret.json();
-      const interpretation = dInterpret.content?.find(b => b.type === 'text')?.text || '';
+      const interpretation = await callOpenAI({
+  system: systemInterpret,
+  prompt: promptInterpret,
+  maxOutputTokens: 1500,
+});
 
       return res.status(200).json({ interpretation });
     }
