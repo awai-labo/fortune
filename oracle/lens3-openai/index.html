@@ -214,7 +214,7 @@ function render(){
           <div class="slot-title">${L ? L.ja : '—'}<span class="en">${C ? C.name : ''}</span></div>
           ${L ? `<div class="core">見落とさないもの：${esc4html(coreOf(id))}</div>` : ''}
           <div style="margin-top:8px">
-            <select data-slot="${i}" class="pick">${id?opts:'<option>—</option>'}</select>
+            <select data-slot="${i}" class="pick">${opts}</select>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ function render(){
   document.querySelectorAll('.pick').forEach(s => {
     s.addEventListener('change', e => {
       const i = +e.target.dataset.slot;
-      current[i] = e.target.value;
+      current[i] = e.target.value || null;
       render();
     });
   });
