@@ -22,6 +22,36 @@ function checkRateLimit(ip) {
 
 // Vercel の関数実行時間の上限。API を二回続けて呼ぶため、既定値だと足りない。
 export const maxDuration = 60;
+async function callOpenAI({ system, prompt, maxOutputTokens }) {
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODEL || 'gpt-5.4-mini',
+      instructions: system,
+      input: prompt,
+      max_output_tokens: maxOutputTokens,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error?.message || 'OpenAI APIの呼び出しに失敗しました'
+    );
+  }
+
+  return (
+    data.output
+      ?.flatMap(item => item.content || [])
+      .find(part => part.type === 'output_text')
+      ?.text || ''
+  );
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
