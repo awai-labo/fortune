@@ -268,7 +268,7 @@ document.getElementById('profileBtn').onclick = async () => {
   out.classList.add('loading');
 
   try {
-    const r = await fetch('/api/oracle', {
+    const r = await fetch('/api/oracle-openai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -323,7 +323,7 @@ document.getElementById('gen').onclick = async () => {
   });
 
   try {
-    const r = await fetch('/api/oracle', {
+    const r = await fetch('/api/oracle-openai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
