@@ -113,6 +113,7 @@
   <div class="bar">
     <input type="password" id="pass" placeholder="合言葉" style="width:150px">
     <button id="draw" class="primary">3枚引く</button>
+    <button id="manual">手元のカードを指定</button>
     <button id="gen">生成</button>
     <span class="spacer"></span>
     <span class="count" id="count">保存 0 組</span>
@@ -253,6 +254,16 @@ document.getElementById('draw').onclick = () => {
   document.getElementById('foundation').value = '';
   lastInterpretation = '';
   render();
+};
+
+// ---------- 手元のカードを指定 ----------
+document.getElementById('manual').onclick = () => {
+  current = [IDS[0], IDS[1], IDS[2]];
+  texts = ['', '', '', '', ''];
+  document.getElementById('foundation').value = '';
+  lastInterpretation = '';
+  render();
+  say('プルダウンから、実際にひいたカードを3枚とも選んでください', true);
 };
 
 // ---------- 下ごしらえ：今の解釈を出す ----------
