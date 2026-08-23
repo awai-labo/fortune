@@ -781,15 +781,65 @@
       },
     };
 
+    // ── カード選択肢のHTML ──
+    const CARD_GROUPS = [
+      { key: 'Sephirot', ja: 'セフィロト（生命の樹）', en: 'Sephirot (Tree of Life)' },
+      { key: 'Hebrew',   ja: 'ヘブライ文字',           en: 'Hebrew Letters' },
+      { key: 'World',    ja: '九つの世界（＋証）',      en: 'The Nine Worlds (+ Signs)' },
+      { key: 'Rune',     ja: 'ルーン文字',             en: 'Elder Futhark Runes' },
+    ];
+
+    function cardLabel(c) {
+      const isJa = currentLang === 'ja';
+      const t = (isJa ? c.theme?.ja : c.theme?.en) || '';
+      return t ? `${c.name} — ${t}` : c.name;
+    }
+
+    function cardOptionsHtml(selectedId) {
+      const isJa = currentLang === 'ja';
+      let html = `<option value="">${isJa ? '― カードを選ぶ ―' : '— choose a card —'}</option>`;
+      CARD_GROUPS.forEach(g => {
+        const list = CARDS.filter(c => c.type === g.key);
+        if (!list.length) return;
+        html += `<optgroup label="${isJa ? g.ja : g.en}">`;
+        list.forEach(c => {
+          const sel = c.id === selectedId ? ' selected' : '';
+          html += `<option value="${c.id}"${sel}>${cardLabel(c)}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      return html;
+    }
+
+    function oriLabel(i) {
+      const isJa = currentLang === 'ja';
+      return orientations[i]
+        ? (isJa ? '↓ 逆位置' : '↓ Reversed')
+        : (isJa ? '↑ 正位置' : '↑ Upright');
+    }
+
+    function toggleOri(i) {
+      orientations[i] = !orientations[i];
+      const btn = document.querySelector(`.ori-btn[data-pos="${i}"]`);
+      if (!btn) return;
+      btn.textContent = oriLabel(i);
+      btn.className = 'ori-btn' + (orientations[i] ? ' rev' : '');
+    }
+
     function renderPositionInputs() {
       const area = document.getElementById('positionsArea');
       const lang = currentLang;
       const defaults = defaultPositions[lang][currentCount];
-      const old = area.querySelectorAll('.pos-input');
-      const oldVals = Array.from(old).map(el => el.value);
+
+      // 既存の入力内容を保持
+      const oldVals = Array.from(area.querySelectorAll('.pos-input')).map(el => el.value);
+      const oldCards = Array.from(area.querySelectorAll('.card-select')).map(el => el.value);
 
       area.innerHTML = '';
       for (let i = 0; i < currentCount; i++) {
+        const group = document.createElement('div');
+        group.className = 'pos-group';
+
         const row = document.createElement('div');
         row.className = 'pos-row';
 
@@ -806,8 +856,63 @@
 
         row.appendChild(num);
         row.appendChild(input);
-        area.appendChild(row);
+
+        const pick = document.createElement('div');
+        pick.className = 'pick-row';
+
+        const sel = document.createElement('select');
+        sel.className = 'card-select';
+        sel.dataset.pos = i;
+        sel.innerHTML = cardOptionsHtml(oldCards[i] || '');
+        sel.addEventListener('change', () => { document.getElementById('pickWarn').textContent = ''; });
+
+        const ori = document.createElement('button');
+        ori.className = 'ori-btn' + (orientations[i] ? ' rev' : '');
+        ori.dataset.pos = i;
+        ori.type = 'button';
+        ori.textContent = oriLabel(i);
+        ori.addEventListener('click', () => toggleOri(i));
+
+        pick.appendChild(sel);
+        pick.appendChild(ori);
+
+        group.appendChild(row);
+        group.appendChild(pick);
+        area.appendChild(group);
       }
+    }
+
+    // ── 補助ボタン ──
+    function fillRandom() {
+      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
+      const selects = document.querySelectorAll('.card-select');
+      selects.forEach((s, i) => {
+        s.value = shuffled[i].id;
+        orientations[i] = Math.random() > 0.65;
+        const btn = document.querySelector(`.ori-btn[data-pos="${i}"]`);
+        if (btn) {
+          btn.textContent = oriLabel(i);
+          btn.className = 'ori-btn' + (orientations[i] ? ' rev' : '');
+        }
+      });
+      document.getElementById('pickWarn').textContent = '';
+    }
+
+    function clearAll() {
+      document.querySelectorAll('.card-select').forEach((s, i) => {
+        s.value = '';
+        orientations[i] = false;
+        const btn = document.querySelector(`.ori-btn[data-pos="${i}"]`);
+        if (btn) {
+          btn.textContent = oriLabel(i);
+          btn.className = 'ori-btn';
+        }
+      });
+      document.getElementById('pickWarn').textContent = '';
+    }
+
+    function drawBtnLabel() {
+      return currentLang === 'ja' ? '✦ この並びを読む ✦' : '✦ Read This Spread ✦';
     }
 
     function toRoman(n) {
@@ -857,11 +962,37 @@
       const question = document.getElementById('userQ').value.trim();
       const posInputs = document.querySelectorAll('.pos-input');
 
-      // カードをランダムに引く（重複なし）
-      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
-      const drawn = shuffled.slice(0, currentCount).map((card, i) => ({
-        card,
-        isReversed: Math.random() > 0.65,
+      // 手で選んだカードを読み取る
+      const warn = document.getElementById('pickWarn');
+      warn.textContent = '';
+      const selects = document.querySelectorAll('.card-select');
+      const pickedIds = [];
+
+      for (let i = 0; i < currentCount; i++) {
+        const id = selects[i]?.value || '';
+        if (!id) {
+          warn.textContent = isJa
+            ? `${toRoman(i + 1)}枚目のカードが選ばれていません。`
+            : `No card chosen for position ${toRoman(i + 1)}.`;
+          btn.disabled = false;
+          btn.textContent = drawBtnLabel();
+          return;
+        }
+        if (pickedIds.includes(id)) {
+          const dup = CARDS.find(c => c.id === id);
+          warn.textContent = isJa
+            ? `${dup ? dup.name : id} が重複しています。`
+            : `${dup ? dup.name : id} is selected more than once.`;
+          btn.disabled = false;
+          btn.textContent = drawBtnLabel();
+          return;
+        }
+        pickedIds.push(id);
+      }
+
+      const drawn = pickedIds.map((id, i) => ({
+        card: CARDS.find(c => c.id === id),
+        isReversed: !!orientations[i],
         posLabel: posInputs[i]?.value.trim() || posInputs[i]?.placeholder || `Card ${i + 1}`,
         posIndex: i,
       }));
@@ -995,7 +1126,7 @@
       }
 
       btn.disabled = false;
-      btn.textContent = isJa ? '✦ もう一度引く ✦' : '✦ Draw Again ✦';
+      btn.textContent = isJa ? '✦ もう一度読む ✦' : '✦ Read Again ✦';
 
       // コピーボタンを表示
       const copyWrap = document.getElementById('copyWrap');
@@ -1072,8 +1203,8 @@
         csv.add('問い', document.getElementById('userQ').value.trim());
         csv.add('まとめ', window._lastSynthesis || '', { split: 3 });
 
-        // spread5.html の書き出しと名前が衝突しないよう free を挟む
-        csv.download('spread_free' + results.length + '_canva');
+        // 手引き版とわかるよう manual を挟む
+        csv.download('spread_manual' + results.length + '_canva');
 
         btn.textContent = isJa ? '✦ CSVを保存しました ✦' : '✦ CSV saved ✦';
       } catch (e) {
