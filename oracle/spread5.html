@@ -178,6 +178,115 @@
       line-height: 1.5;
     }
 
+    /* ── カードの選び方（おまかせ / 自分で選ぶ） ── */
+    .mode-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.4rem;
+    }
+    .mode-btn {
+      background: none;
+      border: 0.5px solid rgba(201,168,76,0.25);
+      border-radius: 2px;
+      color: var(--text-dim);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .mode-btn:hover { color: var(--text); border-color: rgba(201,168,76,0.5); }
+    .mode-btn.active {
+      color: var(--gold);
+      border-color: rgba(201,168,76,0.7);
+      background: rgba(201,168,76,0.08);
+    }
+
+    .pick-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-left: 34px;
+    }
+    .card-select {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      padding: 9px 12px;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.3s;
+      min-width: 0;
+    }
+    .card-select:focus { border-color: rgba(201,168,76,0.65); }
+    .card-select option { background: #12121c; color: var(--text); }
+    .card-select optgroup { background: #0c0c14; color: var(--gold); font-style: normal; }
+
+    .ori-btn {
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      padding: 9px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s;
+    }
+    .ori-btn:hover { border-color: rgba(201,168,76,0.6); color: var(--text); }
+    .ori-btn.rev {
+      color: var(--gold);
+      border-color: rgba(201,168,76,0.7);
+      background: rgba(201,168,76,0.08);
+    }
+
+    .util-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.4rem;
+    }
+    .util-btn {
+      background: none;
+      border: 0.5px solid rgba(201,168,76,0.25);
+      border-radius: 2px;
+      color: var(--text-dim);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      font-style: italic;
+      letter-spacing: 0.05em;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .util-btn:hover { color: var(--text); border-color: rgba(201,168,76,0.55); }
+
+    .pick-warn {
+      text-align: center;
+      color: #d98b6a;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      margin-bottom: 1rem;
+      min-height: 1.2em;
+    }
+
+    @media (max-width: 480px) {
+      .pick-row { padding-left: 0; flex-wrap: wrap; }
+      .card-select { flex: 1 1 100%; }
+      .ori-btn { flex: 1 1 100%; text-align: center; }
+    }
+
     /* ── 問い ── */
     .q-area { margin-bottom: 1.6rem; }
     .q-area textarea {
@@ -557,9 +666,21 @@
     </div>
 
     <div id="appMain" style="display:none">
+    <!-- カードの選び方 -->
+    <div class="mode-row">
+      <button class="mode-btn active" id="modeRandom" type="button" onclick="setPickMode('random')">おまかせで引く</button>
+      <button class="mode-btn" id="modeManual" type="button" onclick="setPickMode('manual')">自分で選ぶ</button>
+    </div>
+
     <!-- Step 2: 固定ポジション表示 -->
     <div class="section-label" id="labelPos">このスプレッドの視点</div>
     <div class="positions-area" id="positionsArea"></div>
+
+    <div class="util-row" id="utilRow" style="display:none">
+      <button class="util-btn" id="utilRandom" type="button" onclick="fillRandom()">ランダムで埋める</button>
+      <button class="util-btn" id="utilClear" type="button" onclick="clearPicks()">選択をクリア</button>
+    </div>
+    <div class="pick-warn" id="pickWarn"></div>
 
     <!-- Step 3: 問い -->
     <div class="q-area">
@@ -626,7 +747,11 @@
       document.getElementById('userQ').placeholder = isJa
         ? '今、問いかけたいことを書いてください（省略可）…'
         : 'Write your question here (optional)…';
-      document.getElementById('drawBtn').textContent = isJa ? '✦ Draw Cards ✦' : '✦ Draw Cards ✦';
+      document.getElementById('drawBtn').textContent = drawBtnLabel();
+      document.getElementById('modeRandom').textContent = isJa ? 'おまかせで引く' : 'Draw for me';
+      document.getElementById('modeManual').textContent = isJa ? '自分で選ぶ' : 'Choose myself';
+      document.getElementById('utilRandom').textContent = isJa ? 'ランダムで埋める' : 'Fill at random';
+      document.getElementById('utilClear').textContent = isJa ? '選択をクリア' : 'Clear all';
       document.getElementById('synthesisTitle').textContent = isJa ? 'まとめ鑑定' : 'SYNTHESIS';
 
       document.getElementById('gateText').innerHTML = isJa
@@ -701,12 +826,105 @@
       5: ['keshiki', 'nekko', 'kakaete', 'yurumu', 'kizashi'],
     };
 
+    // ── カードの選び方（おまかせ / 自分で選ぶ） ──
+    let pickMode = 'random';
+    const orientations = [];
+
+    const CARD_GROUPS = [
+      { key: 'Sephirot', ja: 'セフィロト（生命の樹）', en: 'Sephirot (Tree of Life)' },
+      { key: 'Hebrew',   ja: 'ヘブライ文字',           en: 'Hebrew Letters' },
+      { key: 'World',    ja: '九つの世界（＋証）',      en: 'The Nine Worlds (+ Signs)' },
+      { key: 'Rune',     ja: 'ルーン文字',             en: 'Elder Futhark Runes' },
+    ];
+
+    function cardLabel(c) {
+      const isJa = currentLang === 'ja';
+      const t = (isJa ? c.theme?.ja : c.theme?.en) || '';
+      return t ? `${c.name} — ${t}` : c.name;
+    }
+
+    function cardOptionsHtml(selectedId) {
+      const isJa = currentLang === 'ja';
+      let html = `<option value="">${isJa ? '― カードを選ぶ ―' : '— choose a card —'}</option>`;
+      CARD_GROUPS.forEach(g => {
+        const list = CARDS.filter(c => c.type === g.key);
+        if (!list.length) return;
+        html += `<optgroup label="${isJa ? g.ja : g.en}">`;
+        list.forEach(c => {
+          const sel = c.id === selectedId ? ' selected' : '';
+          html += `<option value="${c.id}"${sel}>${cardLabel(c)}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      return html;
+    }
+
+    function oriLabel(i) {
+      const isJa = currentLang === 'ja';
+      return orientations[i]
+        ? (isJa ? '↓ 逆位置' : '↓ Reversed')
+        : (isJa ? '↑ 正位置' : '↑ Upright');
+    }
+
+    function refreshOriBtn(i) {
+      const btn = document.querySelector(`.ori-btn[data-pos="${i}"]`);
+      if (!btn) return;
+      btn.textContent = oriLabel(i);
+      btn.className = 'ori-btn' + (orientations[i] ? ' rev' : '');
+    }
+
+    function toggleOri(i) {
+      orientations[i] = !orientations[i];
+      refreshOriBtn(i);
+    }
+
+    function setPickMode(mode) {
+      pickMode = mode;
+      document.getElementById('modeRandom').className = 'mode-btn' + (mode === 'random' ? ' active' : '');
+      document.getElementById('modeManual').className = 'mode-btn' + (mode === 'manual' ? ' active' : '');
+      document.getElementById('utilRow').style.display = mode === 'manual' ? 'flex' : 'none';
+      document.getElementById('pickWarn').textContent = '';
+      document.getElementById('drawBtn').textContent = drawBtnLabel();
+      renderPositions();
+    }
+
+    function fillRandom() {
+      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
+      document.querySelectorAll('.card-select').forEach((s, i) => {
+        s.value = shuffled[i].id;
+        orientations[i] = Math.random() > 0.65;
+        refreshOriBtn(i);
+      });
+      document.getElementById('pickWarn').textContent = '';
+    }
+
+    function clearPicks() {
+      document.querySelectorAll('.card-select').forEach((s, i) => {
+        s.value = '';
+        orientations[i] = false;
+        refreshOriBtn(i);
+      });
+      document.getElementById('pickWarn').textContent = '';
+    }
+
+    function drawBtnLabel() {
+      const isJa = currentLang === 'ja';
+      if (pickMode === 'manual') return isJa ? '✦ この並びを読む ✦' : '✦ Read This Spread ✦';
+      return '✦ Draw Cards ✦';
+    }
+
     function renderPositions() {
       const area = document.getElementById('positionsArea');
       const defs = FIXED_POSITIONS[currentLang][currentCount];
 
+      // 選びかけの内容を保持したまま組み直す
+      const oldCards = Array.from(area.querySelectorAll('.card-select')).map(el => el.value);
+
       area.innerHTML = '';
       defs.forEach((p, i) => {
+        const group = document.createElement('div');
+        group.className = 'pos-group';
+
         const row = document.createElement('div');
         row.className = 'pos-row';
 
@@ -720,8 +938,80 @@
 
         row.appendChild(num);
         row.appendChild(box);
-        area.appendChild(row);
+        group.appendChild(row);
+
+        if (pickMode === 'manual') {
+          const pick = document.createElement('div');
+          pick.className = 'pick-row';
+
+          const sel = document.createElement('select');
+          sel.className = 'card-select';
+          sel.dataset.pos = i;
+          sel.innerHTML = cardOptionsHtml(oldCards[i] || '');
+          sel.addEventListener('change', () => {
+            document.getElementById('pickWarn').textContent = '';
+          });
+
+          const ori = document.createElement('button');
+          ori.className = 'ori-btn' + (orientations[i] ? ' rev' : '');
+          ori.dataset.pos = i;
+          ori.type = 'button';
+          ori.textContent = oriLabel(i);
+          ori.addEventListener('click', () => toggleOri(i));
+
+          pick.appendChild(sel);
+          pick.appendChild(ori);
+          group.appendChild(pick);
+        }
+
+        area.appendChild(group);
       });
+    }
+
+    // 引く／選ぶ、どちらでも同じ形の並びを返す。選び残しがあれば null。
+    function collectDrawn(posDefs) {
+      const isJa = currentLang === 'ja';
+      const warn = document.getElementById('pickWarn');
+      warn.textContent = '';
+
+      if (pickMode === 'random') {
+        const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, currentCount).map((card, i) => ({
+          card,
+          isReversed: Math.random() > 0.65,
+          posLabel: posDefs[i].api,
+          posName: posDefs[i].name,
+          posIndex: i,
+        }));
+      }
+
+      const selects = document.querySelectorAll('.card-select');
+      const pickedIds = [];
+      for (let i = 0; i < currentCount; i++) {
+        const id = selects[i] ? selects[i].value : '';
+        if (!id) {
+          warn.textContent = isJa
+            ? `${posDefs[i].name}のカードが選ばれていません。`
+            : `No card chosen for ${posDefs[i].name}.`;
+          return null;
+        }
+        if (pickedIds.includes(id)) {
+          const dup = CARDS.find(c => c.id === id);
+          warn.textContent = isJa
+            ? `${dup ? dup.name : id} が重複しています。`
+            : `${dup ? dup.name : id} is selected more than once.`;
+          return null;
+        }
+        pickedIds.push(id);
+      }
+
+      return pickedIds.map((id, i) => ({
+        card: CARDS.find(c => c.id === id),
+        isReversed: !!orientations[i],
+        posLabel: posDefs[i].api,
+        posName: posDefs[i].name,
+        posIndex: i,
+      }));
     }
 
     function toRoman(n) {
@@ -771,15 +1061,13 @@
       const question = document.getElementById('userQ').value.trim();
       const posDefs = FIXED_POSITIONS[currentLang][currentCount];
 
-      // カードをランダムに引く（重複なし）
-      const shuffled = [...CARDS].sort(() => Math.random() - 0.5);
-      const drawn = shuffled.slice(0, currentCount).map((card, i) => ({
-        card,
-        isReversed: Math.random() > 0.65,
-        posLabel: posDefs[i].api,
-        posName: posDefs[i].name,
-        posIndex: i,
-      }));
+      // おまかせなら引き、自分で選ぶモードなら選ばれたものを読む
+      const drawn = collectDrawn(posDefs);
+      if (!drawn) {
+        btn.disabled = false;
+        btn.textContent = drawBtnLabel();
+        return;
+      }
 
       // ── カード表示エリアをリセット ──
       const container = document.getElementById('cardsContainer');
@@ -990,7 +1278,8 @@
         csv.add('問い', document.getElementById('userQ').value.trim());
         csv.add('まとめ', window._lastSynthesis || '', { split: 3 });
 
-        csv.download('spread' + currentCount + '_canva');
+        // 手で選んだ回は書庫で見分けられるよう manual を挟む
+        csv.download('spread' + currentCount + (pickMode === 'manual' ? '_manual' : '') + '_canva');
 
         btn.textContent = isJa ? '✦ CSVを保存しました ✦' : '✦ CSV saved ✦';
       } catch (e) {
