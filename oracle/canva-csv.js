@@ -178,6 +178,7 @@
       addCard: function (prefix, card, isReversed, lang) {
         var isJa = lang !== 'en';
         api.add(prefix + '_カード名', card && card.name);
+        api.add(prefix + '_カタカナ', card && card.kana);
         api.add(prefix + '_タイプ', card && card.type);
         api.add(prefix + '_柱', localized(card && card.pillar, isJa ? 'ja' : 'en'));
         api.add(prefix + '_サブテーマ', localized(card && card.subtheme, isJa ? 'ja' : 'en'));

@@ -3,7 +3,7 @@ const CARDS = [
   // セフィロト（11枚）
   // =====================
   {
-    id: 'daat', name: "DA'AT", type: 'Sephirot',
+    id: 'daat', kana: 'ダアト', name: "DA'AT", type: 'Sephirot',
     pillar: { ja: '証', en: 'Sign' },
     subtheme: { ja: '特別', en: 'Special' },
     theme: { ja: '向き合う準備', en: 'Readiness to Face Yourself' },
@@ -17,7 +17,7 @@ const CARDS = [
     reversed: '人生において最も核心に触れる大事なテーマと向き合っているがゆえの、神聖な足止め。「ここを超えられなければ終わりだ」という思い込みから、巨大で冷たい壁が見えている。しかしその「目詰まり」こそが、大反転のトリガーになる。',
   },
   {
-    id: 'kether', name: 'KETHER', type: 'Sephirot',
+    id: 'kether', kana: 'ケテル', name: 'KETHER', type: 'Sephirot',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '存在', en: 'Existence' },
     theme: { ja: '存在価値', en: 'Worth of Being' },
@@ -31,7 +31,7 @@ const CARDS = [
     reversed: 'ありのままの自分では世界に存在してはいけないという恐怖。「完璧でなければ価値がない」という思い込みが100点か0点かの極端な世界を見せている。怖がっている自分を、抱きしめていよう。',
   },
   {
-    id: 'chokmah', name: 'CHOKMAH', type: 'Sephirot',
+    id: 'chokmah', kana: 'コクマー', name: 'CHOKMAH', type: 'Sephirot',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '衝動', en: 'Impulse' },
     theme: { ja: '生命の衝動', en: 'Impulse of Life' },
@@ -45,7 +45,7 @@ const CARDS = [
     reversed: '自分の直感や感性を、過去にロジックや常識という檻に閉じ込められ、鎖に繋がれた危機感と支配への怒り。自らの感性を守るために、すべてを破壊するという防衛手段も厭わないかもしれない。そのくやしさと苦しさは必ず強いバネになる。',
   },
   {
-    id: 'binah', name: 'BINAH', type: 'Sephirot',
+    id: 'binah', kana: 'ビナー', name: 'BINAH', type: 'Sephirot',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '形にする', en: 'Giving Form' },
     theme: { ja: '実現の力', en: 'Power to Realize' },
@@ -59,7 +59,7 @@ const CARDS = [
     reversed: '自らの感性を信じられず、混沌の中で傷つき、見捨てられるという恐怖。「絶対にコントロールできるルール」という命綱が必要だった。その傷や恐怖が新しい居場所を創り出す最高の鍵に変わる。',
   },
   {
-    id: 'chesed', name: 'CHESED', type: 'Sephirot',
+    id: 'chesed', kana: 'ケセド', name: 'CHESED', type: 'Sephirot',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '開く・受け取る', en: 'Opening & Receiving' },
     theme: { ja: '世界への信頼', en: 'Trust in the World' },
@@ -73,7 +73,7 @@ const CARDS = [
     reversed: '無条件で受け止められた経験が乏しく、「与え続けなければ見捨てられる」という深い飢餓感。尽くすことでしか価値がないと感じた苦しみが、本当の聖域を現実に創り出す最高の鍵になる。',
   },
   {
-    id: 'geburah', name: 'GEBURAH', type: 'Sephirot',
+    id: 'geburah', kana: 'ゲブラー', name: 'GEBURAH', type: 'Sephirot',
     pillar: { ja: '守る', en: 'Guarding' },
     subtheme: { ja: '境界線', en: 'Boundaries' },
     theme: { ja: '尊厳', en: 'Dignity' },
@@ -87,7 +87,7 @@ const CARDS = [
     reversed: '大切な領域を土足で踏みにじられたり、侵害されてきた無力感。自分の尊厳をどんな形でも守ろうとしたプライドこそ、自分自身や大切に思う人を防衛する盾となる。',
   },
   {
-    id: 'tiphareth', name: 'TIPHARETH', type: 'Sephirot',
+    id: 'tiphareth', kana: 'ティファレト', name: 'TIPHARETH', type: 'Sephirot',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '選択の軸', en: 'Axis of Choice' },
@@ -101,7 +101,7 @@ const CARDS = [
     reversed: 'ありのままの未完成な自分では無視され、愛されないと感じた拒絶の痛み。自分には価値が無いと思う苦しみの記憶は、あなた自身だけの美しさを開花させるための最高の鍵になる。',
   },
   {
-    id: 'netzach', name: 'NETZACH', type: 'Sephirot',
+    id: 'netzach', kana: 'ネツァク', name: 'NETZACH', type: 'Sephirot',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '感性', en: 'Sensibility' },
     theme: { ja: '「好き」の輪郭', en: 'Knowing What You Love' },
@@ -115,7 +115,7 @@ const CARDS = [
     reversed: '純粋な好きという気持ちや繊細な感覚を、過去に「くだらない」と踏みにじられた失望。言葉にできない美しさや違和感を丁寧に拾い上げる圧倒的な共鳴力は、閉ざされた心を一瞬で融かす最高の魔法になる。',
   },
   {
-    id: 'hod', name: 'HOD', type: 'Sephirot',
+    id: 'hod', kana: 'ホド', name: 'HOD', type: 'Sephirot',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '伝わる言葉', en: 'Words That Reach' },
@@ -129,7 +129,7 @@ const CARDS = [
     reversed: 'リアルな感情をそのまま出したとき、理不尽に言いくるめられたり嘘つき呼ばわりされた悔しさ。物事の構造や嘘を見抜き、感覚を自らの言葉で翻訳する言語化能力は、自分の、そして誰かの閉ざされた部分を開ける最高のきっかけになる。',
   },
   {
-    id: 'yesod', name: 'YESOD', type: 'Sephirot',
+    id: 'yesod', kana: 'イエソド', name: 'YESOD', type: 'Sephirot',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '存在', en: 'Existence' },
     theme: { ja: '純粋な欲求', en: 'Pure Desire' },
@@ -143,7 +143,7 @@ const CARDS = [
     reversed: 'リアルな過去が過酷だったり、辛い記憶が多く、直視するのがくるしすぎるほどだった傷。内なる世界の中に命のシェルターを作ってここまで生き延びた、その内側の世界と知恵こそが人生の土台へと変化していく。',
   },
   {
-    id: 'malkuth', name: 'MALKUTH', type: 'Sephirot',
+    id: 'malkuth', kana: 'マルクト', name: 'MALKUTH', type: 'Sephirot',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '存在', en: 'Existence' },
     theme: { ja: '居場所', en: 'A Place to Belong' },
@@ -161,7 +161,7 @@ const CARDS = [
   // ヘブライ文字（22枚）
   // =====================
   {
-    id: 'aleph', name: 'ALEPH', type: 'Hebrew',
+    id: 'aleph', kana: 'アレフ', name: 'ALEPH', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '可能性と力', en: 'Potential & Power' },
     theme: { ja: '可能性', en: 'Possibility' },
@@ -175,7 +175,7 @@ const CARDS = [
     reversed: '可能性を信じるのが怖くなるくらい、過去に自分の純粋な衝動を笑われたり踏みにじられた傷があったかもしれない。でも、あなたの魂の奥底にある「純粋な風（アレフ）」は1ミリも死んでいない。',
   },
   {
-    id: 'beth', name: 'BETH', type: 'Hebrew',
+    id: 'beth', kana: 'ベート', name: 'BETH', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '可能性と力', en: 'Potential & Power' },
     theme: { ja: '内なる資質', en: 'Inner Resources' },
@@ -189,7 +189,7 @@ const CARDS = [
     reversed: '自分の意志やもっている資質・能力を過去に「大した価値がない」と否定され続けた傷。誰かに笑われた記憶が、あなたの手を止めているのかもしれない。あなたの大切な道具たちは、仕舞われていただけで、今もちゃんと使える。',
   },
   {
-    id: 'gimel', name: 'GIMEL', type: 'Hebrew',
+    id: 'gimel', kana: 'ギメル', name: 'GIMEL', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '人生の道', en: 'The Path of Life' },
@@ -203,7 +203,7 @@ const CARDS = [
     reversed: '自分の望みではない光を追っている可能性があるかもしれない。他者の承認に依存する古いパターンから、自分自身の深い知恵を信頼する新しい在り方への移行を促している。',
   },
   {
-    id: 'daleth', name: 'DALETH', type: 'Hebrew',
+    id: 'daleth', kana: 'ダレット', name: 'DALETH', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '開く・受け取る', en: 'Opening & Receiving' },
     theme: { ja: '開く心', en: 'An Open Heart' },
@@ -217,7 +217,7 @@ const CARDS = [
     reversed: '扉の存在に気づいていない、または見えているのに開けられない状態。過去に心を開いたとき傷ついた経験が、鍵を固く握らせているのかもしれない。でもこの扉は、外から壊されるものじゃない。あなたの内側からだけ、開く。',
   },
   {
-    id: 'heh', name: 'HEH', type: 'Hebrew',
+    id: 'heh', kana: 'ヘー', name: 'HEH', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '可能性と力', en: 'Potential & Power' },
     theme: { ja: '積み上げた力', en: 'Earned Power' },
@@ -231,7 +231,7 @@ const CARDS = [
     reversed: '心の窓が閉まっている、または開け方を忘れてしまっているかもしれない。過去に窓を開けたとき、見えたものや流れ込んできたものが、痛かったり怖かったりした経験があったのかもしれない。でも、窓は家の中から開けるもの。今あなたがここにいるということは、安全な場所にいるということ。そして、開ける準備が整っているというお知らせかもしれない。',
   },
   {
-    id: 'vav', name: 'VAV', type: 'Hebrew',
+    id: 'vav', kana: 'ヴァヴ', name: 'VAV', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '内と外の架け橋', en: 'Bridge Between Worlds' },
@@ -245,7 +245,7 @@ const CARDS = [
     reversed: '自分の知恵や感覚を外に出したとき、否定されたり無視された経験があったのかもしれない。だから繋ぐことをやめて、内側に仕舞い込んでいるのかもしれない。でもその釘は、あなたと世界を繋ぐためにある。',
   },
   {
-    id: 'zayin', name: 'ZAYIN', type: 'Hebrew',
+    id: 'zayin', kana: 'ザイン', name: 'ZAYIN', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '心が動く方', en: 'Where the Heart Moves' },
@@ -259,7 +259,7 @@ const CARDS = [
     reversed: '選択することへの深い恐怖。「選んだら何かを失う」「どちらも正しい気がして動けない」——その分裂の痛みそのものが、あなたが何を大切にしているかを教えてくれる。',
   },
   {
-    id: 'cheth', name: 'CHETH', type: 'Hebrew',
+    id: 'cheth', kana: 'ヘット', name: 'CHETH', type: 'Hebrew',
     pillar: { ja: '守る', en: 'Guarding' },
     subtheme: { ja: '境界線', en: 'Boundaries' },
     theme: { ja: '情熱の囲い', en: 'Sheltered Passion' },
@@ -273,7 +273,7 @@ const CARDS = [
     reversed: '炎を守るための柵を作れなかった、または作り方がわからなかったのかもしれない。誰かに踏み込まれて、熱意ごと消されてしまった経験があったのかもしれない。その炎はまだ、あなたの中にある。',
   },
   {
-    id: 'tet', name: 'TET', type: 'Hebrew',
+    id: 'tet', kana: 'テット', name: 'TET', type: 'Hebrew',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '熱の変換', en: 'Transmuting the Flame' },
     theme: { ja: '熱を知恵に', en: 'Heat into Wisdom' },
@@ -287,7 +287,7 @@ const CARDS = [
     reversed: '自分の中の強い熱や衝動を「あってはならないもの」として封じ込めてきたのかもしれない。でもその熱は、悪いものじゃなくて強いものだっただけ。焦らなくても、その扱いを覚えられるのはあなた以外にいない。',
   },
   {
-    id: 'yod', name: 'YOD', type: 'Hebrew',
+    id: 'yod', kana: 'ヨッド', name: 'YOD', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '内なる光', en: 'Inner Light' },
@@ -301,7 +301,7 @@ const CARDS = [
     reversed: '孤立が孤独になってしまっているとき。「誰にもわかってもらえない」という深い孤独感。しかし、その孤独の深さほど、あなたの内なる光は明るい。灯台は、自分のために光らなくていい。',
   },
   {
-    id: 'kaf', name: 'KAF', type: 'Hebrew',
+    id: 'kaf', kana: 'カフ', name: 'KAF', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '開く・受け取る', en: 'Opening & Receiving' },
     theme: { ja: '受け取る手', en: 'Hands That Receive' },
@@ -315,7 +315,7 @@ const CARDS = [
     reversed: '喜んでいいのか、豊かさを受け取っていいのか、どこかで許可が出せないのかもしれない。過去に手を開いたとき、奪われたり、喜びを壊された経験があったから。でも、その手のひらはちゃんと与えられる。',
   },
   {
-    id: 'lamed', name: 'LAMED', type: 'Hebrew',
+    id: 'lamed', kana: 'ラメド', name: 'LAMED', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '公正な目', en: 'Impartial Eyes' },
@@ -329,7 +329,7 @@ const CARDS = [
     reversed: '自分を裁きすぎている、または不公平な裁きを受けてきた傷。「正しくなければ愛されない」という信念の重さ。しかし正義は、あなたを罰するためにあるのではない。あなたの大事なものの重みを知るためにある。',
   },
   {
-    id: 'mem', name: 'MEM', type: 'Hebrew',
+    id: 'mem', kana: 'メム', name: 'MEM', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '温かい冷静さ', en: 'Warm Composure' },
@@ -343,7 +343,7 @@ const CARDS = [
     reversed: '熱いまま言葉にしようとして、うまく伝わらなかった経験があったのかもしれない。または逆に、冷やされすぎて言葉が出てこなくなっているのかもしれない。その経験こそが、言語化や知恵にする力となっていく。',
   },
   {
-    id: 'nun', name: 'NUN', type: 'Hebrew',
+    id: 'nun', kana: 'ヌン', name: 'NUN', type: 'Hebrew',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '手放す・変わる', en: 'Releasing & Transforming' },
     theme: { ja: '手放す動き', en: 'The Motion of Letting Go' },
@@ -357,7 +357,7 @@ const CARDS = [
     reversed: '動き続けることが止められなくなっているかもしれない。止まると何かを失う気がして、過度に動き続けてしまう。本当は疲れている自分に気づくとき。',
   },
   {
-    id: 'samekh', name: 'SAMEKH', type: 'Hebrew',
+    id: 'samekh', kana: 'サメク', name: 'SAMEKH', type: 'Hebrew',
     pillar: { ja: '守る', en: 'Guarding' },
     subtheme: { ja: '聖域', en: 'Sanctuary' },
     theme: { ja: '内と外の一致', en: 'Inner-Outer Alignment' },
@@ -371,7 +371,7 @@ const CARDS = [
     reversed: '表向きの自分と内側の自分にズレが生じているかもしれない。その摩擦が疲れや違和感として出てきているのかもしれない。本当はどう在りたいか、内側から問われている。',
   },
   {
-    id: 'ayin', name: 'AYIN', type: 'Hebrew',
+    id: 'ayin', kana: 'アイン', name: 'AYIN', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '感性', en: 'Sensibility' },
     theme: { ja: '本音の直視', en: 'Facing Your Truth' },
@@ -385,7 +385,7 @@ const CARDS = [
     reversed: 'その鎖を外す恐怖——「自由になったら何が起きるかわからない」という深い不安。その縛りは、かつてあなたを守るために必要だったもの。その歴史への敬意と共に、少しずつ手を開いていい。',
   },
   {
-    id: 'pe', name: 'PE', type: 'Hebrew',
+    id: 'pe', kana: 'ペー', name: 'PE', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '解放の言葉', en: 'Words That Free' },
@@ -399,7 +399,7 @@ const CARDS = [
     reversed: '言いたいことが喉の奥で止まっているかもしれない。壊れることへの恐怖が、口を閉じさせている。でもその言葉は、あなたに表現してもらうのをずっと待っている。',
   },
   {
-    id: 'tzadi', name: 'TZADI', type: 'Hebrew',
+    id: 'tzadi', kana: 'ツァディ', name: 'TZADI', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '感性', en: 'Sensibility' },
     theme: { ja: '眠っていた「好き」', en: 'Dormant Loves' },
@@ -413,7 +413,7 @@ const CARDS = [
     reversed: '好きだったものを感じられなくなっているかもしれない。失ってしまったと思っているかもしれない。でもそれは消えていない。ただ、深いところで眠っているだけ。',
   },
   {
-    id: 'qof', name: 'QOF', type: 'Hebrew',
+    id: 'qof', kana: 'コフ', name: 'QOF', type: 'Hebrew',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '感性', en: 'Sensibility' },
     theme: { ja: '無意識の声', en: 'Voice of the Unconscious' },
@@ -427,7 +427,7 @@ const CARDS = [
     reversed: '浮かび上がってくるものを「気のせいだ」「よくないものだ」と押し戻しているかもしれない。でもその感覚は、あなたを守るために出てきている。',
   },
   {
-    id: 'resh', name: 'RESH', type: 'Hebrew',
+    id: 'resh', kana: 'レーシュ', name: 'RESH', type: 'Hebrew',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '惜しみない輝き', en: 'Unreserved Radiance' },
@@ -441,7 +441,7 @@ const CARDS = [
     reversed: '喜ぶことへの恐怖、または輝くことへの罪悪感。「自分だけ幸せになっていいのか」という思い込み。その曇りを通しても、あなたの太陽は消えていない。',
   },
   {
-    id: 'shin', name: 'SHIN', type: 'Hebrew',
+    id: 'shin', kana: 'シン', name: 'SHIN', type: 'Hebrew',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '手放す・変わる', en: 'Releasing & Transforming' },
     theme: { ja: '痛みの変容', en: 'Transmuting Pain' },
@@ -455,7 +455,7 @@ const CARDS = [
     reversed: '砕かれることへの恐怖から、噛めないでいるのかもしれない。でもシンの炎は、あなたを消すためにあるんじゃない。新しい形に変えるために、ここにある。',
   },
   {
-    id: 'tav', name: 'TAV', type: 'Hebrew',
+    id: 'tav', kana: 'タヴ', name: 'TAV', type: 'Hebrew',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '手放す・変わる', en: 'Releasing & Transforming' },
     theme: { ja: '完成の承認', en: 'Acknowledging Completion' },
@@ -473,7 +473,7 @@ const CARDS = [
   // 九つの世界 + ヴァルハラ + ビフロスト（11枚）
   // =====================
   {
-    id: 'asgard', name: 'ASGARD', type: 'World',
+    id: 'asgard', kana: 'アスガルド', name: 'ASGARD', type: 'World',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '形にする', en: 'Giving Form' },
     theme: { ja: '築く意志', en: 'Will to Build' },
@@ -487,7 +487,7 @@ const CARDS = [
     reversed: '神の権威を笠に着た支配、または権威への過剰な服従。「高みから見下ろされる」感覚の傷。しかし本物の権威は、制圧ではなく守護から来る。',
   },
   {
-    id: 'midgard', name: 'MIDGARD', type: 'World',
+    id: 'midgard', kana: 'ミッドガルド', name: 'MIDGARD', type: 'World',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '存在', en: 'Existence' },
     theme: { ja: '不完全な今', en: 'The Imperfect Now' },
@@ -501,7 +501,7 @@ const CARDS = [
     reversed: '日常の重さに押しつぶされているとき、または現実から逃げたいとき。その「ただの毎日」の中に、見過ごしてきた宝が隠れている。',
   },
   {
-    id: 'jotunheim', name: 'JOTUNHEIM', type: 'World',
+    id: 'jotunheim', kana: 'ヨトゥンヘイム', name: 'JOTUNHEIM', type: 'World',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '未知に乗る', en: 'Riding the Unknown' },
     theme: { ja: 'わからないまま', en: 'Living with the Unknown' },
@@ -515,7 +515,7 @@ const CARDS = [
     reversed: '巨大な力への恐怖、または自分の中の手に負えない感情への恐れ。しかし、ヨトゥンの力はあなたを壊すためにあるのではない。',
   },
   {
-    id: 'vanaheim', name: 'VANAHEIM', type: 'World',
+    id: 'vanaheim', kana: 'ヴァナヘイム', name: 'VANAHEIM', type: 'World',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '衝動', en: 'Impulse' },
     theme: { ja: '本能のまま', en: 'Living by Instinct' },
@@ -529,7 +529,7 @@ const CARDS = [
     reversed: '自然の流れや感覚的な喜びから切り離されているとき。「欲しいと思ってはいけない」という禁止令。あなたの欲望は、生命そのものの声。',
   },
   {
-    id: 'alfheim', name: 'ALFHEIM', type: 'World',
+    id: 'alfheim', kana: 'アルフヘイム', name: 'ALFHEIM', type: 'World',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '感性', en: 'Sensibility' },
     theme: { ja: '感性の純粋さ', en: 'Purity of Sensibility' },
@@ -543,7 +543,7 @@ const CARDS = [
     reversed: 'インスピレーションが枯渇しているとき、または創造性を否定されてきた傷。光のエルフは気まぐれではない——あなたが疲れているとき、彼らは静かに待っている。',
   },
   {
-    id: 'svartalfheim', name: 'SVARTALFHEIM', type: 'World',
+    id: 'svartalfheim', kana: 'スヴァルトアルフヘイム', name: 'SVARTALFHEIM', type: 'World',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '共に育つ', en: 'Growing Together' },
     theme: { ja: '見えない貢献', en: 'Unseen Contribution' },
@@ -557,7 +557,7 @@ const CARDS = [
     reversed: '隠れて作業することの孤独感、または評価されない苦しさ。しかし、ドワーフの最高の作品は、地下で生まれた。その暗闇での制作が本物の力になる。',
   },
   {
-    id: 'niflheim', name: 'NIFLHEIM', type: 'World',
+    id: 'niflheim', kana: 'ニヴルヘイム', name: 'NIFLHEIM', type: 'World',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '止まる', en: 'Stillness' },
     theme: { ja: '静止の準備', en: 'Stillness as Preparation' },
@@ -571,7 +571,7 @@ const CARDS = [
     reversed: 'その凍結が長くなりすぎているとき。感情が完全に麻痺し、生きている感覚が薄くなっているとき。ニフルヘイムの氷は始まりの物質——いつか必ず、火との出会いで融ける。',
   },
   {
-    id: 'muspelheim', name: 'MUSPELHEIM', type: 'World',
+    id: 'muspelheim', kana: 'ムスペルヘイム', name: 'MUSPELHEIM', type: 'World',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '熱の変換', en: 'Transmuting the Flame' },
     theme: { ja: '激しさの創造', en: 'Creation from Intensity' },
@@ -585,7 +585,7 @@ const CARDS = [
     reversed: '怒りや激情のコントロールが効かなくなっているとき、または逆に炎が完全に消えてしまったとき。スルトの炎は終末のためにある——しかし今、その炎はあなたの内側で新しいものを創るためにある。',
   },
   {
-    id: 'helheim', name: 'HELHEIM', type: 'World',
+    id: 'helheim', kana: 'ヘルヘイム', name: 'HELHEIM', type: 'World',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '止まる', en: 'Stillness' },
     theme: { ja: '浮遊の許し', en: 'Permission to Drift' },
@@ -599,7 +599,7 @@ const CARDS = [
     reversed: '平和と見せかけた麻痺、降伏に偽装した回避。「もう何も感じたくない」という麻痺の中にいるとき。その無感覚は、かつてあなたが生き延びるために選んだ戦略だった。',
   },
   {
-    id: 'valhalla', name: 'VALHALLA', type: 'World',
+    id: 'valhalla', kana: 'ヴァルハラ', name: 'VALHALLA', type: 'World',
     pillar: { ja: '証', en: 'Sign' },
     subtheme: { ja: '特別', en: 'Special' },
     theme: { ja: '労いと讃え', en: 'Honoring Your Battles' },
@@ -613,7 +613,7 @@ const CARDS = [
     reversed: '傷つくことへの恐怖、または傷を恥じ続けているとき。「こんな自分では価値がない」という思い込み。あなたの傷に刻まれた歴史こそが、最も美しい勲章。',
   },
   {
-    id: 'bifrost', name: 'BIFROST', type: 'World',
+    id: 'bifrost', kana: 'ビフロスト', name: 'BIFROST', type: 'World',
     pillar: { ja: '証', en: 'Sign' },
     subtheme: { ja: '特別', en: 'Special' },
     theme: { ja: '見えない助け', en: 'Unseen Support' },
@@ -631,7 +631,7 @@ const CARDS = [
   // ルーン文字（24枚）
   // =====================
   {
-    id: 'fehu', name: 'FEHU', type: 'Rune',
+    id: 'fehu', kana: 'フェフ', name: 'FEHU', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '開く・受け取る', en: 'Opening & Receiving' },
     theme: { ja: '豊かさの循環', en: 'Circulation of Abundance' },
@@ -645,7 +645,7 @@ const CARDS = [
     reversed: '豊かさを受け取ることへの恐怖、または喪失への執着。「持っていなければ価値がない」という思い込み。真の富は、流れの中にある。',
   },
   {
-    id: 'uruz', name: 'URUZ', type: 'Rune',
+    id: 'uruz', kana: 'ウルズ', name: 'URUZ', type: 'Rune',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '衝動', en: 'Impulse' },
     theme: { ja: '野生の力', en: 'Wild Strength' },
@@ -659,7 +659,7 @@ const CARDS = [
     reversed: '生命力の消耗、または力への恐怖。その疲れは本物——しかしウルズの牛は、倒れても立ち上がる。あなたの根底にある生命力は、まだ燃えている。',
   },
   {
-    id: 'thurisaz', name: 'THURISAZ', type: 'Rune',
+    id: 'thurisaz', kana: 'スリサズ', name: 'THURISAZ', type: 'Rune',
     pillar: { ja: '守る', en: 'Guarding' },
     subtheme: { ja: '境界線', en: 'Boundaries' },
     theme: { ja: '防衛線', en: 'Line of Defense' },
@@ -673,7 +673,7 @@ const CARDS = [
     reversed: '境界線を引けずに傷ついているとき、または棘が暴走しているとき。その攻撃性の奥には、深く傷つけられた心がある。守るべきものは、まず自分自身。',
   },
   {
-    id: 'ansuz', name: 'ANSUZ', type: 'Rune',
+    id: 'ansuz', kana: 'アンスズ', name: 'ANSUZ', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '媒介の声', en: 'Voice of the Messenger' },
@@ -687,7 +687,7 @@ const CARDS = [
     reversed: 'コミュニケーションの断絶、または言葉が本当の意味を失っているとき。言葉が届かない孤独感。しかし、真の言葉は沈黙の中からも伝わる。',
   },
   {
-    id: 'raidho', name: 'RAIDHO', type: 'Rune',
+    id: 'raidho', kana: 'ライド', name: 'RAIDHO', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '熟す', en: 'Ripening' },
     theme: { ja: '自分のリズム', en: 'Your Own Rhythm' },
@@ -701,7 +701,7 @@ const CARDS = [
     reversed: '道を見失っているとき、または間違った方向へ進んでいる感覚。その迷いは、本当の方向を知っているから生まれる。立ち止まって、足元の感覚を確かめて。',
   },
   {
-    id: 'kenaz', name: 'KENAZ', type: 'Rune',
+    id: 'kenaz', kana: 'ケナズ', name: 'KENAZ', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '照らす光', en: 'Light That Illuminates' },
@@ -715,7 +715,7 @@ const CARDS = [
     reversed: '創造の火が消えかけているとき。インスピレーションの枯渇、または自分の光を信じられないとき。松明は消えても、火種は残っている。もう一度、息を吹きかけてみて。',
   },
   {
-    id: 'gebo', name: 'GEBO', type: 'Rune',
+    id: 'gebo', kana: 'ゲボ', name: 'GEBO', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '開く・受け取る', en: 'Opening & Receiving' },
     theme: { ja: '与え合い', en: 'Mutual Giving' },
@@ -729,7 +729,7 @@ const CARDS = [
     reversed: '与えすぎて枯渇しているとき、または受け取ることを拒否しているとき。ギャバは言う——受け取ることもまた、与えること、と。',
   },
   {
-    id: 'wunjo', name: 'WUNJO', type: 'Rune',
+    id: 'wunjo', kana: 'ウンジョ', name: 'WUNJO', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '伝える', en: 'Expressing' },
     theme: { ja: '喜びの分かち合い', en: 'Sharing Joy' },
@@ -743,7 +743,7 @@ const CARDS = [
     reversed: '喜びを感じることへの罪悪感、または仲間外れの痛み。「自分だけ幸せになっていいのか」という思い込み。喜びはあなたの権利——生まれてきたその瞬間から。',
   },
   {
-    id: 'hagalaz', name: 'HAGALAZ', type: 'Rune',
+    id: 'hagalaz', kana: 'ハガラズ', name: 'HAGALAZ', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '手放す・変わる', en: 'Releasing & Transforming' },
     theme: { ja: '破壊と再生', en: 'Destruction & Renewal' },
@@ -757,7 +757,7 @@ const CARDS = [
     reversed: '混乱への恐怖から、すべてをコントロールしようとしているとき。または、嵐の中で完全に立ちすくんでいるとき。嵐には必ず終わりがある——あなたは今、その中を通過している。',
   },
   {
-    id: 'nauthiz', name: 'NAUTHIZ', type: 'Rune',
+    id: 'nauthiz', kana: 'ナウティズ', name: 'NAUTHIZ', type: 'Rune',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '熱の変換', en: 'Transmuting the Flame' },
     theme: { ja: '制約の中の火', en: 'Fire within Constraint' },
@@ -771,7 +771,7 @@ const CARDS = [
     reversed: '制約への絶望、または制限の中での自己消耗。限界を感じて絶望するとき、その苦しさはあなたが本当に限界まで頑張ってきた証拠。ナウティズの火は、摩擦がなければ生まれない。',
   },
   {
-    id: 'isa', name: 'ISA', type: 'Rune',
+    id: 'isa', kana: 'イサ', name: 'ISA', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '止まる', en: 'Stillness' },
     theme: { ja: '凍る時間', en: 'Frozen Time' },
@@ -785,7 +785,7 @@ const CARDS = [
     reversed: '凍結への恐怖、または自我の過剰な硬化。動けない自分を責めたり、逆に凍りついたまま溶けられないとき——氷は必ず溶ける。静止の中で、次のための力を蓄えている。',
   },
   {
-    id: 'jera', name: 'JERA', type: 'Rune',
+    id: 'jera', kana: 'イェラ', name: 'JERA', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '熟す', en: 'Ripening' },
     theme: { ja: '時の実り', en: 'Fruit of Time' },
@@ -799,7 +799,7 @@ const CARDS = [
     reversed: '収穫への焦りと不信、または実りを受け取れないとき。あなたが確かに蒔いた種は、確かに育っている。ただ、自然の時間は人間の焦りより遅い。',
   },
   {
-    id: 'eihwaz', name: 'EIHWAZ', type: 'Rune',
+    id: 'eihwaz', kana: 'エイワズ', name: 'EIHWAZ', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '熟す', en: 'Ripening' },
     theme: { ja: '過程の全部', en: 'Every Stage of You' },
@@ -813,7 +813,7 @@ const CARDS = [
     reversed: '変容への抵抗、または境界の混乱。変わることが怖い、自分が誰なのかわからなくなるのは、本当に深い変容が起きているサイン。根は死の世界まで届きながら、枝は天を突き刺す。',
   },
   {
-    id: 'perthro', name: 'PERTHRO', type: 'Rune',
+    id: 'perthro', kana: 'ペルスロ', name: 'PERTHRO', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '未知に乗る', en: 'Riding the Unknown' },
     theme: { ja: '賭ける面白さ', en: 'The Thrill of the Wager' },
@@ -827,7 +827,7 @@ const CARDS = [
     reversed: 'コントロールへの執着、または運命への諦め。わからないことへの恐怖は、過去に「わからないまま」に傷つけられた記憶があるから。運命は容器の中で静かに待っている。',
   },
   {
-    id: 'algiz', name: 'ALGIZ', type: 'Rune',
+    id: 'algiz', kana: 'アルギズ', name: 'ALGIZ', type: 'Rune',
     pillar: { ja: '守る', en: 'Guarding' },
     subtheme: { ja: '聖域', en: 'Sanctuary' },
     theme: { ja: '内なる聖域', en: 'Inner Sanctuary' },
@@ -841,7 +841,7 @@ const CARDS = [
     reversed: '防護の過剰発動、または神聖なものへの接続の喪失。両手を天に向けるその姿勢は、今のあなたにも宿っている。内なる聖域は消えていない。',
   },
   {
-    id: 'sowilo', name: 'SOWILO', type: 'Rune',
+    id: 'sowilo', kana: 'ソウィロ', name: 'SOWILO', type: 'Rune',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '可能性と力', en: 'Potential & Power' },
     theme: { ja: '光と影の統合', en: 'Integrating Light & Shadow' },
@@ -855,7 +855,7 @@ const CARDS = [
     reversed: '勝利への恐れ、または光の中に立つことへの怖さ。うまくいくこと、輝くことが怖いなら、過去に光の中に立って傷ついた経験があるのかもしれない。その勝利を、あなた自身が一番先に祝ってあげよう。',
   },
   {
-    id: 'tiwaz', name: 'TIWAZ', type: 'Rune',
+    id: 'tiwaz', kana: 'ティワズ', name: 'TIWAZ', type: 'Rune',
     pillar: { ja: '燃える', en: 'Burning' },
     subtheme: { ja: '形にする', en: 'Giving Form' },
     theme: { ja: '信念の選択', en: 'Choice of Conviction' },
@@ -869,7 +869,7 @@ const CARDS = [
     reversed: '自己犠牲の過剰、または正義の暴走。傷ついても正義を守ろうとするのは、あなたがその信念を命がけで信じているから。あなたを大切にすることも、正義の一部。',
   },
   {
-    id: 'berkana', name: 'BERKANA', type: 'Rune',
+    id: 'berkana', kana: 'ベルカナ', name: 'BERKANA', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '共に育つ', en: 'Growing Together' },
     theme: { ja: '育む力', en: 'Power to Nurture' },
@@ -883,7 +883,7 @@ const CARDS = [
     reversed: '新しい命への恐れ、または養育の枯渇。まず自分という大地を潤してあげよう。その豊かさの上に、新しい命が育つ。土もまた栄養を必要とする。',
   },
   {
-    id: 'ehwaz', name: 'EHWAZ', type: 'Rune',
+    id: 'ehwaz', kana: 'エワズ', name: 'EHWAZ', type: 'Rune',
     pillar: { ja: '繋がる', en: 'Connecting' },
     subtheme: { ja: '共に育つ', en: 'Growing Together' },
     theme: { ja: '対等な信頼', en: 'Trust Between Equals' },
@@ -897,7 +897,7 @@ const CARDS = [
     reversed: '信頼への恐れ、または一方的な関係の疲弊。互いを尊重できる関係だけが、本当に遠くへ行ける。馬と乗り手はどちらも等しく大切。',
   },
   {
-    id: 'mannaz', name: 'MANNAZ', type: 'Rune',
+    id: 'mannaz', kana: 'マンナズ', name: 'MANNAZ', type: 'Rune',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '内なる指針', en: 'Inner Compass' },
     theme: { ja: '自己理解', en: 'Self-Understanding' },
@@ -911,7 +911,7 @@ const CARDS = [
     reversed: '自己認識の歪み、または他者との境界の喪失。人間であることそのものが、すでに知性の現れ。あなたをあなたとして見る、その目を、まず自分に向けよう。',
   },
   {
-    id: 'laguz', name: 'LAGUZ', type: 'Rune',
+    id: 'laguz', kana: 'ラグズ', name: 'LAGUZ', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '未知に乗る', en: 'Riding the Unknown' },
     theme: { ja: '流れに乗る', en: 'Riding the Current' },
@@ -925,7 +925,7 @@ const CARDS = [
     reversed: '感情の氾濫、または直感への不信。水は形を変えながら、どこまでも流れ続ける。あなたの直感もまた、止まっていない。その流れに、そっと乗ってみよう。',
   },
   {
-    id: 'ingwaz', name: 'INGWAZ', type: 'Rune',
+    id: 'ingwaz', kana: 'イングワズ', name: 'INGWAZ', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '止まる', en: 'Stillness' },
     theme: { ja: '内なる完成', en: 'Inner Completion' },
@@ -939,7 +939,7 @@ const CARDS = [
     reversed: '見えない成果への焦り、または完成を外に出す怖さ。種は暗闇の中でこそ育つ。あなたの内的完成は本物。その準備が整ったとき、あなたは自然に外へと向かえる。',
   },
   {
-    id: 'dagaz', name: 'DAGAZ', type: 'Rune',
+    id: 'dagaz', kana: 'ダガズ', name: 'DAGAZ', type: 'Rune',
     pillar: { ja: '流れる', en: 'Flowing' },
     subtheme: { ja: '手放す・変わる', en: 'Releasing & Transforming' },
     theme: { ja: '夜明け', en: 'Daybreak' },
@@ -953,7 +953,7 @@ const CARDS = [
     reversed: '夜明け前の絶望、または突破口への恐れ。あなたがこれだけ暗闇を歩いてきたことが、光がすぐそこにある証拠。夜明けは来る。その閾値を、一歩だけ、渡ってみよう。',
   },
   {
-    id: 'othala', name: 'OTHALA', type: 'Rune',
+    id: 'othala', kana: 'オサラ', name: 'OTHALA', type: 'Rune',
     pillar: { ja: '在る', en: 'Being' },
     subtheme: { ja: '存在', en: 'Existence' },
     theme: { ja: '帰る場所', en: 'A Place to Return' },
