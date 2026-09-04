@@ -773,15 +773,15 @@
 
     // ── 固定ポジション定義 ──
     // name: 画面表示名 / desc: 画面表示の説明 / api: AIに渡すラベル（説明込み）
-    const FIXED_POSITIONS = {
+        const FIXED_POSITIONS = {
       ja: {
         3: [
-          { name: '景色',   desc: 'いま見えているもの — 意識できている状況・感情',
-            api: '景色（いま見えているもの。相談者が意識できている状況・感情の表層）' },
-          { name: '根っこ', desc: 'その奥で守っているもの — 維持したいもの・恐れているもの',
-            api: '根っこ（その奥で守っているもの。維持したいホメオスタシスの核・恐れているもの）' },
-          { name: '兆し',   desc: '開いていく先 — 別の方向から自然にほどけていくところ',
-            api: '兆し（開いていく先。未来予測ではなく、別の方向から自然に開いていく可能性の観察）' },
+          { name: '今見えていること', desc: '意識できている状況・感情の表層',
+            api: '今見えていること（相談者がいま自覚できている状況・感情の表層。目に入っている景色）' },
+          { name: '水面下にありそうなこと', desc: 'まだ言葉になっていない、その奥で動いているもの',
+            api: '水面下にありそうなこと（まだ言葉になっていない層。守っているもの、維持したいホメオスタシスの核、恐れているもの）' },
+          { name: 'この問いを、別の場所から見るなら', desc: '答えではなく、視点そのものをずらしてみる',
+            api: 'この問いを、別の場所から見るなら（未来予測でも答えでもなく、問いそのものを別の角度・別の高さから眺め直す視点の提示）' },
         ],
         5: [
           { name: '景色',       desc: 'いま立っている場所',
@@ -798,12 +798,12 @@
       },
       en: {
         3: [
-          { name: 'Landscape', desc: 'What is visible now — the situation and feelings you are aware of',
-            api: 'Landscape (what is visible now — the conscious surface of the situation and feelings)' },
-          { name: 'Root',      desc: 'What is protected beneath — what you hold onto, what you fear',
-            api: 'Root (what is protected beneath — the homeostatic core: what is being maintained, what is feared)' },
-          { name: 'Sign',      desc: 'Where it opens — not a prediction, but a natural unfolding',
-            api: 'Sign (where it opens — not a prediction, but an observation of how things may naturally unfold from another direction)' },
+          { name: 'What Is Visible Now', desc: 'The situation and feelings you are aware of right now',
+            api: 'What Is Visible Now (the conscious surface — the situation and feelings currently in view)' },
+          { name: 'What Lies Beneath', desc: 'What is still moving under the surface, unnamed',
+            api: 'What Lies Beneath (the layer not yet put into words — what is protected, the homeostatic core, what is feared)' },
+          { name: 'Seen From Elsewhere', desc: 'Not an answer — the question viewed from another place',
+            api: 'Seen From Elsewhere (not a prediction or an answer, but the question itself viewed from another angle, another height)' },
         ],
         5: [
           { name: 'Landscape',      desc: 'Where you stand now',
