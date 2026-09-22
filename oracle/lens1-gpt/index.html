@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The Integration Tree — One Lens / GPT</title>
+  <meta name="description" content="一枚のカードから、願いの奥にあるかもしれない思い込みをGPTと見つめる、ひとつのレンズ。">
+  <meta name="theme-color" content="#08080f">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080f'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23c9a84c' stroke-width='4'/%3E%3Cpath d='M32 12v40M18 32h28M23 20l18 24M41 20 23 44' stroke='%23c9a84c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#c9a84c;--gold-dim:rgba(201,168,76,.35);--bg:#08080f;--text:#e8e0d0;--dim:rgba(232,224,208,.45)}
+    body{background:var(--bg);color:var(--text);font-family:'Cormorant Garamond',serif;min-height:100vh;display:flex;justify-content:center;padding:3rem 1.5rem 4rem}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(180,140,60,.1),transparent 55%),radial-gradient(ellipse at 85% 85%,rgba(60,80,160,.08),transparent 45%);pointer-events:none}
+    .wrap{position:relative;width:100%;max-width:540px}header{text-align:center;margin-bottom:2.2rem}
+    .site-title,.lens-label,.card-name,.btn{font-family:'Cinzel Decorative',serif}.site-title{font-size:clamp(10px,2.5vw,13px);letter-spacing:.3em;color:var(--gold);opacity:.85;text-transform:uppercase}
+    .site-sub{font-size:13px;color:var(--dim);font-style:italic;margin-top:6px;letter-spacing:.05em}.gpt-badge{display:inline-block;margin-top:10px;padding:3px 9px;border:1px solid var(--gold-dim);border-radius:999px;color:var(--gold);font:9px/1.3 'Cinzel Decorative',serif;letter-spacing:.16em}
+    .desc{font-size:14px;color:var(--dim);font-style:italic;text-align:center;line-height:1.85;margin-bottom:1.8rem}
+    label{display:block;font-size:12px;letter-spacing:.1em;color:var(--gold);opacity:.75;margin-bottom:8px}textarea{width:100%;background:rgba(255,255,255,.04);border:.5px solid var(--gold-dim);border-radius:8px;color:var(--text);font:17px/1.65 'Cormorant Garamond',serif;padding:12px 16px;resize:none;outline:0}textarea:focus{border-color:rgba(201,168,76,.65)}textarea::placeholder{color:var(--dim);font-style:italic}
+    .hint{font-size:12px;color:#c98080;display:none;margin-top:6px}.hint.show{display:block}.btn{display:block;width:100%;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:10px;letter-spacing:.18em;padding:12px;cursor:pointer;border-radius:2px;transition:.25s;margin-top:1.5rem}.btn:hover{background:rgba(201,168,76,.07);border-color:var(--gold)}.btn:disabled{opacity:.35;cursor:not-allowed}
+    #cardStage{display:none}#cardStage.visible{display:block;animation:fadeUp .8s ease}@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    .your-q{text-align:center;color:var(--dim);font-size:14px;font-style:italic;line-height:1.75;margin-bottom:1.8rem}.card-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:1.8rem}.card-face{width:190px;height:304px;border:1px solid rgba(201,168,76,.38);border-radius:11px;overflow:hidden;box-shadow:0 0 36px rgba(201,168,76,.13),0 20px 56px rgba(0,0,0,.72)}.card-face svg{width:100%;height:100%;display:block}.card-name{font-size:11px;letter-spacing:.18em;color:var(--gold);margin-top:12px}.card-type{font-size:13px;color:var(--dim);font-style:italic;margin-top:4px}
+    .lens{margin-bottom:1.4rem}.lens-label{display:flex;align-items:center;gap:10px;font-size:10.5px;letter-spacing:.14em;color:var(--gold);margin-bottom:10px}.n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid var(--gold-dim);border-radius:50%;font-size:10px;flex-shrink:0}.lens-box{background:rgba(255,255,255,.025);border:.5px solid rgba(201,168,76,.18);border-radius:9px;padding:1.3rem 1.4rem}.lens-text{font-size:16.5px;line-height:1.95;font-weight:300;white-space:pre-wrap}.loading{text-align:center;font-style:italic;color:var(--dim);font-size:15px;padding:.6rem 0;animation:pulse 1.6s ease-in-out infinite}@keyframes pulse{50%{opacity:.3}}
+    .column .lens-box{background:transparent;border:0;padding:.4rem 1.1rem 0}.column .lens-text{font-size:14.5px;font-style:italic;color:var(--dim);line-height:1.85}.secondary{color:var(--dim);margin-top:1rem}.footer{text-align:center;margin-top:2rem;color:var(--dim);font-size:12px;font-style:italic;line-height:1.6}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header><p class="site-title">The Integration Tree</p><p class="site-sub">One Lens — ひとつのレンズ</p><span class="gpt-badge">GPT EDITION</span></header>
+    <section id="inputStage">
+      <p class="desc">一枚のカードを通して、今かなえたい願い・問いの奥にあるかもしれない思い込みを見にいきます。</p>
+      <label for="userQ">今、問いかけたいこと・叶えたい願い</label>
+      <textarea id="userQ" rows="3" maxlength="1000" placeholder="例）新しい仕事に踏み出したい、この関係をどうしたいか知りたい…"></textarea>
+      <p class="hint" id="qHint">一行だけでいいので、書いてから引いてください</p>
+      <button class="btn" id="drawBtn" type="button">✦ カードを引く ✦</button>
+    </section>
+
+    <section id="cardStage" aria-live="polite">
+      <p class="your-q" id="yourQ"></p>
+      <div class="card-wrap"><div class="card-face"><svg id="cardSvg" viewBox="0 0 200 320" xmlns="http://www.w3.org/2000/svg"></svg></div><p class="card-name" id="cardName"></p><p class="card-type" id="cardType"></p></div>
+      <div class="lens"><div class="lens-label"><span class="n">1</span>鍵となっていそうな思い込み</div><div class="lens-box"><div class="loading" id="loadBelief">GPTから受け取り中…</div><div class="lens-text" id="textBelief" hidden></div></div></div>
+      <div class="lens"><div class="lens-label"><span class="n">2</span>その思い込みができた背景にありそうなもの</div><div class="lens-box"><div class="loading" id="loadBackground">GPTから受け取り中…</div><div class="lens-text" id="textBackground" hidden></div></div></div>
+      <div class="lens"><div class="lens-label"><span class="n">3</span>願いが叶った視点でみてみると</div><div class="lens-box"><div class="loading" id="loadView">GPTから受け取り中…</div><div class="lens-text" id="textView" hidden></div></div></div>
+      <div class="lens column"><div class="lens-label"><span class="n">✦</span>このカードにまつわる小話</div><div class="lens-box"><div class="loading" id="loadColumn">GPTから受け取り中…</div><div class="lens-text" id="textColumn" hidden></div></div></div>
+      <button class="btn" id="csvBtn" type="button">✦ Canva用CSV ✦</button>
+      <button class="btn secondary" id="againBtn" type="button">✦ もう一度引く ✦</button>
+      <p class="footer">この文章はGPTが生成する内省のための一つの見方です。大切な判断は、ご自身の感覚や信頼できる専門家の意見も合わせてご検討ください。</p>
+    </section>
+  </main>
+
+  <script src="https://fortune-five-psi.vercel.app/oracle/cards-data.js"></script>
+  <script src="https://fortune-five-psi.vercel.app/oracle/canva-csv.js"></script>
+  <script>
+    const API_ENDPOINT='/api/oracle-gpt';
+    const ASSET_BASE='https://fortune-five-psi.vercel.app/oracle/';
+    const typeLabels={Sephirot:'セフィロト（生命の樹）',Hebrew:'ヘブライ文字',Rune:'ルーン文字',Norse:'北欧神話の世界'};
+    let lastDraw=null,currentDrawId=0;
+    const $=id=>document.getElementById(id);
+
+    function escapeXml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));}
+    function buildSvg(card){
+      if(card.image)return `<image href="${ASSET_BASE}${encodeURI(card.image)}" width="200" height="320" preserveAspectRatio="xMidYMid slice"/>`;
+      const c1=card.gradStops?.[0]||['#111','#222'],c2=card.gradStops?.[1]||['#333','#777'],gid='g'+escapeXml(card.id);
+      return `<defs><radialGradient id="${gid}" cx="50%" cy="60%" r="75%"><stop offset="0%" stop-color="${c2[1]}"/><stop offset="45%" stop-color="${c1[1]}"/><stop offset="100%" stop-color="${c1[0]}"/></radialGradient></defs><rect width="200" height="320" fill="url(#${gid})"/><text x="100" y="145" text-anchor="middle" font-size="60" fill="${card.symbolColor||'#fff'}">${escapeXml(card.symbol||'✦')}</text><text x="100" y="190" text-anchor="middle" font-size="9" letter-spacing="3" fill="rgba(255,255,255,.75)">${escapeXml(card.name)}</text>`;
+    }
+    function setLoading(){['Belief','Background','View','Column'].forEach(k=>{$('load'+k).hidden=false;$('text'+k).hidden=true;$('text'+k).textContent='';});}
+    function showResult(data){[['Belief','belief'],['Background','background'],['View','view'],['Column','column']].forEach(([k,key])=>{$('load'+k).hidden=true;$('text'+k).hidden=false;$('text'+k).textContent=data[key]||'（受け取れませんでした）';});}
+    function showError(message){['Belief','Background','View','Column'].forEach(k=>{$('load'+k).hidden=true;$('text'+k).hidden=true;});$('textBelief').hidden=false;$('textBelief').textContent='エラー：'+message;}
+
+    async function drawCard(){
+      const question=$('userQ').value.trim();
+      if(!question){$('qHint').classList.add('show');$('userQ').focus();return;}
+      $('qHint').classList.remove('show');$('drawBtn').disabled=true;$('drawBtn').textContent='…';
+      const drawId=++currentDrawId,card=CARDS[Math.floor(Math.random()*CARDS.length)];lastDraw=null;
+      $('cardSvg').innerHTML=buildSvg(card);$('cardName').textContent=card.name;$('cardType').textContent=typeLabels[card.type]||card.type;$('yourQ').textContent='「'+question+'」';setLoading();
+      $('inputStage').hidden=true;$('cardStage').classList.add('visible');window.scrollTo({top:0,behavior:'smooth'});
+      try{
+        const response=await fetch(API_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'lens1',lang:'ja',question,card:{name:card.name,type:card.type,keywords:card.keywords,upright:card.upright,reversed:card.reversed}})});
+        const raw=await response.text();let data;try{data=JSON.parse(raw);}catch{data={error:'サーバーから正しい応答を受け取れませんでした'};}if(drawId!==currentDrawId)return;if(!response.ok)throw new Error(data.error||'受け取れませんでした');
+        showResult(data);lastDraw={question,card,...data};
+      }catch(error){if(drawId===currentDrawId)showError(error.message);}
+      finally{if(drawId===currentDrawId){$('drawBtn').disabled=false;$('drawBtn').textContent='✦ カードを引く ✦';}}
+    }
+    function downloadCsv(){
+      if(!lastDraw){$('csvBtn').textContent='✦ 先にカードを引いてください ✦';setTimeout(()=>{$('csvBtn').textContent='✦ Canva用CSV ✦';},2200);return;}
+      try{const csv=CanvaCSV.sheet();csv.add('問い',lastDraw.question);csv.addCard('card',{...lastDraw.card,image:lastDraw.card.image?ASSET_BASE+lastDraw.card.image:lastDraw.card.image},false,'ja');csv.add('思い込み',lastDraw.belief,{split:2});csv.add('背景',lastDraw.background,{split:2});csv.add('叶った視点',lastDraw.view,{split:2});csv.add('由来の小話',lastDraw.column);csv.download('lens1_gpt_canva');$('csvBtn').textContent='✦ CSVを保存しました ✦';}catch(error){$('csvBtn').textContent='✦ CSVを作れませんでした ✦';}setTimeout(()=>{$('csvBtn').textContent='✦ Canva用CSV ✦';},3000);
+    }
+    function reset(){currentDrawId++;lastDraw=null;$('cardStage').classList.remove('visible');$('inputStage').hidden=false;$('userQ').value='';$('userQ').focus();window.scrollTo({top:0,behavior:'smooth'});}
+    $('drawBtn').addEventListener('click',drawCard);$('csvBtn').addEventListener('click',downloadCsv);$('againBtn').addEventListener('click',reset);
+  </script>
+</body>
+</html>
