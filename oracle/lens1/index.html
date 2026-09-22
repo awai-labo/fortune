@@ -259,6 +259,32 @@
     }
     .again-btn:hover { color: var(--gold); border-color: var(--gold); }
 
+    .csv-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      padding: 11px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      margin-top: 1.8rem;
+    }
+    .csv-btn:hover { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+
+    .csv-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-dim);
+      text-align: center;
+      margin-top: 8px;
+    }
+
     .instagram-link { text-align: center; margin-top: 2rem; }
 
     .instagram-link a {
@@ -344,6 +370,9 @@
         </div>
       </div>
 
+      <button class="csv-btn" id="csvBtn" onclick="downloadCsv()">✦ Canva用CSV ✦</button>
+      <p class="csv-hint" id="csvHint">CSVは Canva の「一括作成」にそのまま読み込めます。</p>
+
       <button class="again-btn" id="againBtn" onclick="reset()">✦ もう一度引く ✦</button>
 
       <div class="instagram-link">
@@ -358,8 +387,10 @@
   </div>
 
   <script src="../cards-data.js"></script>
+  <script src="../canva-csv.js"></script>
   <script>
     const API_ENDPOINT = 'https://fortune-five-psi.vercel.app/api/oracle';
+    let lastDraw = null; // { question, card, belief, background, view, column }
 
     function buildSvg(card) {
       if (card.image) {
@@ -454,6 +485,7 @@
       btn.textContent = '…';
 
       const card = CARDS[Math.floor(Math.random() * CARDS.length)];
+      lastDraw = null;
 
       document.getElementById('cardSvg').innerHTML = buildSvg(card);
       document.getElementById('cardName').textContent = card.name;
@@ -500,6 +532,15 @@
         typeInto('textView', 'loadView', data.view || '（受け取れませんでした）', 400);
         typeInto('textColumn', 'loadColumn', data.column || '（受け取れませんでした）', 600);
 
+        lastDraw = {
+          question,
+          card,
+          belief: data.belief || '',
+          background: data.background || '',
+          view: data.view || '',
+          column: data.column || '',
+        };
+
         btn.disabled = false;
         btn.textContent = '✦ カードを引く ✦';
       } catch (e) {
@@ -510,8 +551,43 @@
       }
     }
 
+    // ── Canva 一括作成用CSV ──
+    // カード1枚＋問い＋四つの本文を1行ぶん書き出す。日付などの固定要素は
+    // Canva 側のテンプレートで持たせる前提で CSV には入れない（他アプリと同じ方針）。
+    function downloadCsv() {
+      const btn = document.getElementById('csvBtn');
+      if (!lastDraw) {
+        btn.textContent = '✦ 先にカードを引いてください ✦';
+        setTimeout(() => { btn.textContent = '✦ Canva用CSV ✦'; }, 2500);
+        return;
+      }
+
+      try {
+        const csv = CanvaCSV.sheet();
+        csv.add('問い', lastDraw.question);
+        // 画像URLは location.href を基点に解決される。lens1 は oracle/ の
+        // 一段下にいるので、../ を足してから渡す（../images/xxx.webp）。
+        const cardForCsv = Object.assign({}, lastDraw.card, {
+          image: lastDraw.card.image ? '../' + lastDraw.card.image : lastDraw.card.image,
+        });
+        csv.addCard('card', cardForCsv, false, 'ja');
+        csv.add('思い込み', lastDraw.belief, { split: 2 });
+        csv.add('背景', lastDraw.background, { split: 2 });
+        csv.add('叶った視点', lastDraw.view, { split: 2 });
+        csv.add('由来の小話', lastDraw.column);
+        csv.download('lens1_canva');
+
+        btn.textContent = '✦ CSVを保存しました ✦';
+      } catch (e) {
+        console.error(e);
+        btn.textContent = '✦ CSVを作れませんでした：' + e.message + ' ✦';
+      }
+      setTimeout(() => { btn.textContent = '✦ Canva用CSV ✦'; }, 4000);
+    }
+
     function reset() {
       stopTyping();
+      lastDraw = null;
       currentDrawId++;
       document.getElementById('cardStage').className = 'card-stage';
       document.getElementById('inputStage').style.display = 'block';
