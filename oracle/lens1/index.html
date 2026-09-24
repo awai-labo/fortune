@@ -109,6 +109,71 @@
     }
     .q-hint.show { opacity: 0.85; height: auto; margin-bottom: 6px; }
 
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.4rem;
+    }
+
+    .mode-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--text-dim);
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      padding: 11px 6px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .mode-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .mode-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(201,168,76,0.08);
+    }
+
+    .card-picker { display: none; margin-bottom: 1.6rem; }
+    .card-picker.show { display: block; }
+
+    .card-picker label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      opacity: 0.75;
+      margin-bottom: 8px;
+    }
+
+    .card-picker select {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--gold-dim);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .card-picker select:focus { border-color: rgba(201,168,76,0.65); }
+    .card-picker optgroup { font-style: normal; color: var(--gold); background: #0c0c16; }
+    .card-picker option { background: #0c0c16; color: var(--text); }
+
+    .pick-hint {
+      font-size: 12px;
+      color: #c98080;
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+      margin-top: 6px;
+      transition: opacity 0.2s;
+    }
+    .pick-hint.show { opacity: 0.85; height: auto; margin-bottom: 6px; }
+
     .draw-btn {
       display: block;
       width: 100%;
@@ -318,6 +383,17 @@
     <div id="inputStage">
       <p class="deck-desc">一枚のカードを通して、今かなえたい願い・問いの奥にあるかもしれない思い込みを見にいきます。</p>
 
+      <div class="mode-switch">
+        <button type="button" class="mode-btn active" id="modeRandomBtn" onclick="setMode('random')">✦ ランダムに引く</button>
+        <button type="button" class="mode-btn" id="modeManualBtn" onclick="setMode('manual')">カードを指定する</button>
+      </div>
+
+      <div class="card-picker" id="cardPickerWrap">
+        <label for="cardSelect">実際に引いたカードを選ぶ</label>
+        <select id="cardSelect"></select>
+        <p class="pick-hint" id="pickHint">カードを選んでから進んでください</p>
+      </div>
+
       <div class="q-area">
         <label for="userQ">今、問いかけたいこと・叶えたい願い</label>
         <textarea id="userQ" rows="3" placeholder="例）新しい仕事に踏み出したい、この関係をどうしたいか知りたい…"></textarea>
@@ -391,6 +467,7 @@
   <script>
     const API_ENDPOINT = 'https://fortune-five-psi.vercel.app/api/oracle';
     let lastDraw = null; // { question, card, belief, background, view, column }
+    let mode = 'random'; // 'random' | 'manual'
 
     function buildSvg(card) {
       if (card.image) {
@@ -426,8 +503,37 @@
       Sephirot: 'セフィロト（生命の樹）',
       Hebrew: 'ヘブライ文字',
       Rune: 'ルーン文字',
-      Norse: '北欧神話の世界',
+      World: '北欧神話の世界',
     };
+
+    // ── カードを指定して引くモード用：プルダウンを組み立てる ──
+    const TYPE_ORDER = ['Sephirot', 'Hebrew', 'World', 'Rune'];
+
+    function populateCardPicker() {
+      const sel = document.getElementById('cardSelect');
+      const groups = TYPE_ORDER.map(type => {
+        const cards = CARDS.filter(c => c.type === type);
+        const label = typeLabelMap[type] || type;
+        const opts = cards.map(c =>
+          `<option value="${c.id}">${c.name}（${c.kana}）</option>`).join('');
+        return `<optgroup label="${label}">${opts}</optgroup>`;
+      }).join('');
+      sel.innerHTML = '<option value="">— カードを選ぶ —</option>' + groups;
+    }
+    populateCardPicker();
+
+    function drawBtnLabel() {
+      return mode === 'manual' ? '✦ このカードで見る ✦' : '✦ カードを引く ✦';
+    }
+
+    function setMode(m) {
+      mode = m;
+      document.getElementById('modeRandomBtn').classList.toggle('active', m === 'random');
+      document.getElementById('modeManualBtn').classList.toggle('active', m === 'manual');
+      document.getElementById('cardPickerWrap').classList.toggle('show', m === 'manual');
+      document.getElementById('pickHint').className = 'pick-hint';
+      document.getElementById('drawBtn').textContent = drawBtnLabel();
+    }
 
     let currentDrawId = 0;
     const timers = [];
@@ -468,6 +574,19 @@
     }
 
     async function drawCard() {
+      let manualCard = null;
+      if (mode === 'manual') {
+        const sel = document.getElementById('cardSelect');
+        const id = sel.value;
+        if (!id) {
+          document.getElementById('pickHint').className = 'pick-hint show';
+          sel.focus();
+          return;
+        }
+        document.getElementById('pickHint').className = 'pick-hint';
+        manualCard = CARDS.find(c => c.id === id);
+      }
+
       const qEl = document.getElementById('userQ');
       const question = qEl.value.trim();
       if (!question) {
@@ -484,7 +603,7 @@
       btn.disabled = true;
       btn.textContent = '…';
 
-      const card = CARDS[Math.floor(Math.random() * CARDS.length)];
+      const card = mode === 'manual' ? manualCard : CARDS[Math.floor(Math.random() * CARDS.length)];
       lastDraw = null;
 
       document.getElementById('cardSvg').innerHTML = buildSvg(card);
@@ -542,12 +661,12 @@
         };
 
         btn.disabled = false;
-        btn.textContent = '✦ カードを引く ✦';
+        btn.textContent = drawBtnLabel();
       } catch (e) {
         if (drawId !== currentDrawId) return;
         showError(e.message);
         btn.disabled = false;
-        btn.textContent = '✦ カードを引く ✦';
+        btn.textContent = drawBtnLabel();
       }
     }
 
@@ -571,9 +690,9 @@
           image: lastDraw.card.image ? '../' + lastDraw.card.image : lastDraw.card.image,
         });
         csv.addCard('card', cardForCsv, false, 'ja');
-        csv.add('思い込み', lastDraw.belief, { split: 2 });
-        csv.add('背景', lastDraw.background, { split: 2 });
-        csv.add('叶った視点', lastDraw.view, { split: 2 });
+        csv.add('思い込み', lastDraw.belief);
+        csv.add('背景', lastDraw.background);
+        csv.add('叶った視点', lastDraw.view);
         csv.add('由来の小話', lastDraw.column);
         csv.download('lens1_canva');
 
@@ -592,6 +711,9 @@
       document.getElementById('cardStage').className = 'card-stage';
       document.getElementById('inputStage').style.display = 'block';
       document.getElementById('userQ').value = '';
+      document.getElementById('cardSelect').value = '';
+      document.getElementById('pickHint').className = 'pick-hint';
+      document.getElementById('drawBtn').textContent = drawBtnLabel();
       document.getElementById('userQ').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
